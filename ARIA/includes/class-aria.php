@@ -130,6 +130,39 @@ class ARIA {
 
 		// Register all of the hooks needed by ARIA
 
+    // okay to have this here because the "create a competition" form will be
+    // created before this code is executed BUT we run into a problem if the
+    // user decides to delete the form! We need a way to keep this form around
+    // because it's arguably the most important form in the plugin.
+
+    $this->loader->add_action(
+      'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),
+      'ARIA_Create_Competition',
+      'aria_create_teacher_and_student_forms',
+      10,
+      4);
+    
+
+    /*
+    trying to generalize the call and have the function perform a check to
+    see if it's a student form
+    */
+    $this->loader->add_action('gform_after_submission',
+      'ARIA_Create_Competition',
+      'aria_calling_test',
+      10,
+      2
+    );
+
+/*
+$form_id = ARIA_API::aria_get_create_competition_form_id();
+add_action(
+	'gform_after_submission_' . strval($form_id),
+	array('ARIA_Create_Competition', 'aria_calling_test'),
+	10,
+	2);
+*/
+
 		// Creating student and teacher forms
 
 		/*
@@ -140,11 +173,6 @@ class ARIA {
     !!!
 
 		*/
-
-    /*
-		$this->loader->add_action('gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),
-			'ARIA_Create_Competition', 'aria_create_teacher_and_student_forms', 10, 4);
-    */
 
 		// Adding music upload/download functionality
 		$this->loader->add_action('gform_after_submission_' . strval(ARIA_API::aria_get_song_upload_form_id()),
