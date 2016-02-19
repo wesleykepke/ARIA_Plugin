@@ -2,3 +2,5 @@
 A local version of my senior project so I can experiment without causing catastrophic damage. 
 
 This is just the ARIA plugin (all of the other WordPress files are not included here). 
+
+The main repository for my senior project can be found at https://github.com/wesleykepke/ARIA. 
