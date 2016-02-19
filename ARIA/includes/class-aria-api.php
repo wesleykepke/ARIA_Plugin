@@ -217,4 +217,8 @@ class ARIA_API {
 
 		return $title;
 	}
+
+  public static function check_if_student_form($form_name) {
+    return strpos($form_name, STUDENT_REG);
+  }
 }
