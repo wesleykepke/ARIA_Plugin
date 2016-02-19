@@ -45,23 +45,68 @@ class ARIA_Create_Competition {
       $form_id = self::aria_create_competition_form();
     }
 
+    self::aria_init();
+
     // add functionality to create new student and teacher forms once a new
     // competition is created
-    $hook = ('gform_confirmation_' . strval($form_id));
-    $function = 'aria_create_teacher_and_student_forms';
-    if (!has_action($hook)) { // 1 is the priority on this hook
-      $loader = new ARIA_Loader();
-      $loader->add_action($hook,
-	      'ARIA_Create_Competition', $function, 10, 4);
-      $loader->run();
 
-      /*
-      add_action($hook,
-	      array(&$this, 'aria_create_teacher_and_student_forms'), 10, 4); */
-      //wp_die('added function named: ' . $function . " to " . $hook);
+    /*
+    this does NOT work
+    add_action('init', array($this, 'init'));
+    do_action('init');
+    */
+  }
+
+  public static function aria_init() {
+
+    $form_id = ARIA_API::aria_get_create_competition_form_id();
+    //wp_die("My init function: " . strval($form_id));
+
+
+    /*
+    this does NOT work
+    $loader = new ARIA_Loader();
+    $loader->add_action('gform_after_submission_' . strval($form_id),
+		$this,
+    'aria_calling_test',
+		10,
+		2);
+    */
+
+/*
+	add_action(
+		'gform_after_submission_' . strval($form_id),
+		array('ARIA_Create_Competition', 'aria_calling_test'),
+		10,
+		2);
+*/
+
+/*
+    add_action(
+      'gform_confirmation__' . strval($form_id),
+      array(&$this, 'aria_change_confirmation'),
+      10,
+      4);
+*/
+  }
+
+  public static function aria_calling_test($entry, $form) {
+    if (ARIA_API::check_if_student_form($form['title'])) {
+      $prepended_comp_title = ARIA_API::aria_parse_form_name_for_title($form["title"]);
+	    $related_forms = ARIA_Registration_Handler::aria_find_related_forms_ids($prepended_comp_title);
+      wp_die(print_r($related_forms));
     }
+/*
     else {
-      wp_die('hook has already been added');
+      wp_die(print_r($form));
+    } */
+  }
+
+  public static function aria_change_confirmation($confirmation, $form, $entry, $ajax) {
+    $competition_creation_form_id = ARIA_API::aria_get_create_competition_form_id();
+    if ($form['id'] === $competition_creation_form_id) {
+      $confirmation = "I'm Wes and I'm changing the confirmation message";
+      return $confirmation;
     }
   }
 
@@ -80,16 +125,11 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_teacher_and_student_forms($confirmation, $form, $entry, $ajax) {
-    wp_die("I'm getting called.");
+    //wp_die("I'm getting called.");
 
     // make sure the create competition form is calling this function
     $competition_creation_form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form['id'] === $competition_creation_form_id) {
-			/*
-			Calls wp_die and returns a value of 86?
-      self::aria_update_page_ids();
-
-			*/
 
 			$field_mapping = self::aria_get_competition_entry_meta();
 			$competition_name = $entry[$field_mapping['Name of Competition']];
@@ -111,6 +151,7 @@ class ARIA_Create_Competition {
       $confirmation .= " was published. </br>";
       $confirmation .= "<a href={$teacher_form_url}> {$competition_name} Teacher Registration </a>";
       $confirmation .= " was published.";
+
 
       return $confirmation;
     }
