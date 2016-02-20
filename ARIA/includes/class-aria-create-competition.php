@@ -39,29 +39,10 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_competition_activation() {
-    // if the form for creating music competitions doesn't exist, create a new form
+    // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
-    }
-
-    // add functionality to create new student and teacher forms once a new
-    // competition is created
-    $hook = ('gform_confirmation_' . strval($form_id));
-    $function = 'aria_create_teacher_and_student_forms';
-    if (!has_action($hook)) { // 1 is the priority on this hook
-      $loader = new ARIA_Loader();
-      $loader->add_action($hook,
-	      'ARIA_Create_Competition', $function, 10, 4);
-      $loader->run();
-
-      /*
-      add_action($hook,
-	      array(&$this, 'aria_create_teacher_and_student_forms'), 10, 4); */
-      //wp_die('added function named: ' . $function . " to " . $hook);
-    }
-    else {
-      wp_die('hook has already been added');
     }
   }
 
@@ -80,16 +61,9 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_teacher_and_student_forms($confirmation, $form, $entry, $ajax) {
-
     // make sure the create competition form is calling this function
     $competition_creation_form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form['id'] === $competition_creation_form_id) {
-			/*
-			Calls wp_die and returns a value of 86?
-      self::aria_update_page_ids();
-
-			*/
-
 			$field_mapping = self::aria_get_competition_entry_meta();
 			$competition_name = $entry[$field_mapping['Name of Competition']];
 

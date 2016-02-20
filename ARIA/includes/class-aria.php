@@ -130,7 +130,7 @@ class ARIA {
 
 		// Register all of the hooks needed by ARIA
 
-		/*
+    /*
     The action registered for this hook is for adding the form to create a new
     music competition.
 
@@ -138,7 +138,7 @@ class ARIA {
     deletes the "NNMTA: Create Competition" form after the plugin is
     initialized. Currently, if the user deletes it, the only way to get it back
     is to deactivate and reactivate the plugin.
-		*/
+    */
     $this->loader->add_action(
       'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),
 			'ARIA_Create_Competition',
@@ -147,8 +147,6 @@ class ARIA {
     /*
     The action registered for this hook is to invoke processing after a student
     has submitted their registration.
-
-    blah blah
     */
 		$this->loader->add_action('gform_after_submission',
       'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
