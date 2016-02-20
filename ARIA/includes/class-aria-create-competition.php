@@ -69,9 +69,12 @@ class ARIA_Create_Competition {
 
 			// create the student and teacher forms
       $student_form_id = self::aria_create_student_form($entry);
-      $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
-      $student_form_url = self::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
-      $teacher_form_url = self::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
+      $teacher_form_id = self::aria_create_teacher_form($entry,
+        unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+      $student_form_url = self::aria_publish_form(
+        "{$competition_name} Student Registration", $student_form_id);
+      $teacher_form_url = self::aria_publish_form(
+        "{$competition_name} Teacher Registration", $teacher_form_id);
 
 			// create the sutdent and teacher (master) forms
 			$student_master_form_id =
