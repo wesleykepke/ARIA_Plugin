@@ -163,6 +163,19 @@ class ARIA {
 			'ARIA_Music',
       'aria_add_music_from_csv', 10, 2);
 
+    /*
+    The following two add_actions are for testing purposes only!
+    $this->loader->add_action(
+    'gform_after_submission_194',
+    'ARIA_Form_Hooks',
+    'after_student_master_submission', 10, 2);
+
+    $this->loader->add_action(
+    'gform_after_submission_195',
+    'ARIA_Form_Hooks',
+    'after_student_master_submission', 10, 2);
+    */
+
 		/*
     The filter registered for this hook is to modify the upload path for NNMTA
     music
