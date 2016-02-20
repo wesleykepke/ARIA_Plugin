@@ -41,17 +41,28 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_after_student_submission($entry, $form) {
+    // only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
           return;
     }
 
-    // Find common title and get the forms that are related to this form
-    $prepended_comp_title = ARIA_API::aria_parse_form_name_for_title($form["title"]);
+    // Find the 4 related forms that pertain to $form
     $related_forms = $form['aria_relations'];
 
     // Find out the information associated with the $entry variable
-		$student_fields = ARIA_Create_Competition::aria_student_field_id_array();
+    $student_fields = ARIA_Create_Competition::aria_student_field_id_array();
+
+    /*
+    This output confirms that the associative arrays match.
+
+    $json = ('<h1>' . json_encode($entry) . '</h1>');
+    wp_die($json . '<br>' . print_r($student_fields));
+    */
+
+// works for sure up to here
+
+    /* not checked! */
     $teacher_master_fields = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
 

@@ -64,12 +64,12 @@ class ARIA_Create_Competition {
     // make sure the create competition form is calling this function
     $competition_creation_form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form['id'] === $competition_creation_form_id) {
-			$field_mapping = self::aria_get_competition_entry_meta();
-			$competition_name = $entry[$field_mapping['Name of Competition']];
+			$field_mapping = self::aria_competition_field_id_array();
+			$competition_name = $entry[$field_mapping['competition_name']];
 
 			// create the student and teacher forms
       $student_form_id = self::aria_create_student_form($entry);
-      $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['Volunteer Times']]));
+      $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
       $student_form_url = self::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
       $teacher_form_url = self::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
@@ -79,6 +79,7 @@ class ARIA_Create_Competition {
 			$teacher_master_form_id =
       ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name);
 
+      // associate all of the related forms
       $related_forms = array(
         'student_public_form_id' => $student_form_id,
         'teacher_public_form_id' => $teacher_form_id,
@@ -88,16 +89,19 @@ class ARIA_Create_Competition {
         'teacher_public_form_url' => $teacher_form_url
       );
 
+      // obtain form objects for each of the four forms
       $student_public_form = GFAPI::get_form($student_form_id);
       $teacher_public_form = GFAPI::get_form($teacher_form_id);
       $student_master_form = GFAPI::get_form($student_master_form_id);
       $teacher_master_form = GFAPI::get_form($teacher_master_form_id);
 
+      // assign the related form objects
       $student_public_form['aria_relations'] = $related_forms;
       $teacher_public_form['aria_relations'] = $related_forms;
       $student_master_form['aria_relations'] = $related_forms;
       $teacher_master_form['aria_relations'] = $related_forms;
 
+      // update the related forms
       GFAPI::update_form($student_public_form);
       GFAPI::update_form($teacher_public_form);
       GFAPI::update_form($student_master_form);
@@ -105,6 +109,8 @@ class ARIA_Create_Competition {
 
       $teacher_public_form = GFAPI::get_form($teacher_form_id);
 
+      // change the confirmation message that the festival chairman sees
+      // after competition creation
       $confirmation = 'Congratulations! A new music competition has been ';
       $confirmation .= 'created. The following forms are now available for ';
       $confirmation .= ' students and teachers to use for registration: </br>';
@@ -112,7 +118,6 @@ class ARIA_Create_Competition {
       $confirmation .= " was published. </br>";
       $confirmation .= "<a href={$teacher_form_url}> {$competition_name} Teacher Registration </a>";
       $confirmation .= " was published.";
-
       return $confirmation;
     }
     else {
@@ -136,22 +141,34 @@ class ARIA_Create_Competition {
    * @since 1.0.5
    * @author KREW
    */
-  public static function aria_get_competition_entry_meta() {
+  public static function aria_competition_field_id_array() {
+    /*
+    CAUTION, This array is used as a source of truth. Changing these values may
+    result in catastrophic failure. If you do not want to feel the bern,
+    consult an aria developer before making changes to this portion of code.
+
+    This is super important and can't be emphasized enough! These values must
+    be changed if the corresponding form is modified. Use the function
+    json_encode($entry) to view the JSON and make sure it matches what this
+    function returns.
+
+    Last modified by wes on 2/20/2016 at 1:56 PM.
+    */
     return array(
-      'Name of Competition' => 1,
-      'Date of Competition' => 2,
-      'Location of Competition' => 3,
-      'Street Address' => 3.1,
-      'Address Line 2' => 3.2,
-      'City' => 3.3,
-      'State / Province / Region' => 3.4,
-      'Zip / Postal Code' => 3.5,
-      'Country' => 3.6,
-      'Student Registration Start Date' => 4,
-      'Student Registration End Date' => 5,
-      'Teacher Registration Start Date' => 6,
-      'Teacher Registration Start Date' => 7,
-      'Volunteer Times' => 8
+      'competition_name' => 1,
+      'competition_date' => 2,
+      'competition_location' => 3,
+      'competition_address_first' => 3.1,
+      'competition_address_second' => 3.2,
+      'competition_city' => 3.3,
+      'competition_state_province_region' => 3.4,
+      'competition_zip_postal' => 3.5,
+      'competition_country' => 3.6,
+      'competition_student_reg_start' => 4,
+      'competition_student_reg_end' => 5,
+      'competition_teacher_reg_start' => 6,
+      'competition_teacher_reg_end' => 7,
+      'competition_volunteer_times' => 8
     );
   }
 
@@ -170,13 +187,13 @@ class ARIA_Create_Competition {
 
     // name
     $competition_name_field = new GF_Field_Text();
-    $competition_name_field->label = "Name of Competition";
+    $competition_name_field->label = "competition_name";
     $competition_name_field->id = 1;
     $competition_name_field->isRequired = false;
 
     // date of the competition
     $competition_date_field = new GF_Field_Date();
-    $competition_date_field->label = "Date of Competition";
+    $competition_date_field->label = "competition_date";
     $competition_date_field->id = 2;
     $competition_date_field->isRequired = false;
     $competition_date_field->calendarIconType = 'calendar';
@@ -184,14 +201,14 @@ class ARIA_Create_Competition {
 
     // location
     $competition_location_field = new GF_Field_Address();
-    $competition_location_field->label = "Location of Competition";
+    $competition_location_field->label = "competition_location";
     $competition_location_field->id = 3;
     $competition_location_field->isRequired = false;
     $competition_location_field = self::aria_add_default_address_inputs($competition_location_field);
 
-    // student registration start date
+    // competition_student_reg_start
     $student_registration_start_date_field = new GF_Field_Date();
-    $student_registration_start_date_field->label = "Student Registration Start Date";
+    $student_registration_start_date_field->label = "competition_student_reg_start";
     $student_registration_start_date_field->id = 4;
     $student_registration_start_date_field->isRequired = false;
     $student_registration_start_date_field->calendarIconType = 'calendar';
@@ -199,15 +216,15 @@ class ARIA_Create_Competition {
 
     // student registration deadline
     $student_registration_end_date_field = new GF_Field_Date();
-    $student_registration_end_date_field->label = "Student Registration End Date";
+    $student_registration_end_date_field->label = "competition_student_reg_end";
     $student_registration_end_date_field->id = 5;
     $student_registration_end_date_field->isRequired = false;
     $student_registration_end_date_field->calendarIconType = 'calendar';
     $student_registration_end_date_field->dateType = 'datepicker';
 
-    // teacher registration start date
+    // competition_teacher_reg_start
     $teacher_registration_start_date_field = new GF_Field_Date();
-    $teacher_registration_start_date_field->label = "Teacher Registration Start Date";
+    $teacher_registration_start_date_field->label = "competition_teacher_reg_start";
     $teacher_registration_start_date_field->id = 6;
     $teacher_registration_start_date_field->isRequired = false;
     $teacher_registration_start_date_field->calendarIconType = 'calendar';
@@ -215,7 +232,7 @@ class ARIA_Create_Competition {
 
     // teacher registration deadline
     $teacher_registration_end_date_field = new GF_Field_Date();
-    $teacher_registration_end_date_field->label = "Teacher Registration Start Date";
+    $teacher_registration_end_date_field->label = "competition_teacher_reg_start";
     $teacher_registration_end_date_field->id = 7;
     $teacher_registration_end_date_field->isRequired = false;
     $teacher_registration_end_date_field->calendarIconType = 'calendar';
@@ -273,13 +290,13 @@ class ARIA_Create_Competition {
   private static function aria_add_default_address_inputs($field) {
     $field->inputs = array(
       array("id" => "{$field->id}.1",
-      			"label" => "Street Address",
+      			"label" => "competition_address_first",
       			"name" => ""),
       array("id" => "{$field->id}.2",
-      			"label" => "Address Line 2",
+      			"label" => "competition_address_second",
       			"name" => ""),
       array("id" => "{$field->id}.3",
-      			"label" => "City",
+      			"label" => "competition_city",
       			"name" => ""),
       array("id" => "{$field->id}.4",
       			"label" => "State \/ Province",
@@ -288,7 +305,7 @@ class ARIA_Create_Competition {
       			"label" => "ZIP \/ Postal Code",
       			"name" => ""),
       array("id" => "{$field->id}.6",
-      			"label" => "Country",
+      			"label" => "competition_country",
       			"name" => ""),
     );
 
@@ -402,9 +419,16 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_teacher_field_id_array() {
-    // CAUTION, This array is used as a source of truth. Changing these values may
-    // result in catastrophic failure. If you do not want to feel the bern,
-    // consult an aria developer before making changes to this portion of code.
+    /*
+    CAUTION, This array is used as a source of truth. Changing these values may
+    result in catastrophic failure. If you do not want to feel the bern,
+    consult an aria developer before making changes to this portion of code.
+
+    This is super important and can't be emphasized enough! These values must
+    be changed if the corresponding form is modified. Use the function
+    json_encode($entry) to view the JSON and make sure it matches what this
+    function returns.
+    */
     return array(
       'name' => 1,
 			'first_name' => 1.3,
@@ -448,9 +472,9 @@ class ARIA_Create_Competition {
    * @author KREW
    */
    private static function aria_create_teacher_form($competition_entry, $volunteer_time_options_array) {
-    $field_mapping = self::aria_get_competition_entry_meta();
+    $field_mapping = self::aria_competition_field_id_array();
 
-    $competition_name = $competition_entry[$field_mapping['Name of Competition']];
+    $competition_name = $competition_entry[$field_mapping['competition_name']];
     $teacher_form = new GF_Form("{$competition_name} Teacher Registration", "");
     $field_id_arr = self::aria_teacher_field_id_array();
 
@@ -547,7 +571,7 @@ class ARIA_Create_Competition {
           = array('text' => $volunteer_time, 'value' => $volunteer_time, 'isSelected' => false);
       }
     }
-    //foreach( $competition_entry[ $field_mapping['Volunteer Times']]
+    //foreach( $competition_entry[ $field_mapping['competition_volunteer_times']]
     //$volunteer_time_field->choices = $volunteer_time_options['choices'];
     $volunteer_time_field->conditionalLogic = array(
     	'actionType' => 'show',
@@ -769,13 +793,22 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_student_field_id_array() {
-    // CAUTION, This array is used as a source of truth. Changing these values may
-    // result in catastrophic failure. If you do not want to feel the bern,
-    // consult an aria developer before making changes to this portion of code.
+    /*
+    CAUTION, This array is used as a source of truth. Changing these values may
+    result in catastrophic failure. If you do not want to feel the bern,
+    consult an aria developer before making changes to this portion of code.
+
+    This is super important and can't be emphasized enough! These values must
+    be changed if the corresponding form is modified. Use the function
+    json_encode($entry) to view the JSON and make sure it matches what this
+    function returns.
+
+    Last modified by wes on 2/20/2016 at 1:41 PM.
+    */
     return array(
       'parent_name' => 1,
-			'parent_first_name' => 1.1,
-			'parent_last_name' => 1.2,
+			'parent_first_name' => 1.3,
+			'parent_last_name' => 1.6,
       'parent_email' => 2,
       'student_name' => 3,
 			'student_first_name' => 3.3,
@@ -784,8 +817,13 @@ class ARIA_Create_Competition {
       'teacher_name' => 5,
       'not_listed_teacher_name' => 6,
       'available_festival_days' => 7,
+      'available_festival_days_saturday' => 7.1,
+      'available_festival_days_sunday' => 7.2,
       'preferred_command_performance' => 8,
-      'compliance_statement' => 9
+      'preferred_command_performance_earlier' => 8.1,
+      'preferred_command_performance_later' => 8.2,
+      'compliance_statement' => 9,
+      'compliance_statement_agreement' => 9.1
     );
   }
 
@@ -802,9 +840,9 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   private static function aria_create_student_form( $competition_entry ) {
-    $field_mapping = self::aria_get_competition_entry_meta();
+    $field_mapping = self::aria_competition_field_id_array();
 
-    $competition_name = $competition_entry[$field_mapping['Name of Competition']];
+    $competition_name = $competition_entry[$field_mapping['competition_name']];
     $student_form = new GF_Form("{$competition_name} Student Registration", "");
     $field_id_array = self::aria_student_field_id_array();
 
@@ -890,7 +928,7 @@ class ARIA_Create_Competition {
     "that you prefer in the event that your child receives a superior rating.";
     $command_times->choices = array(
       array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
-      array('text' => 'Thursday 7:30', 'value' => 'Sunday', 'isSelected' => false)
+      array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
     );
     $command_times->inputs = array();
     $command_times = self::aria_add_checkbox_input( $command_times, 'Thursday 5:30' );
