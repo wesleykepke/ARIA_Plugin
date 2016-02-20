@@ -13,7 +13,7 @@
  * @package           ARIA
  *
  * @wordpress-plugin
- * Plugin Name:       ARIA (Administration, Registration, and Information Assistant)
+ * Plugin Name:       ARIA_Wes (Administration, Registration, and Information Assistant)
  * Plugin URI:        http://wesleykepke.github.io/ARIA/
  * Description:       This plugin allows the NNMTA to create, schedule, and manage music competitions.
  * Version:           1.0.0
