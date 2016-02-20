@@ -112,8 +112,8 @@ class ARIA_Create_Master_Forms {
     $command_times->description = "Please check the Command Performance time ".
     "that you prefer in the event that your child receives a superior rating.";
     $command_times->choices = array(
-      array('text' => 'Thursday 5:30', 'value' => 'Saturday', 'isSelected' => false),
-      array('text' => 'Thursday 7:30', 'value' => 'Sunday', 'isSelected' => false)
+      array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
+      array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
     );
     $student_master_form->fields[] = $available_times;
 
@@ -226,22 +226,35 @@ class ARIA_Create_Master_Forms {
 	 * @author KREW
 	 */
 	public static function aria_master_student_field_id_array() {
-	  // CAUTION, This array is used as a source of truth. Changing these values may
-	  // result in catastrophic failure. If you do not want to feel the bern,
-	  // consult an aria developer before making changes to this portion of code.
+	  /*
+    CAUTION, This array is used as a source of truth. Changing these values may
+    result in catastrophic failure. If you do not want to feel the bern,
+    consult an aria developer before making changes to this portion of code.
+
+    This is super important and can't be emphasized enough! These values must
+    be changed if the corresponding form is modified. Use the function
+    json_encode($entry) to view the JSON and make sure it matches what this
+    function returns.
+
+    Last modified by wes on 2/20/2016 at 3:23 PM.
+    */
 	  return array(
 	    'parent_name' => 1,
-			'parent_first_name' => 1.1,
-			'parent_last_name' => 1.2,
-	    'parent_email' => 2,
-	    'student_name' => 3,
-			'student_first_name' => 3.1,
-			'student_last_name' => 3.2,
-	    'student_birthday' => 4,
-	    'teacher_name' => 5,
-	    'not_listed_teacher_name' => 6,
-	    'available_festival_days' => 7,
-	    'preferred_command_performance' => 8,
+			'parent_first_name' => 1.3,
+			'parent_last_name' => 1.6,
+      'parent_email' => 2,
+      'student_name' => 3,
+			'student_first_name' => 3.3,
+			'student_last_name' => 3.6,
+      'student_birthday' => 4,
+      'teacher_name' => 5,
+      'not_listed_teacher_name' => 6,
+      'available_festival_days' => 7,
+      'available_festival_days_saturday' => 7.1,
+      'available_festival_days_sunday' => 7.2,
+      'preferred_command_performance' => 8,
+      'preferred_command_performance_earlier' => 8.1,
+      'preferred_command_performance_later' => 8.2,
 	    'song_1_period' => 9,
 	    'song_1_composer' => 10,
 	    'song_1_selection' => 11,
@@ -374,6 +387,7 @@ class ARIA_Create_Master_Forms {
 
     // student's hash
     $teacher_hash_field = new GF_Field_Text();
+    $teacher_hash_field->label = 'Student Hash';
     $teacher_hash_field->id = $field_id_array['hash'];
     $teacher_hash_field->isRequired = false;
     $teacher_master_form->fields[] = $teacher_hash_field;
@@ -397,26 +411,29 @@ class ARIA_Create_Master_Forms {
 	 *
 	 */
   public static function aria_master_teacher_field_id_array() {
-    // CAUTION, This array is used as a source of truth. Changing these values may
-    // result in catastrophic failure. If you do not want to feel the bern,
-    // consult an aria developer before making changes to this portion of code.
-
-
     /*
+    CAUTION, This array is used as a source of truth. Changing these values may
+    result in catastrophic failure. If you do not want to feel the bern,
+    consult an aria developer before making changes to this portion of code.
 
-    this needs to be checked, i don't think it's right
+    This is super important and can't be emphasized enough! These values must
+    be changed if the corresponding form is modified. Use the function
+    json_encode($entry) to view the JSON and make sure it matches what this
+    function returns.
 
-		*/
-
+    Last modified by wes on 2/20/2016 at 3:37 PM.
+    */
     return array(
-      'name' => 1,
-      'email' => 2,
-      'phone' => 3,
-      'volunteer_preference' => 4,
-      'volunteer_time' => 5,
-      'students' => 6,
-      'is_judging' => 7,
-      'hash' => 8
+      'students' => 1,
+      'name' => 2,
+      'first_name' => 2.3,
+      'last_name' => 2.6,
+      'email' => 3,
+      'phone' => 4,
+      'volunteer_preference' => 4, // needs checking!
+      'volunteer_time' => 5, // needs checking!
+      'is_judging' => 7, // needs checking!
+      'hash' => 8 // needs checking!
     );
 	}
 }
