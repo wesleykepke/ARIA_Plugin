@@ -147,6 +147,8 @@ class ARIA {
     /*
     The action registered for this hook is to invoke processing after a student
     has submitted their registration.
+
+    blah blah
     */
 		$this->loader->add_action('gform_after_submission',
       'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
