@@ -30,20 +30,20 @@ class ARIA_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
-		// define all the files that are required
-		require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+  public static function activate() {
+    // define all the files that are required
+    require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
     // make sure that the Gravity Forms plugin is enabled
     if (is_plugin_active('gravityforms/gravityforms.php')) {
-	    // create the form for creating new music competitions
+      // create the form for creating new music competitions
       require_once("class-aria-create-competition.php");
-	    ARIA_Create_Competition::aria_create_competition_activation();
-		}
-		else {
+      ARIA_Create_Competition::aria_create_competition_activation();
+    }
+    else {
       wp_die("Error: ARIA requires the Gravity Forms plugin to be installed
-	      and enabled. Please enable the Gravity Forms plugin and reactivate
-	      ARIA.");
-		}
+        and enabled. Please enable the Gravity Forms plugin and reactivate
+        ARIA.");
+    }
 	}
 }
