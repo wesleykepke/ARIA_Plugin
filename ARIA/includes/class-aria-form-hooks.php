@@ -25,6 +25,19 @@ require_once("class-aria-create-competition.php");
  * @author     KREW
  */
 class ARIA_Form_Hooks {
+
+  /*
+  The following two functions are intended only for testing purposes.
+  */
+  public static function after_student_master_submission($entry, $form) {
+    wp_die(json_encode($entry));
+  }
+
+  public static function aria_teacher_master_submission($entry, $form) {
+    wp_die(json_encode($entry));
+  }
+
+
   /**
    * This function will be the hook that is called after a student public form
    * entry is made. This is to get all information from the student form and
