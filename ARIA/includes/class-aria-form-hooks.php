@@ -41,9 +41,13 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_after_student_submission($entry, $form) {
-    // Find common title and get the forms that are related to this form
-    $prepended_comp_title = ARIA_API::aria_parse_form_name_for_title($form["title"]);
-    $related_forms = ARIA_Registration_Handler::aria_find_related_forms_ids($prepended_comp_title);
+    if (ARIA_API::check_if_student_form($form["title"])) {
+      // Find common title and get the forms that are related to this form
+	    $prepended_comp_title = ARIA_API::aria_parse_form_name_for_title($form["title"]);
+	    $related_forms = ARIA_Registration_Handler::aria_find_related_forms_ids($prepended_comp_title);
+      wp_die('Made it to aria_after_student_submission');
+    }
+
 
 // tested and working to this point ($related_forms has the ids we need)
 
@@ -54,8 +58,8 @@ class ARIA_Form_Hooks {
 
     //print_r($entry);
 		//echo rgar($entry, '1.3');
-		var_dump($entry);
-    wp_die(var_dump(rgar( $entry, '1.3' )));
+		//var_dump($entry);
+    //wp_die(var_dump(rgar( $entry, '1.3' )));
 
 
 		//wp_die(print_r($student_fields) . " DELIMITER" . print_r($entry));

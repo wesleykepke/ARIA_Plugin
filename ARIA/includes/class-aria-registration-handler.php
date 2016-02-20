@@ -62,6 +62,8 @@ class ARIA_Registration_Handler {
 			self::TEACHER_MASTER => null
 		);
 
+    wp_die("Passed title: " . $prepended_title); 
+
 		$student_form = $prepended_title . " Student Registration";
 		$student_master_form = $prepended_title . " Student Master";
 		$teacher_form = $prepended_title . " Teacher Registration";
@@ -93,9 +95,9 @@ class ARIA_Registration_Handler {
 		}
 
 		// make sure all forms exist
-		foreach ($form_ids as $key => $value) {
-			if (!isset($value)) {
-				wp_die('Error: The form titled ' . $all_competition_forms[$key] .
+		for ($i = 0; $i < count($all_competition_forms); $i++) {
+			if (!isset($form_ids[$i])) {
+				wp_die('Error: The form titled ' . $all_competition_forms[$i] .
 				" does not exist.");
 			}
 		}

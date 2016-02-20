@@ -141,11 +141,13 @@ class ARIA {
       'aria_create_teacher_and_student_forms',
       10,
       4);
-    
+
 
     /*
     trying to generalize the call and have the function perform a check to
     see if it's a student form
+
+    this works!
     */
     $this->loader->add_action('gform_after_submission',
       'ARIA_Create_Competition',
@@ -153,6 +155,14 @@ class ARIA {
       10,
       2
     );
+
+    $this->loader->add_action('gform_after_submission',
+      'ARIA_Form_Hooks',
+      'aria_after_student_submission',
+      11,
+      2
+    );
+
 
 /*
 $form_id = ARIA_API::aria_get_create_competition_form_id();
