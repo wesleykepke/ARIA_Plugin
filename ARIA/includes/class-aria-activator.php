@@ -33,11 +33,11 @@ class ARIA_Activator {
 	public static function activate() {
 		// define all the files that are required
 		require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-		require_once("class-aria-create-competition.php");
 
     // make sure that the Gravity Forms plugin is enabled
     if (is_plugin_active('gravityforms/gravityforms.php')) {
 	    // create the form for creating new music competitions
+      require_once("class-aria-create-competition.php");
 	    ARIA_Create_Competition::aria_create_competition_activation();
 		}
 		else {
