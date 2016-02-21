@@ -70,7 +70,13 @@ class ARIA_Form_Hooks {
     $student_master_fields = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
 
     // Hash for teacher (just has the teacher name)
-    $teacher_name = $entry[(string)$student_fields["teacher_name"]];
+    if (!empty($entry[$student_fields['not_listed_teacher_name']])) {
+      // student entered a name that didn't appear in the drop-down menu
+      $teacher_name = $entry[$student_fields['not_listed_teacher_name']];
+    }
+    else {
+      $teacher_name = $entry[(string)$student_fields["teacher_name"]];
+    }
     $teacher_hash = hash("md5", $teacher_name);
 
     // Hash for student (student name and entry date)
@@ -86,15 +92,33 @@ class ARIA_Form_Hooks {
       ARIA_Registration_Handler::aria_find_teacher_entry($related_forms['teacher_master_form_id'],
       $teacher_hash);
 
-/* !!! works for sure up to here !!! */
-
     if ($teacher_entry) {
-      wp_die('teacher entry is not false' . print_r($teacher_entry));
-
+      // Add the newly registered student to the teacher's list of student hashes
+      $teacher_entry[strval($teacher_master_fields["students"])][] = $student_hash;
     }
     else {
+      // Create a new teacher and apply some default values
+      $teacher_name = explode(" ", $teacher_name);
+      $new_teacher_entry = array();
+      $new_teacher_entry[] = array(
+        strval($teacher_master_fields["students"]) => array($student_hash),
+        strval($teacher_master_fields["first_name"]) => $teacher_name[0],
+        strval($teacher_master_fields["last_name"]) => $teacher_name[1],
+        strval($teacher_master_fields["email"]) => null,
+        strval($teacher_master_fields["phone"]) => null,
+        strval($teacher_master_fields["volunteer_preference"]) => null,
+        strval($teacher_master_fields["volunteer_time"]) => null,
+        strval($teacher_master_fields["is_judging"]) => null,
+        strval($teacher_master_fields["hash"]) => $teacher_hash
+      );
 
+      $result = GFAPI::add_entries($new_teacher_entry, $related_forms['teacher_master_form_id']);
+      if (is_wp_error()) {
+        wp_die($result->get_error_message());
+      }
     }
+
+/* !!! works for sure up to here !!! */
 
     // // Search through the teacher form to see if the teacher has an entry made
     // $teacher_entry = ARIA_Registration_Handler::aria_find_teacher_entry($form["title"], $teacher_hash);
