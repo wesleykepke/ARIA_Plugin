@@ -16,7 +16,7 @@
  * Plugin Name:       ARIA (Administration, Registration, and Information Assistant)
  * Plugin URI:        http://wesleykepke.github.io/ARIA/
  * Description:       This plugin allows the NNMTA to create, schedule, and manage music competitions.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            KREW (Kyle Lee, Renee Iinuma, Ernest Landrito, and Wesley Kepke)
  * Author URI:        http://wesleykepke.github.io/ARIA/
  * License:           GPL-2.0+
