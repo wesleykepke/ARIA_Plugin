@@ -69,12 +69,9 @@ class ARIA_Create_Competition {
 
 			// create the student and teacher forms
       $student_form_id = self::aria_create_student_form($entry);
-      $teacher_form_id = self::aria_create_teacher_form($entry,
-        unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
-      $student_form_url = self::aria_publish_form(
-        "{$competition_name} Student Registration", $student_form_id);
-      $teacher_form_url = self::aria_publish_form(
-        "{$competition_name} Teacher Registration", $teacher_form_id);
+      $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+      $student_form_url = self::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
+      $teacher_form_url = self::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
 			// create the sutdent and teacher (master) forms
 			$student_master_form_id =
@@ -190,6 +187,8 @@ class ARIA_Create_Competition {
 
     // name
     $competition_name_field = new GF_Field_Text();
+    // !!! maybe this should be admin label and label should be like
+    // $competition_name_field->label = "Competition Name";
     $competition_name_field->label = "competition_name";
     $competition_name_field->id = 1;
     $competition_name_field->isRequired = false;
@@ -402,11 +401,24 @@ class ARIA_Create_Competition {
   private static function aria_add_checkbox_input($field, $new_input) {
     $next_input = count( $field->inputs ) + 1;
 
-    $field->inputs[] = array(
+    if( is_array($new_input) ){
+      foreach( $new_input as $input ){
+        $field->inputs[] = array(
           "id" => "{$field->id}.{$next_input}",
-          "label" => $new_input,
+          "label" => $input,
           "name" => ""
         );
+        $next_input = $next_input + 1;
+      }
+    }
+    else{
+      $field->inputs[] = array(
+        "id" => "{$field->id}.{$next_input}",
+        "label" => $new_input,
+        "name" => ""
+      );
+    }
+
     return $field;
   }
 
@@ -455,9 +467,12 @@ class ARIA_Create_Competition {
       'timing_of_pieces' => 16,
       'is_judging' => 17, // !!!DO WE WANT TO CHANGE THIS NUMBER
       'student_level' => 18,
-      'alt_song_2_period' => 19,
-      'alt_song_2_composer' => 20,
-      'alt_song_2_selection' => 21
+      'alt_song_2_composer' => 19,
+      'alt_song_2_selection' => 20,
+      'alt_song_2_key' => 21,
+      'alt_song_2_movement_number' => 22,
+      'alt_song_2_movement_description' => 23,
+      'alt_song_2_identifying_number' => 24
     );
   }
 
@@ -526,18 +541,7 @@ class ARIA_Create_Competition {
     $volunteer_preference_field->label = "Volunteer Preference";
     $volunteer_preference_field->id = $field_id_arr['volunteer_preference'];
     $volunteer_preference_field->isRequired = false;
-    /*!!! $volunteer_preference_field->choices = array(
-      array('text' => 'Section Proctor', 'value' => 'Section Proctor', 'isSelected' => false),
-      array('text' => 'Posting Results', 'value' => 'Posting Results', 'isSelected' => false),
-      array('text' => 'Information Table', 'value' => 'Information Table', 'isSelected' => false),
-      array('text' => 'Greeting and Assisting with Locating Rooms', 'value' => 'Greeting', 'isSelected' => false),
-      array('text' => 'Hospitality (managing food in judges rooms)', 'value' => 'Hospitality', 'isSelected' => false)
-    );
-    $volunteer_preference_field->description = "Please check 1 time slot if you"
-    ." have 1-3 students competing, 2 time slots if you have 4-6 students"
-    ." competing, and 3 time slots if you have more than 6 students competing.";
-    */
-    $volunteer_preference_field->choices = array(
+    $volunteer_preference_field->choices = array( 
       array('text' => 'Proctor sessions', 'value' => 'Proctor sessions', 'isSelected' => false),
       array('text' => 'Monitor door during sessions', 'value' => 'Monitor door during sessions', 'isSelected' => false),
       array('text' => 'Greet students and parents', 'value' => 'Greet students and parents', 'isSelected' => false),
@@ -547,7 +551,17 @@ class ARIA_Create_Competition {
       array('text' => 'Clean up', 'value' => 'Clean up', 'isSelected' => false),
       array('text' => 'Help with food for judges and volunteers', 'value' => 'Help with food for judges and volunteers', 'isSelected' => false)
     );
-    //self::aria_add_checkbox_input( $volunteer_preference_field, 'Proctor sessions' );
+    $volunteer_inputs = array(
+        'Proctor sessions',
+        'Monitor door during sessions',
+        'Greet students and parents',
+        'Prepare excellent ribbons',
+        'Put seals on certificates',
+        'Early set up',
+        'Clean up',
+        'Help with food for judges and volunteers'
+      );
+    $volunteer_preference_field = self::aria_add_checkbox_input( $volunteer_preference_field, $volunteer_inputs );
     $volunteer_preference_field->description = "Please check at least two volunteer job"
     ." preferences for this year's Festival. You will be notified by email of your"
     ." volunteer assignments as Festival approaches.";
@@ -572,10 +586,9 @@ class ARIA_Create_Competition {
       foreach( $volunteer_time_options_array as $volunteer_time ) {
         $volunteer_time_field->choices[]
           = array('text' => $volunteer_time, 'value' => $volunteer_time, 'isSelected' => false);
+        $volunteer_time_field = self::aria_add_checkbox_input( $volunteer_time_field, $volunteer_time );
       }
     }
-    //foreach( $competition_entry[ $field_mapping['competition_volunteer_times']]
-    //$volunteer_time_field->choices = $volunteer_time_options['choices'];
     $volunteer_time_field->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
@@ -741,6 +754,7 @@ class ARIA_Create_Competition {
       'value' => 'Alternate theory exam completed',
       'isSelected' => false)
     );
+    $alternate_theory_field = self::aria_add_checkbox_input( $alternate_theory_field, 'Alternate theory exam completed' );
     $teacher_form->fields[] = $alternate_theory_field;
 
     // competition format
@@ -918,8 +932,7 @@ class ARIA_Create_Competition {
       array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
     );
     $available_times->inputs = array();
-    $available_times = self::aria_add_checkbox_input( $available_times, 'Saturday' );
-    $available_times = self::aria_add_checkbox_input( $available_times, 'Sunday' );
+    $available_times = self::aria_add_checkbox_input( $available_times, array( 'Saturday', 'Sunday' ));
     $student_form->fields[] = $available_times;
 
     // student's available times to compete for command performance
@@ -934,8 +947,7 @@ class ARIA_Create_Competition {
       array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
     );
     $command_times->inputs = array();
-    $command_times = self::aria_add_checkbox_input( $command_times, 'Thursday 5:30' );
-    $command_times = self::aria_add_checkbox_input( $command_times, 'Thursday 7:30' );
+    $command_times = self::aria_add_checkbox_input( $command_times, array('Thursday 5:30', 'Thursday 7:30') );
     $student_form->fields[] = $command_times;
 
     // the compliance field for parents
