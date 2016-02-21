@@ -118,59 +118,38 @@ class ARIA_Form_Hooks {
       }
     }
 
-/* !!! works for sure up to here !!! */
-
-    // // Search through the teacher form to see if the teacher has an entry made
-    // $teacher_entry = ARIA_Registration_Handler::aria_find_teacher_entry($form["title"], $teacher_hash);
-    // $teacher_master_fields = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
-
-    // // If the teacher exists, add the student hash to the students array
-    // if ($teacher_entry !== false) {
-    //   $teacher_entry[(string) $teacher_master_fields["students"]][] = $student_hash;
-    // }
-    //
-		// // If not make a new entry in the form
-    // if (!$teacher_exists) {
-    //   $new_teacher_entry = array();
-    //   $new_teacher_entry[] = array (
-    //     (string) $teacher_master_fields["name"] => $entry[(string) $student_fields["not_listed_teacher_name"]],
-    //     (string) $teacher_master_fields["email"] => null,
-    //     (string) $teacher_master_fields["phone"] => null,
-    //     (string) $teacher_master_fields["volunteer_preference"] => null,
-    //     (string) $teacher_master_fields["volunteer_time"] => null,
-    //     (string) $teacher_master_fields["students"] => array($student_hash),
-    //     (string) $teacher_master_fields["is_judging"] => null,
-    //     (string) $teacher_master_fields["hash"] => null
-    //   );
-    //   $teacher_result = GFAPI::add_entries($new_teacher_entry, $related_forms[ARIA_Registration_Handler::$TEACHER_FORM]);
-    //   if (is_wp_error($teacher_result)) {
-    //     wp_die($teacher_result->get_error_message());
-    //   }
-    // }
-
     // Make a new student master entry with the student hash
-    $new_student_master_entry = array(
-      array(
-      // (string) $student_fields["parent_name"] => $entry[(string) $student_fields["parent_name"]],
-      (string) $student_master_fields["parent_email"] => $entry[(string) $student_fields["parent_email"]],
-      // (string) $student_fields["student_name"] => $entry[(string) $student_fields["student_name"]],
-      (string) $student_master_fields["student_birthday"] => $entry[(string) $student_fields["student_birthday"]],
-      (string) $student_master_fields["teacher_name"] => $entry[(string) $student_fields["teacher_name"]],
-      (string) $student_master_fields["not_listed_teacher_name"] => $entry[(string) $student_fields["not_listed_teacher_name"]],
-      (string) $student_master_fields["available_festival_days"] => $entry[(string) $student_fields["available_festival_days"]],
-      (string) $student_master_fields["preferred_command_performance"] => $entry[(string) $student_fields["preferred_command_performance"]],
-      (string) $student_master_fields["song_1_period"] => $entry[(string) $student_fields["song_1_period"]],
-      (string) $student_master_fields["song_1_composer"] => $entry[(string) $student_fields["song_1_composer"]],
-      (string) $student_master_fields["song_1_selection"] => $entry[(string) $student_fields["song_1_selection"]],
-      (string) $student_master_fields["song_2_period"] => $entry[(string) $student_fields["song_2_period"]],
-      (string) $student_master_fields["song_2_composer"] => $entry[(string) $student_fields["song_2_composer"]],
-      (string) $student_master_fields["song_2_selection"] => $entry[(string) $student_fields["song_2_selection"]],
-      (string) $student_master_fields["theory_score"] => $entry[(string) $student_fields["theory_score"]],
-      (string) $student_master_fields["alternate_theory"] => $entry[(string) $student_fields["alternate_theory"]],
-      (string) $student_master_fields["competition_format"] => $entry[(string) $student_fields["competition_format"]],
-      (string) $student_master_fields["timing_of_pieces"] => $entry[(string) $student_fields["timing_of_pieces"]],
-      (string) $student_master_fields["hash"] => $student_hash
-    ));
+    $new_student_master_entry = array();
+    $new_student_master_entry[] = array(
+      strval($student_master_fields["parent_name"]) => $entry[strval($student_fields["parent_name"])],
+      strval($student_master_fields["parent_first_name"]) => $entry[strval($student_fields["parent_first_name"])],
+      strval($student_master_fields["parent_last_name"]) => $entry[strval($student_fields["parent_last_name"])],
+      strval($student_master_fields["parent_email"]) => $entry[strval($student_fields["parent_email"])],
+      strval($student_master_fields["student_name"]) => $entry[strval($student_fields["student_name"])],
+      strval($student_master_fields["student_first_name"]) => $entry[strval($student_fields["student_first_name"])],
+      strval($student_master_fields["student_last_name"]) => $entry[strval($student_fields["student_last_name"])],
+      strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
+      strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
+      strval($student_master_fields["not_listed_teacher_name"]) => $entry[strval($student_fields["not_listed_teacher_name"])],
+      strval($student_master_fields["available_festival_days"]) => $entry[strval($student_fields["available_festival_days"])],
+      strval($student_master_fields["available_festival_days_saturday"]) => $entry[strval($student_fields["available_festival_days_saturday"])],
+      strval($student_master_fields["available_festival_days_sunday"]) => $entry[strval($student_fields["available_festival_days_sunday"])],
+      strval($student_master_fields["preferred_command_performance"]) => $entry[strval($student_fields["preferred_command_performance"])],
+      strval($student_master_fields["preferred_command_performance_earlier"]) => $entry[strval($student_fields["preferred_command_performance_earlier"])],
+      strval($student_master_fields["preferred_command_performance_later"]) => $entry[strval($student_fields["preferred_command_performance_later"])],
+      strval($student_master_fields["song_1_period"]) => null,
+      strval($student_master_fields["song_1_composer"]) => null,
+      strval($student_master_fields["song_1_selection"]) => null,
+      strval($student_master_fields["song_2_period"]) => null,
+      strval($student_master_fields["song_2_composer"]) => null,
+      strval($student_master_fields["song_2_selection"]) => null,
+      strval($student_master_fields["theory_score"]) => null,
+      strval($student_master_fields["alternate_theory"]) => null,
+      strval($student_master_fields["competition_format"]) => null,
+      strval($student_master_fields["timing_of_pieces"]) => null,
+      strval($student_master_fields["hash"]) => $student_hash
+    );
+
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);
     if (is_wp_error($student_result)) {
       wp_die($student_result->get_error_message());
