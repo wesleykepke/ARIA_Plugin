@@ -152,7 +152,6 @@ class ARIA_Registration_Handler {
 			)
 		);
 
-    //wp_die("teacher_hash: " . $teacher_hash);
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
     if (count($entries) === 1 ) {
       // it's reaching this wp_die()

@@ -173,7 +173,7 @@ class ARIA {
     $this->loader->add_action(
     'gform_after_submission_195',
     'ARIA_Form_Hooks',
-    'after_student_master_submission', 10, 2);
+    'aria_teacher_master_submission', 10, 2);
     */
 
 		/*
