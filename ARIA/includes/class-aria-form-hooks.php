@@ -37,7 +37,6 @@ class ARIA_Form_Hooks {
     wp_die(json_encode($entry));
   }
 
-
   /**
    * This function will be the hook that is called after a student public form
    * entry is made. This is to get all information from the student form and
@@ -54,7 +53,7 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_after_student_submission($entry, $form) {
-    // only perform processing if it's a student form
+    // Only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
           return;
@@ -66,16 +65,7 @@ class ARIA_Form_Hooks {
     // Find out the information associated with the $entry variable
     $student_fields = ARIA_Create_Competition::aria_student_field_id_array();
 
-    /*
-    This output confirms that the associative arrays match.
-
-    $json = ('<h1>' . json_encode($entry) . '</h1>');
-    wp_die($json . '<br>' . print_r($student_fields));
-    */
-
-// works for sure up to here
-
-    /* not checked! */
+    /* teacher master has not been fully checked because form doesn't look complete? */
     $teacher_master_fields = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
 
@@ -90,6 +80,21 @@ class ARIA_Form_Hooks {
         $entry[(string)$student_fields["student_last_name"]];
     $student_name_and_entry .= $entry["date_created"];
     $student_hash = hash("md5", $student_name_and_entry);
+
+    // Search through the teacher master form to see if the teacher has an entry made
+    $teacher_entry =
+      ARIA_Registration_Handler::aria_find_teacher_entry($related_forms['teacher_master_form_id'],
+      $teacher_hash);
+
+/* !!! works for sure up to here !!! */
+
+    if ($teacher_entry) {
+      wp_die('teacher entry is not false' . print_r($teacher_entry));
+
+    }
+    else {
+
+    }
 
     // // Search through the teacher form to see if the teacher has an entry made
     // $teacher_entry = ARIA_Registration_Handler::aria_find_teacher_entry($form["title"], $teacher_hash);
