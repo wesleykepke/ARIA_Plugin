@@ -424,12 +424,12 @@ class ARIA_Create_Master_Forms {
     Last modified by wes on 2/20/2016 at 3:37 PM.
     */
     return array(
-      'students' => 1,
-      'name' => 2,
-      'first_name' => 2.3,
-      'last_name' => 2.6,
-      'email' => 3,
-      'phone' => 4,
+      'students' => 6,
+      'name' => 1,
+      'first_name' => 1.3,
+      'last_name' => 1.6,
+      'email' => 2,
+      'phone' => 3,
       'volunteer_preference' => 4, // needs checking!
       'volunteer_time' => 5, // needs checking!
       'is_judging' => 7, // needs checking!
