@@ -14,7 +14,7 @@
  * @subpackage ARIA/includes
  */
 
-// competitions
+// Competitions
 define("CREATE_COMPETITION_FORM_NAME", "ARIA: Create a Competition");
 define("MUSIC_UPLOAD_FORM_NAME", "ARIA: Upload Music");
 define("NNMTA_MUSIC_DATABASE_NAME", "NNMTA: Music Database");
@@ -23,3 +23,9 @@ define("STUDENT_REG", "Student Registration");
 define("STUDENT_MASTER", "Student Master");
 define("TEACHER_REG", "Teacher Registration");
 define("TEACHER_MASTER", "Teacher Master");
+
+// Enumerating constants for competitions 
+const STUDENT_FORM = 1;
+const STUDENT_MASTER = 2;
+const TEACHER_FORM = 3;
+const TEACHER_MASTER = 4;

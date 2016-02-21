@@ -15,6 +15,7 @@
  */
 
 require_once("class-aria-create-master-forms.php");
+require_once("aria-constants.php");
 
 /**
  * The competition registration handler class.
@@ -25,12 +26,6 @@ require_once("class-aria-create-master-forms.php");
  * @author     KREW
 */
 class ARIA_Registration_Handler {
-
-	// ENUMERATING CONSTANTS
-	const STUDENT_FORM = 1;
-	const STUDENT_MASTER = 2;
-	const TEACHER_FORM = 3;
-	const TEACHER_MASTER = 4;
 
 	/**
 	 * Function for sending emails.
@@ -56,10 +51,10 @@ class ARIA_Registration_Handler {
 		$all_forms = GFAPI::get_forms();
 
 		$form_ids = array(
-			self::STUDENT_FORM => null,
-			self::STUDENT_MASTER => null,
-			self::TEACHER_FORM => null,
-			self::TEACHER_MASTER => null
+			STUDENT_FORM => null,
+			STUDENT_MASTER => null,
+			TEACHER_FORM => null,
+			TEACHER_MASTER => null
 		);
 
 		$student_form = $prepended_title . " Student Registration";
@@ -130,8 +125,44 @@ class ARIA_Registration_Handler {
 
 	/**
 	 * Function for searching through teacher-master to find a teacher.
+   *
+   * This function will search through the teacher-master form and check to see
+   * if a particular teacher exists. If a teacher exists within the teacher
+   * master function of a particular competition, then the entry for that
+   * teacher will be returned. Otherwise, if no such teacher exists, the
+   * function will return false.
+   *
+   * @param $teacher_master_form_id   Integer   The ID of the teacher master form.
+   * @param $teacher_hash             String    The hash of a particular teacher.
+   *
+   * @since 1.0.0
+   * @author KREW
 	 */
-   public static function aria_find_teacher_entry($prepended_title, $teacher_hash) {
+  public static function aria_find_teacher_entry($teacher_master_form_id, $teacher_hash) {
+    $hash_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['hash'];
+
+    // check to see if any of the entries in the teacher master have $teacher_hash
+    $search_criteria = array(
+			'field_filters' => array(
+				'mode' => 'any',
+				array(
+					'key' => (string) $hash_field_id,
+					'value' => $teacher_hash
+				)
+			)
+		);
+
+    //wp_die("teacher_hash: " . $teacher_hash);
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
+    if (count($entries) === 1 ) {
+      // it's reaching this wp_die()
+      //wp_die("After get_entries, inside if statement: " . print_r($entries));
+      return $entries[0];
+    }
+
+    return false;
+
+    /*
 		 $related_forms = self::aria_find_related_forms_ids($prepended_tite);
 
 		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['hash'];
@@ -150,9 +181,8 @@ class ARIA_Registration_Handler {
      if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_name) {
        return $entries[0];
      }
-
-     return false;
-   }
+    */
+  }
 
 	/**
 	 * Function to check if a student is assigned to a teacher.
