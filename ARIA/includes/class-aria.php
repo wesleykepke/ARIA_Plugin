@@ -156,7 +156,7 @@ class ARIA {
     has submitted their registration.
     */
     $this->loader->add_action('gform_after_submission',
-      'ARIA_Form_Hooks', 'aria_after_teacher_submission', 10, 2); 
+      'ARIA_Form_Hooks', 'aria_after_teacher_submission', 10, 2);
 
 		/*
     The action registered for this hook if for adding music upload/download
@@ -189,6 +189,13 @@ class ARIA {
     */
 		$this->loader->add_filter('gform_upload_path', 'ARIA_Music',
       'aria_modify_upload_path', 10, 2);
+
+    /*
+    The filter registered for this hook exposes the new, custom query variables
+    to WP_Query.
+    */
+    $this->loader->add_filer('query_vars', 'ARIA_Form_Hooks',
+      'aria_add_query_vars_filter', 10, 1);
 	}
 
 	/**
