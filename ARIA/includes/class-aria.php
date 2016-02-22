@@ -194,7 +194,7 @@ class ARIA {
     The filter registered for this hook exposes the new, custom query variables
     to WP_Query.
     */
-    $this->loader->add_filer('query_vars', 'ARIA_Form_Hooks',
+    $this->loader->add_filter('query_vars', 'ARIA_Form_Hooks',
       'aria_add_query_vars_filter', 10, 1);
 	}
 
