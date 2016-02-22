@@ -202,6 +202,7 @@ class ARIA_Form_Hooks {
     $student_hash = get_query_var("student_hash", false);
     $teacher_hash = get_query_var("teacher_hash", false);
 
+    // student hash and teacher hash are empty
     wp_die('student hash: ' . $student_hash . ' teacher hash: ' . $teacher_hash);
 
     // Get field id arrays
@@ -242,13 +243,24 @@ class ARIA_Form_Hooks {
     $teacher_result = GFAPI::update_entry( $teacher_master_entry );
     $student_result = GFAPI::update_entry( $student_master_entry );
   }
-}
 
-// In order to make use of query vals of these functions, this filter must be,
-// added to the query vars.
-function aria_add_query_vars_filter( $vars ){
-  $vars[] = "teacher_hash";
-  $vars[] .= "student_hash";
-  return $vars;
+  /**
+   * This function will expose the new, custom query variables to WP_Query.
+   *
+   * In order for ARIA's query hash method to work, specific query vars (the
+   * query vars that will be added to URLs) need to be added to the public
+   * query variables that are available to WP_Query. This function is
+   * responsible for adding these query vars to the $query_vars property of
+   * WP_Query.
+   *
+   * @param $vars   Array   The array of query vars passed via the filter
+   *
+   * @since 1.0.0
+   * @author KREW
+  */
+  public static function aria_add_query_vars_filter($vars) {
+    $vars[] = "teacher_hash";
+    $vars[] = "student_hash";
+    return $vars;
+  }
 }
-add_filter( 'query_vars', 'aria_add_query_vars_filter' );
