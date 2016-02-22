@@ -185,7 +185,7 @@ class ARIA_API {
 		}
 
 		// check if the title contains "Student Master"
-		elseif (strpos($form_name, STUDENT_MASTER) !== false) {
+		elseif (strpos($form_name, STUDENT_MAS) !== false) {
 			$found_match = true;
 		}
 
@@ -195,7 +195,7 @@ class ARIA_API {
 		}
 
 		// check if the title contains "Teacher Master"
-		elseif (strpos($form_name, TEACHER_MASTER) !== false) {
+		elseif (strpos($form_name, TEACHER_MAS) !== false) {
 			$found_match = true;
 		}
 

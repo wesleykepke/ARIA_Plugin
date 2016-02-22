@@ -31,7 +31,12 @@ class ARIA_Registration_Handler {
 	 * Function for sending emails.
 	 */
   public static function aria_send_registration_emails() {
-
+    // this is going to need to iterate through a given teachers array
+    // of students and generate a url that has that specific teacher's hash
+    // and a hash for each of the students involved in the competition
+    // a sample url with 2 hashes might look like the following:
+    // wesley-bruh-teacher-registration-4/?teacher_hash=fredharris&student_hash=weskepke
+    // note the & in between the two hash values
   }
 
 	/**
@@ -99,36 +104,47 @@ class ARIA_Registration_Handler {
 
 	/**
 	 * Function for searching through student-master to find a student.
+   *
+   * This function will search through the student-master form and check to see
+   * if a particular student exists. If a studetn exists within the student-
+   * master form of a particular competition, then the entry for that
+   * student will be returned. Otherwise, if no such student exists, the
+   * function will return false.
+   *
+   * @param $student_master_form_id   Integer   The ID of the student-master form.
+   * @param $student_hash             String    The hash of a particular student.
+   *
+   * @since 1.0.0
+   * @author KREW
 	 */
-   public static function aria_find_student_entry($prepended_tite, $student_hash) {
-		 $related_forms = self::aria_find_related_forms_ids($prepended_tite);
+  public static function aria_find_student_entry($student_master_form_id, $student_hash) {
+    $hash_field_id = ARIA_Create_Master_Forms::aria_master_student_field_id_array()['hash'];
 
-		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_student_field_id_array()['hash'];
+    // check to see if any of the entries in the student master have $student_hash
+    $search_criteria = array(
+      'field_filters' => array(
+        'mode' => 'any',
+        array(
+         'key' => (string) $hash_field_id,
+         'value' => $student_hash
+        )
+      )
+    );
 
-     $search_criteria = array(
-       'field_filters' => array(
-         'mode' => 'any',
-         array(
-           'key' => (string) $hash_field_id,
-           'value' => $student_hash
-         )
-       )
-     );
-     $entries = GFAPI::get_entries($related_forms[self::STUDENT_MASTER], $search_criteria);
+    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria);
+    if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $student_hash) {
+     return $entries[0];
+    }
 
-     if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $student_hash) {
-       return $entries[0];
-     }
-
-     return false;
-   }
+    return false;
+  }
 
 	/**
 	 * Function for searching through teacher-master to find a teacher.
    *
    * This function will search through the teacher-master form and check to see
    * if a particular teacher exists. If a teacher exists within the teacher
-   * master function of a particular competition, then the entry for that
+   * master form of a particular competition, then the entry for that
    * teacher will be returned. Otherwise, if no such teacher exists, the
    * function will return false.
    *
@@ -153,34 +169,13 @@ class ARIA_Registration_Handler {
 		);
 
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
-    if (count($entries) === 1 ) {
+    if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
       // it's reaching this wp_die()
       //wp_die("After get_entries, inside if statement: " . print_r($entries));
       return $entries[0];
     }
 
     return false;
-
-    /*
-		 $related_forms = self::aria_find_related_forms_ids($prepended_tite);
-
-		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['hash'];
-
-     $search_criteria = array(
-       'field_filters' => array(
-         'mode' => 'any',
-         array(
-           'key' => (string) $hash_field_id,
-           'value' => $teacher_hash
-         )
-       )
-     );
-
-     $entries = GFAPI::get_entries($related_forms[self::TEACHER_MASTER], $search_criteria);
-     if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_name) {
-       return $entries[0];
-     }
-    */
   }
 
 	/**
