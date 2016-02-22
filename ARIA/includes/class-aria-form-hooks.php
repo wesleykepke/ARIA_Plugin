@@ -262,13 +262,9 @@ class ARIA_Form_Hooks {
     $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($form["title"], $student_hash);
 
     // If the student doesn't exist, throw an error message
-/*
     if (!$student_master_entry) {
       wp_die("Error: aria_after_teacher_submission() could not locate the specified student.");
     }
-*/
-
-    $student_master_entry = array();
 
     // If the student does exist, update the student master with the new information
     $student_master_entry[strval($student_master_field_ids['student_first_name'])] =
