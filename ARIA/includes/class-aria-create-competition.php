@@ -398,8 +398,8 @@ class ARIA_Create_Competition {
   /**
 
   */
-  private static function aria_add_checkbox_input($field, $new_input) {
-    $next_input = count( $field->inputs ) + 1;
+  public static function aria_add_checkbox_input($field, $new_input) {
+    $next_input = sizeof( $field->inputs ) + 1;
 
     if( is_array($new_input) ){
       foreach( $new_input as $input ){
@@ -541,7 +541,7 @@ class ARIA_Create_Competition {
     $volunteer_preference_field->label = "Volunteer Preference";
     $volunteer_preference_field->id = $field_id_arr['volunteer_preference'];
     $volunteer_preference_field->isRequired = false;
-    $volunteer_preference_field->choices = array( 
+    $volunteer_preference_field->choices = array(
       array('text' => 'Proctor sessions', 'value' => 'Proctor sessions', 'isSelected' => false),
       array('text' => 'Monitor door during sessions', 'value' => 'Monitor door during sessions', 'isSelected' => false),
       array('text' => 'Greet students and parents', 'value' => 'Greet students and parents', 'isSelected' => false),
@@ -783,6 +783,11 @@ class ARIA_Create_Competition {
     $successful_submission_message .= ' one your students.';
     $competition_creation_form->confirmation['type'] = 'message';
     $competition_creation_form->confirmation['message'] = $successful_submission_message;
+
+    $successful_submission_message = 'Congratulations! You have just';
+    $successful_submission_message .= ' successfully registered your student.';
+    $teacher_form->confirmation['type'] = 'message';
+    $teacher_form->confirmation['message'] = $successful_submission_message;
 
     $teacher_form_array = $teacher_form->createFormArray();
     $teacher_form_array['isTeacherPublicForm'] = true;

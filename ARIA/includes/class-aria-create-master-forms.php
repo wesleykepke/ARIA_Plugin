@@ -98,10 +98,12 @@ class ARIA_Create_Master_Forms {
     $available_times->isRequired = false;
     $available_times->description = "There is no guarantee that scheduling ".
     "requests will be honored.";
+    $available_times->inputs = null;
     $available_times->choices = array(
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
       array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
     );
+    $available_times = ARIA_Create_Competition::aria_add_checkbox_input($available_times, array('Saturday', 'Sunday'));
     $student_master_form->fields[] = $available_times;
 
     // student's available times to compete for command performance
@@ -115,7 +117,10 @@ class ARIA_Create_Master_Forms {
       array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
       array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
     );
-    $student_master_form->fields[] = $available_times;
+    $command_times->inputs = null;
+    $command_times = ARIA_Create_Competition::aria_add_checkbox_input($command_times, array('Thursday 5:30', 'Thursday 7:30'));
+
+    $student_master_form->fields[] = $command_times;
 
     // student's first song period
     $song_one_period_field = new GF_Field_Select();
@@ -179,6 +184,7 @@ class ARIA_Create_Master_Forms {
       'value' => 'Alternate theory exam completed',
       'isSelected' => false)
     );
+    $alternate_theory_field = ARIA_Create_Competition::aria_add_checkbox_input($alternate_theory_field, 'Alternate theory exam completed');
     $student_master_form->fields[] = $alternate_theory_field;
 
     // competition format
@@ -361,6 +367,19 @@ class ARIA_Create_Master_Forms {
       array('text' => 'Clean up', 'value' => 'Clean up', 'isSelected' => false),
       array('text' => 'Help with food for judges and volunteers', 'value' => 'Help with food for judges and volunteers', 'isSelected' => false)
     );
+    $volunteer_preference_field->input = null;
+    $volunteer_preference_field
+      = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_preference_field,
+        array(
+          'Proctor sessions',
+          'Monitor door during sessions',
+          'Greet students and parents',
+          'Prepare excellent ribbons',
+          'Put seals on certificates',
+          'Early set up',
+          'Clean up',
+          'Help with food for judges and volunteers',
+        ));
     $volunteer_preference_field->description = "Please check at least two volunteer job"
     ."preferences for this year's Festival. You will be notified by email of your"
     ."volunteer assignments as Festival approaches.";
