@@ -38,13 +38,10 @@ class ARIA_Form_Hooks {
   }
 
   /**
-   * This function will be the hook that is called after a student public form
-   * entry is made. This is to get all information from the student form and
-   * make updates in the teacher master and the student master form.
-   *
-   * This can be used as such:
-   * add_action(
-   * 'gform_after_submission_x', 'aria_after_student_submission', 10, 2);
+   * This function will be the hook that is called after a student submits their
+   * information for a new music competition. This function will take all of the
+   * information that the student submitted and update corresponding data in the
+   * student form, the student master form, and the teacher master form.
    *
    * @param		$form		GF Forms Object		The form this function is attached to.
    * @param		$entry	GF Entry Object		The entry that is returned after form submission.
@@ -182,10 +179,30 @@ class ARIA_Form_Hooks {
 	// !!!RENEE HERE
   }
 
-  public static function aria_after_teacher_submission($form, $entry) {
+  /**
+   * This function will be the hook that is called after a teacher submits
+   * information for a particular student. This function will take all of the
+   * information that the teacher submitted and update corresponding data in the
+   * teacher form, the student master form, and the teacher master form.
+   *
+   * @param		$form		GF Forms Object		The form this function is attached to.
+   * @param		$entry	GF Entry Object		The entry that is returned after form submission.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_after_teacher_submission($entry, $form) {
+    // Only perform processing if it's a teacher form
+    if (!array_key_exists('isTeacherPublicForm', $form)
+        || !$form['isTeacherPublicForm']) {
+          return;
+    }
+
     // Get the query variables from the link
     $student_hash = get_query_var("student_hash", false);
     $teacher_hash = get_query_var("teacher_hash", false);
+
+    wp_die('student hash: ' . $student_hash . ' teacher hash: ' . $teacher_hash);
 
     // Get field id arrays
     $student_master_field_ids = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
