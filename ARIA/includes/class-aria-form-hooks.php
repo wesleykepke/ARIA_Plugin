@@ -90,8 +90,19 @@ class ARIA_Form_Hooks {
       $teacher_hash);
 
     if ($teacher_entry) {
+      // Determine whether a student has been added or not (if it's an array)
+      if (!is_array($teacher_entry[strval($teacher_master_fields["students"])])) {
+        $teacher_entry[strval($teacher_master_fields["students"])] = array();
+      }
+
       // Add the newly registered student to the teacher's list of student hashes
       $teacher_entry[strval($teacher_master_fields["students"])][] = $student_hash;
+
+      // Update the teacher entry with the new student edition
+      $result = GFAPI::update_entry($teacher_entry, $related_forms['teacher_master_form_id']);
+      if (is_wp_error($result)) {
+        wp_die($result->get_error_message());
+      }
     }
     else {
       // Create a new teacher and apply some default values
@@ -110,7 +121,7 @@ class ARIA_Form_Hooks {
       );
 
       $result = GFAPI::add_entries($new_teacher_entry, $related_forms['teacher_master_form_id']);
-      if (is_wp_error()) {
+      if (is_wp_error($result)) {
         wp_die($result->get_error_message());
       }
     }
@@ -118,20 +129,20 @@ class ARIA_Form_Hooks {
     // Make a new student master entry with the student hash
     $new_student_master_entry = array();
     $new_student_master_entry[] = array(
-      strval($student_master_fields["parent_name"]) => $entry[strval($student_fields["parent_name"])],
+      strval($student_master_fields["parent_name"]) => null,
       strval($student_master_fields["parent_first_name"]) => $entry[strval($student_fields["parent_first_name"])],
       strval($student_master_fields["parent_last_name"]) => $entry[strval($student_fields["parent_last_name"])],
       strval($student_master_fields["parent_email"]) => $entry[strval($student_fields["parent_email"])],
-      strval($student_master_fields["student_name"]) => $entry[strval($student_fields["student_name"])],
+      strval($student_master_fields["student_name"]) => null,
       strval($student_master_fields["student_first_name"]) => $entry[strval($student_fields["student_first_name"])],
       strval($student_master_fields["student_last_name"]) => $entry[strval($student_fields["student_last_name"])],
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
       strval($student_master_fields["not_listed_teacher_name"]) => $entry[strval($student_fields["not_listed_teacher_name"])],
-      strval($student_master_fields["available_festival_days"]) => $entry[strval($student_fields["available_festival_days"])],
+      strval($student_master_fields["available_festival_days"]) => null,
       strval($student_master_fields["available_festival_days_saturday"]) => $entry[strval($student_fields["available_festival_days_saturday"])],
       strval($student_master_fields["available_festival_days_sunday"]) => $entry[strval($student_fields["available_festival_days_sunday"])],
-      strval($student_master_fields["preferred_command_performance"]) => $entry[strval($student_fields["preferred_command_performance"])],
+      strval($student_master_fields["preferred_command_performance"]) => null,
       strval($student_master_fields["preferred_command_performance_earlier"]) => $entry[strval($student_fields["preferred_command_performance_earlier"])],
       strval($student_master_fields["preferred_command_performance_later"]) => $entry[strval($student_fields["preferred_command_performance_later"])],
       strval($student_master_fields["song_1_period"]) => null,
@@ -198,50 +209,104 @@ class ARIA_Form_Hooks {
           return;
     }
 
-    // Get the query variables from the link
+    // Find the 4 related forms that pertain to $form
+    $related_forms = $form['aria_relations'];
+
+    /*
+    Get the query variables from the link.
+    Link must be in a format like the following:
+    wesley-bruh-teacher-registration-4/?teacher_hash=fredharris&student_hash=weskepke
+    Note the & in the url above.
+    */
     $student_hash = get_query_var("student_hash", false);
     $teacher_hash = get_query_var("teacher_hash", false);
-
-    // student hash and teacher hash are empty
-    wp_die('student hash: ' . $student_hash . ' teacher hash: ' . $teacher_hash);
 
     // Get field id arrays
     $student_master_field_ids = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
     $teacher_master_field_ids = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
-    $teacher_public_field_ids = ARIA_Create_Competition::aria_master_teacher_field_id_array();
+    $teacher_public_field_ids = ARIA_Create_Competition::aria_teacher_field_id_array();
 
-    // Update the teacher entry in the teacher master.
-    $teacher_master_entry = ARIA_Registration_Handler::aria_find_teacher_entry($form["title"], $teacher_hash);
-    if (!teacher_entry) {
-      wp_die("Error");
+    // Locate the teacher entry in the teacher master.
+    $teacher_master_entry =
+      ARIA_Registration_Handler::aria_find_teacher_entry($related_forms['teacher_master_form_id'],
+      $teacher_hash);
+
+    // If the teacher doesn't exist, throw an error message
+    if (!$teacher_master_entry) {
+      wp_die("Error: aria_after_teacher_submission() could not locate the specified teacher.");
     }
-    $teacher_master_entry[(string) $teacher_master_field_ids['name']] = $entry[(string) $teacher_public_field_ids['name']];
-    $teacher_master_entry[(string) $teacher_master_field_ids['email']] = $entry[(string) $teacher_public_field_ids['email']];
-    $teacher_master_entry[(string) $teacher_master_field_ids['phone']] = $entry[(string) $teacher_public_field_ids['phone']];
-    $teacher_master_entry[(string) $teacher_master_field_ids['volunteer_preference']] = $entry[(string) $teacher_public_field_ids['volunteer_preference']];
-    $teacher_master_entry[(string) $teacher_master_field_ids['volunteer_time']] = $entry[(string) $teacher_public_field_ids['volunteer_time']];
-    $teacher_master_entry[(string) $teacher_master_field_ids['is_judging']] = $entry[(string) $teacher_public_field_ids['is_judging']];
 
-    // Update the student entry in the student master.
+    // If the teacher does exist, update the teacher master with the new information
+    $teacher_master_entry[strval($teacher_master_field_ids['first_name'])] =
+      $entry[strval($teacher_public_field_ids['first_name'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['last_name'])] =
+      $entry[strval($teacher_public_field_ids['last_name'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['email'])] =
+      $entry[strval($teacher_public_field_ids['email'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
+      $entry[strval($teacher_public_field_ids['phone'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] =
+      $entry[strval($teacher_public_field_ids['volunteer_preference'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time'])] =
+      $entry[strval($teacher_public_field_ids['volunteer_time'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['is_judging'])] =
+	    $entry[strval($teacher_public_field_ids['is_judging'])];
+
+    // Update the teacher master form with the new information
+    $result = GFAPI::update_entry($teacher_master_entry, $related_forms['teacher_master_form_id']);
+		if (is_wp_error($result)) {
+			wp_die($result->get_error_message());
+		}
+
+    // Locate the student entry in the student master.
     $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($form["title"], $student_hash);
-    if (!student_entry) {
-      wp_die("Error");
+
+    // If the student doesn't exist, throw an error message
+/*
+    if (!$student_master_entry) {
+      wp_die("Error: aria_after_teacher_submission() could not locate the specified student.");
     }
+*/
 
-    $student_master_entry[(string) $student_master_field_ids['student_name']] = $entry[(string) $teacher_public_field_ids['student_name']];
-    $student_master_entry[(string) $student_master_field_ids['song_1_period']] = $entry[(string) $teacher_public_field_ids['song_1_period']];
-    $student_master_entry[(string) $student_master_field_ids['song_1_composer']] = $entry[(string) $teacher_public_field_ids['song_1_composer']];
-    $student_master_entry[(string) $student_master_field_ids['song_1_selection']] = $entry[(string) $teacher_public_field_ids['song_1_selection']];
-    $student_master_entry[(string) $student_master_field_ids['song_2_period']] = $entry[(string) $teacher_public_field_ids['song_2_period']];
-    $student_master_entry[(string) $student_master_field_ids['song_2_composer']] = $entry[(string) $teacher_public_field_ids['song_2_composer']];
-    $student_master_entry[(string) $student_master_field_ids['song_2_selection']] = $entry[(string) $teacher_public_field_ids['song_2_selection']];
-    $student_master_entry[(string) $student_master_field_ids['theory_score']] = $entry[(string) $teacher_public_field_ids['theory_score']];
-    $student_master_entry[(string) $student_master_field_ids['alternate_theory']] = $entry[(string) $teacher_public_field_ids['alternate_theory']];
-    $student_master_entry[(string) $student_master_field_ids['competition_format']] = $entry[(string) $teacher_public_field_ids['competition_format']];
-    $student_master_entry[(string) $student_master_field_ids['timing_of_pieces']] = $entry[(string) $teacher_public_field_ids['timing_of_pieces']];
+    $student_master_entry = array();
 
-    $teacher_result = GFAPI::update_entry( $teacher_master_entry );
-    $student_result = GFAPI::update_entry( $student_master_entry );
+    // If the student does exist, update the student master with the new information
+    $student_master_entry[strval($student_master_field_ids['student_first_name'])] =
+      $entry[strval($teacher_public_field_ids['student_first_name'])];
+    $student_master_entry[strval($student_master_field_ids['student_last_name'])] =
+      $entry[strval($teacher_public_field_ids['student_last_name'])];
+
+    /* level not currently in student master ?
+    $student_master_entry[strval($student_master_field_ids['student_first_name'])] =
+      $entry[strval($teacher_public_field_ids['student_first_name'])];
+    */
+
+    $student_master_entry[strval($student_master_field_ids['song_1_period'])] =
+      $entry[strval($teacher_public_field_ids['song_1_period'])];
+    $student_master_entry[strval($student_master_field_ids['song_1_composer'])] =
+      $entry[strval($teacher_public_field_ids['song_1_composer'])];
+    $student_master_entry[strval($student_master_field_ids['song_1_selection'])] =
+      $entry[strval($teacher_public_field_ids['song_1_selection'])];
+    $student_master_entry[strval($student_master_field_ids['song_2_period'])] =
+      $entry[strval($teacher_public_field_ids['song_2_period'])];
+    $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
+      $entry[strval($teacher_public_field_ids['song_2_composer'])];
+    $student_master_entry[strval($student_master_field_ids['song_2_selection'])] =
+      $entry[strval($teacher_public_field_ids['song_2_selection'])];
+    $student_master_entry[strval($student_master_field_ids['theory_score'])] =
+      $entry[strval($teacher_public_field_ids['theory_score'])];
+    $student_master_entry[strval($student_master_field_ids['alternate_theory'])] =
+      $entry[strval($teacher_public_field_ids['alternate_theory'])];
+    $student_master_entry[strval($student_master_field_ids['competition_format'])] =
+      $entry[strval($teacher_public_field_ids['competition_format'])];
+    $student_master_entry[strval($student_master_field_ids['timing_of_pieces'])] =
+      $entry[strval($teacher_public_field_ids['timing_of_pieces'])];
+
+    // Update the student master form with the new information
+    $result = GFAPI::update_entry($student_master_entry, $related_forms['student_master_form_id']);
+		if (is_wp_error($result)) {
+			wp_die($result->get_error_message());
+		}
   }
 
   /**
