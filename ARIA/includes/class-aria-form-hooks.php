@@ -168,7 +168,8 @@ class ARIA_Form_Hooks {
     if (is_wp_error($student_result)) {
       wp_die(__LINE__.$student_result->get_error_message());
     }
-    wp_die('<div>'.json_encode(GFAPI::get_form(227)).'</div>');
+
+    //!!!ERNEST0 DEBUGGING wp_die('<div>'.json_encode(GFAPI::get_form(227)).'</div>');
 
   }
 
