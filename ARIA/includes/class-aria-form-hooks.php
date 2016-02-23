@@ -87,21 +87,25 @@ class ARIA_Form_Hooks {
     // Search through the teacher master form to see if the teacher has an entry made
     $teacher_entry =
       ARIA_Registration_Handler::aria_find_teacher_entry($related_forms['teacher_master_form_id'],
-      $teacher_hash);
+        $teacher_hash);
 
     if ($teacher_entry) {
       // Determine whether a student has been added or not (if it's an array)
-      if (!is_array($teacher_entry[strval($teacher_master_fields["students"])])) {
-        $teacher_entry[strval($teacher_master_fields["students"])] = array();
+      $students = $teacher_entry[strval($teacher_master_fields["students"])];
+      $students = unserialize($students);
+
+      if (!is_array($students)) {
+        $students = array();
       }
 
       // Add the newly registered student to the teacher's list of student hashes
-      $teacher_entry[strval($teacher_master_fields["students"])][] = $student_hash;
+      $students[] = $student_hash;
+      $teacher_entry[strval($teacher_master_fields["students"])] = serialize($students);
 
       // Update the teacher entry with the new student edition
-      $result = GFAPI::update_entry($teacher_entry, $related_forms['teacher_master_form_id']);
+      $result = GFAPI::update_entry($teacher_entry);
       if (is_wp_error($result)) {
-        wp_die($result->get_error_message());
+        wp_die(__LINE__.$result->get_error_message());
       }
     }
     else {
@@ -109,9 +113,9 @@ class ARIA_Form_Hooks {
       $teacher_name = explode(" ", $teacher_name);
       $new_teacher_entry = array();
       $new_teacher_entry[] = array(
-        strval($teacher_master_fields["students"]) => array($student_hash),
+        strval($teacher_master_fields["students"]) => serialize(array($student_hash)),
         strval($teacher_master_fields["first_name"]) => $teacher_name[0],
-        strval($teacher_master_fields["last_name"]) => $teacher_name[1],
+        strval($teacher_master_fields["last_name"]) => sizeof($teacher_name) > 1 ? $teacher_name[1] : '',
         strval($teacher_master_fields["email"]) => null,
         strval($teacher_master_fields["phone"]) => null,
         strval($teacher_master_fields["volunteer_preference"]) => null,
@@ -122,11 +126,11 @@ class ARIA_Form_Hooks {
 
       $result = GFAPI::add_entries($new_teacher_entry, $related_forms['teacher_master_form_id']);
       if (is_wp_error($result)) {
-        wp_die($result->get_error_message());
+        wp_die(__LINE__.$result->get_error_message());
       }
     }
 
-    // Make a new student master entry with the student hash
+    // Make a new student master entry with the  student hash
     $new_student_master_entry = array();
     $new_student_master_entry[] = array(
       strval($student_master_fields["parent_name"]) => null,
@@ -158,10 +162,15 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["hash"]) => $student_hash
     );
 
+
+
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);
     if (is_wp_error($student_result)) {
-      wp_die($student_result->get_error_message());
+      wp_die(__LINE__.$student_result->get_error_message());
     }
+
+    //!!!ERNEST0 DEBUGGING wp_die('<div>'.json_encode(GFAPI::get_form(227)).'</div>');
+
   }
 
   public static function aria_before_teacher_render($form) {
@@ -253,7 +262,7 @@ class ARIA_Form_Hooks {
 	    $entry[strval($teacher_public_field_ids['is_judging'])];
 
     // Update the teacher master form with the new information
-    $result = GFAPI::update_entry($teacher_master_entry, $related_forms['teacher_master_form_id']);
+    $result = GFAPI::update_entry($teacher_master_entry);
 		if (is_wp_error($result)) {
 			wp_die($result->get_error_message());
 		}
@@ -299,7 +308,7 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['timing_of_pieces'])];
 
     // Update the student master form with the new information
-    $result = GFAPI::update_entry($student_master_entry, $related_forms['student_master_form_id']);
+    $result = GFAPI::update_entry($student_master_entry);
 		if (is_wp_error($result)) {
 			wp_die($result->get_error_message());
 		}

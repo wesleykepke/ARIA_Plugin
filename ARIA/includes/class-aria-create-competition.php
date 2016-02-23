@@ -13,7 +13,7 @@
  * @subpackage ARIA/includes
  */
 
-require_once("class-aria-api.php");
+//require_once("class-aria-api.php");
 require_once("class-aria-create-master-forms.php");
 
 /**
@@ -245,7 +245,8 @@ class ARIA_Create_Competition {
     $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
     $teacher_volunteer_times_field->id = 8;
     $teacher_volunteer_times_field->isRequired = false;
-    $teacher_volunteer_times_field->description = "E.g. Saturday (10am-4pm), Either Saturday or Sunday, etc.";
+    $teacher_volunteer_times_field->description = "e.g. Saturday (10am-4pm), Either Saturday or Sunday, etc.";
+    $teacher_volunteer_times_field->descriptionPlacement = 'above';
 
     // assign all of the previous attributes to our newly created form
     $competition_creation_form->fields[] = $competition_name_field;
@@ -398,8 +399,8 @@ class ARIA_Create_Competition {
   /**
 
   */
-  private static function aria_add_checkbox_input($field, $new_input) {
-    $next_input = count( $field->inputs ) + 1;
+  public static function aria_add_checkbox_input($field, $new_input) {
+    $next_input = sizeof( $field->inputs ) + 1;
 
     if( is_array($new_input) ){
       foreach( $new_input as $input ){
@@ -541,7 +542,7 @@ class ARIA_Create_Competition {
     $volunteer_preference_field->label = "Volunteer Preference";
     $volunteer_preference_field->id = $field_id_arr['volunteer_preference'];
     $volunteer_preference_field->isRequired = false;
-    $volunteer_preference_field->choices = array( 
+    $volunteer_preference_field->choices = array(
       array('text' => 'Proctor sessions', 'value' => 'Proctor sessions', 'isSelected' => false),
       array('text' => 'Monitor door during sessions', 'value' => 'Monitor door during sessions', 'isSelected' => false),
       array('text' => 'Greet students and parents', 'value' => 'Greet students and parents', 'isSelected' => false),
@@ -720,7 +721,7 @@ class ARIA_Create_Competition {
     $alt_song_two_composer_field = new GF_Field_Text();
     $alt_song_two_composer_field->label = "Song 2 Composer";
     $alt_song_two_composer_field->id = $field_id_arr['alt_song_2_composer'];
-    $alt_song_two_composer_field->isRequired = false;
+    $alt_song_two_composer_field->isRequired = true;
     $alt_song_two_composer_field->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
@@ -728,11 +729,75 @@ class ARIA_Create_Competition {
     );
 
     $teacher_form->fields[] = $alt_song_two_composer_field;
+
     // Piece Title
+    $alt_song_two_selection_field = new GF_Field_Text();
+    $alt_song_two_selection_field->label = "Song 2 Piece Title";
+    $alt_song_two_selection_field->id = $field_id_arr['alt_song_2_selection'];
+    $alt_song_two_selection_field->isRequired = true;
+    $alt_song_two_selection_field->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $teacher_form->fields[] = $alt_song_two_selection_field;
+
+
     // Key (e.g. D Major, F Minor)
+    $alt_song_two_key_field = new GF_Field_Text();
+    $alt_song_two_key_field->label = "Song 2 Key";
+    $alt_song_two_key_field->id = $field_id_arr['alt_song_2_key'];
+    $alt_song_two_key_field->isRequired = false;
+    $alt_song_two_key_field->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $alt_song_two_key_field->description = "e.g. D Major, F Minor";
+    $alt_song_two_key_field->descriptionPlacement = 'above';
+    $teacher_form->fields[] = $alt_song_two_key_field;
+
     // Movement number, if applicable (e.g. 1st, 2nd, 3rd, 4th)
+    $alt_song_two_movement_num_field = new GF_Field_Text();
+    $alt_song_two_movement_num_field->label = "Song 2 Movement Number, if applicable";
+    $alt_song_two_movement_num_field->id = $field_id_arr['alt_song_2_movement_number'];
+    $alt_song_two_movement_num_field->isRequired = false;
+    $alt_song_two_movement_num_field->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $alt_song_two_movement_num_field->description = "e.g. 1st, 2nd, 3rd, etc.";
+    $alt_song_two_movement_num_field->descriptionPlacement = 'above';
+    $teacher_form->fields[] = $alt_song_two_movement_num_field;
+
     // Movement description, if applicable (e.g. Adante, Presto, Rondo Allegro Comodo)
+    $alt_song_two_movement_desc_field = new GF_Field_Text();
+    $alt_song_two_movement_desc_field->label = "Song 2 Movement Description, if applicable";
+    $alt_song_two_movement_desc_field->id = $field_id_arr['alt_song_2_movement_description'];
+    $alt_song_two_movement_desc_field->isRequired = false;
+    $alt_song_two_movement_desc_field->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $alt_song_two_movement_desc_field->description = "e.g. Andante, Presto, Rondo Allegro Comodo, etc.";
+    $alt_song_two_movement_desc_field->descriptionPlacement = 'above';
+    $teacher_form->fields[] = $alt_song_two_movement_desc_field;
+
     // Identifying number, if applicable (e.g. BWV, Opus, HOB, etc)
+    $alt_song_two_identifying_num_field = new GF_Field_Text();
+    $alt_song_two_identifying_num_field->label = "Song 2 Identifying Number, if applicable";
+    $alt_song_two_identifying_num_field->id = $field_id_arr['alt_song_2_identifying_number'];
+    $alt_song_two_identifying_num_field->isRequired = false;
+    $alt_song_two_identifying_num_field->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $alt_song_two_identifying_num_field->description = "e.g. BWV, Opus, HOB, etc.";
+    $alt_song_two_identifying_num_field->descriptionPlacement = 'above';
+    $teacher_form->fields[] = $alt_song_two_identifying_num_field;
 
     // student's theory score
     $student_theory_score = new GF_Field_Number();
@@ -783,6 +848,11 @@ class ARIA_Create_Competition {
     $successful_submission_message .= ' one your students.';
     $competition_creation_form->confirmation['type'] = 'message';
     $competition_creation_form->confirmation['message'] = $successful_submission_message;
+
+    $successful_submission_message = 'Congratulations! You have just';
+    $successful_submission_message .= ' successfully registered your student.';
+    $teacher_form->confirmation['type'] = 'message';
+    $teacher_form->confirmation['message'] = $successful_submission_message;
 
     $teacher_form_array = $teacher_form->createFormArray();
     $teacher_form_array['isTeacherPublicForm'] = true;
