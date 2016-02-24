@@ -26,40 +26,40 @@ require_once("aria-constants.php");
 
 class ARIA_API {
 
-	/**
-	 * This function will find the ID of the form used to create music competitions.
-	 *
-	 * This function will iterate through all of the active form objects and return
-	 * the ID of the form that is used to create music competitions. If no music
-	 * competition exists, the function will return -1.
-	 *
-	 * @since 1.0.0
-	 * @author KREW
-	 */
-	public static function aria_get_create_competition_form_id() {
+  /**
+   * This function will find the ID of the form used to create music competitions.
+   *
+   * This function will iterate through all of the active form objects and return
+   * the ID of the form that is used to create music competitions. If no music
+   * competition exists, the function will return -1.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_create_competition_form_id() {
     $create_competition_form_id = -1;
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
       if ($form['title'] === CREATE_COMPETITION_FORM_NAME) {
-	      $create_competition_form_id = $form['id'];
+        $create_competition_form_id = $form['id'];
       }
     }
 
-		return $create_competition_form_id;
+    return $create_competition_form_id;
   }
 
-	/**
-	 * This function will find the ID of the form used to upload songs to the
-	 * database.
-	 *
-	 * This function will iterate through all of the active form objects and return
-	 * the ID of the form that is used to upload music to the database.
-	 *
-	 * @since 1.0.0
-	 * @author KREW
-	 */
-	public static function aria_get_song_upload_form_id() {
+  /**
+   * This function will find the ID of the form used to upload songs to the
+   * database.
+   *
+   * This function will iterate through all of the active form objects and return
+   * the ID of the form that is used to upload music to the database.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_song_upload_form_id() {
     $upload_form_name_id = -1;
     $all_active_forms = GFAPI::get_forms();
 
@@ -70,7 +70,7 @@ class ARIA_API {
     }
 
     return $upload_form_name_id;
-	}
+  }
 
 	/**
 	 * This function will find the ID of the form used as the NNMTA music database.
@@ -86,10 +86,14 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] === NNMTA_MUSIC_DATABASE_NAME) {
+      if ($form['title'] == NNMTA_MUSIC_DATABASE_NAME) {
         $nnmta_music_database_form_id = $form['id'];
+        //echo 'yes!' . $nnmta_music_database_form_id; 
       }
+      //echo $form['title'];
     }
+
+//wp_die(); 
 
     return $nnmta_music_database_form_id;
 	}
