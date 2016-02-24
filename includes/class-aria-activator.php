@@ -39,6 +39,7 @@ class ARIA_Activator {
       // create the form for creating new music competitions
       require_once("class-aria-create-competition.php");
       ARIA_Create_Competition::aria_create_competition_activation();
+      ARIA_Music::aria_create_music_upload_form(); 
     }
     else {
       wp_die("Error: ARIA requires the Gravity Forms plugin to be installed
