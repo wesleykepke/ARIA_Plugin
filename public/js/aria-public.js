@@ -1,8 +1,8 @@
 jQuery(document).ready(function($) {
 //	alert("in public");
 	// ---- only load on specific page (if statement with student level?)
-	
-	// Page load functions 
+
+	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";
 
@@ -62,26 +62,26 @@ jQuery(document).ready(function($) {
 	var period_html = store_periods();
 
 
-	// Song 1 Selection 
+	// Song 1 Selection
 
-	// user selects period 
+	// user selects period
 	$(input_id_arr['song_1_period']).live("change", function() {
 		period_arr[ 'selected_val' ][1] = $(input_id_arr['song_1_period']).val();
 		period_arr[ 'selected_text' ][1] = $(input_id_arr['song_1_period'] + '  option:selected').text();
-		
+
 		// !!!restore selection
 		load_periods('2', period_html);
-		if( period_arr['selected_val'][2] != '' ){	
+		if( period_arr['selected_val'][2] != '' ){
 			$(input_id_arr['song_2_period']).val( period_arr['selected_val'][2]);
 		}
-	
+
 		// remove period from song 2 options
 		$(input_id_arr['song_2_period'] + " option[value='" + period_arr['selected_val'][1]  + "']").remove( );
 
 		// disable song selection
 		$(input_id_arr['song_1_selection']).empty();
 		$(input_id_arr['song_1_selection']).attr('disabled', true);
-		
+
 		// populate period composers
 		load_composers( period_arr[ 'selected_val' ][1], '1' );
 	});
@@ -119,26 +119,26 @@ jQuery(document).ready(function($) {
 		$(song_field).append(html);
 	}
 
-	// Song 2 Selection 
+	// Song 2 Selection
 
-	// user selects period 
+	// user selects period
 	$(input_id_arr['song_2_period']).live("change", function() {
 		period_arr[ 'selected_val' ][2] = $(input_id_arr['song_2_period']).val();
 		period_arr[ 'selected_text' ][2] = $(input_id_arr['song_2_period'] + '  option:selected').text();
-		
+
 		// !!!restore selection
 		load_periods('1', period_html);
-		if( period_arr['selected_val'][1] != '' ){	
+		if( period_arr['selected_val'][1] != '' ){
 			$(input_id_arr['song_1_period']).val( period_arr['selected_val'][1]);
 		}
-	
+
 		// remove period from song 2 options
 		$(input_id_arr['song_1_period'] + " option[value='" + period_arr['selected_val'][2]  + "']").remove( );
 
 		// disable song selection
 		$(input_id_arr['song_2_selection']).empty();
 		$(input_id_arr['song_2_selection']).attr('disabled', true);
-		
+
 		// populate period composers
 		load_composers( period_arr[ 'selected_val' ][2], '2' );
 	});
@@ -229,11 +229,11 @@ jQuery(document).ready(function($) {
 			idResult = JSON.parse(temp);
 		});
 
-		
+
 		return idResult;
-	
+
 	} // end of get IDs function
-	
+
 
 	function get_songs( level, levelID ){
         	var d = new Date,
@@ -245,7 +245,7 @@ jQuery(document).ready(function($) {
         	stringToSign = public_key + ":" + method + ":" + route + ":" + future_unixtime;
 
         	sig = CalculateSig( stringToSign, private_key );
-		
+
 		// local
         	url = host + "/gravityformsapi/" + route;
 		url += "/?api_key=" + public_key;
@@ -253,7 +253,7 @@ jQuery(document).ready(function($) {
 
 		//NOTE: key in search is just field ID not formID.fieldID
 		// search for entry[levelID] == level
-		
+
 		var search;
 
 		if( level != 11 )
@@ -272,9 +272,9 @@ jQuery(document).ready(function($) {
 		else
 		{
 			search = {
-				field_filters : { 
-					mode: 'any', 
-					0:  
+				field_filters : {
+					mode: 'any',
+					0:
 						{
 						key: levelID,
 						operator: 'is',
@@ -288,10 +288,10 @@ jQuery(document).ready(function($) {
 						}
 				}
 			}
-		
+
 		}
-	
-		
+
+
 		var searchJSON = JSON.stringify( search );
 
 		//NOTE: paging requires &
@@ -314,7 +314,7 @@ jQuery(document).ready(function($) {
 	        });
 		return returnedValue;
 	}// end of getMusic function
-		
+
 	function store_periods(){
 		//alert( $(field_id_arr['song_1_period'] ).html() );
 		var html = '';
@@ -323,7 +323,7 @@ jQuery(document).ready(function($) {
 			html += '<option value="' + $(this).val() + '">' + $(this).text() + '</option>';
 		});
 		return html;
-		
+
 	}
 
 	function load_composers( period, song ){
@@ -353,7 +353,7 @@ jQuery(document).ready(function($) {
 		//alert( $(field_id_arr['song_1_period'] ).html() );
 		$(input_id_arr['song_' + song + '_period']).empty();
 		$(input_id_arr['song_' + song + '_period']).append(periods);
-		
+
 	}
 
 	function create_placeholder( str ){

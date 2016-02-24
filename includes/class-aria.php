@@ -159,6 +159,11 @@ class ARIA {
       'ARIA_Form_Hooks', 'aria_after_teacher_submission', 10, 2);
 
 		/*
+		The filter that makes sure that the teacher pages have correct hashes.
+		*/
+		$this->loader->add_filter('gform_enqueue_scripts', 'ARIA_Form_Hooks', 'aria_before_teacher_render', 10, 2);
+
+		/*
     The action registered for this hook if for adding music upload/download
     functionality.
 

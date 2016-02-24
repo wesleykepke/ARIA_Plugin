@@ -168,35 +168,40 @@ class ARIA_Form_Hooks {
     if (is_wp_error($student_result)) {
       wp_die(__LINE__.$student_result->get_error_message());
     }
-
-    //!!!ERNEST0 DEBUGGING wp_die('<div>'.json_encode(GFAPI::get_form(227)).'</div>');
-
   }
 
-  public static function aria_before_teacher_render($form) {
+  public static function aria_before_teacher_render($form, $is_ajax) {
+    // Only perform processing if it's a teacher form
+    if (!array_key_exists('isTeacherPublicForm', $form)
+        || !$form['isTeacherPublicForm']) {
+        return $form;
+    }
+
     // Get the query variables from the link
     $student_hash = get_query_var("student_hash", false);
     $teacher_hash = get_query_var("teacher_hash", false);
 
+    $error = "You cannot access this form. Check your email to get the correct link to access this form correctly.";
+
     // If they dont exist redirect to home
     if (!$student_hash || !$teacher_hash) {
-      wp_redirect( home_url() );
-      exit();
+      wp_die($error);
     }
+
+    // Get the related forms of the form
+    $related_forms = $form['aria_relations'];
 
     // Check if the variables exist as a teacher-student combination
     // If they dont exist redirect home.
-    if (!ARIA_Registration_Handler::aria_check_student_teacher_relationship($form["title"], $student_hash, $teacher_hash)) {
-      wp_redirect( home_url() );
-      exit();
+    if (!ARIA_Registration_Handler::aria_check_student_teacher_relationship($related_forms, $student_hash, $teacher_hash)) {
+      wp_die($error);
     }
 
     // Do form prepopulation
-    $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($form['title'], $teacher_hash);
-    $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($form['title'], $student_hash);
+    $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($related_forms, $teacher_hash);
+    $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($related_forms, $student_hash);
 
-
-	// !!!RENEE HERE
+    return $form;
   }
 
   /**
