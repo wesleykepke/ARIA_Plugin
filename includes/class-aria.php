@@ -140,15 +140,15 @@ class ARIA {
     is to deactivate and reactivate the plugin.
     */
     $this->loader->add_action(
-      'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),
-			'ARIA_Create_Competition',
+      'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),    
+      'ARIA_Create_Competition',
       'aria_create_teacher_and_student_forms', 10, 4);
 
     /*
     The action registered for this hook is to invoke processing after a student
     has submitted their registration.
     */
-		$this->loader->add_action('gform_after_submission',
+    $this->loader->add_action('gform_after_submission',
       'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
 
     /*
@@ -166,8 +166,8 @@ class ARIA {
     deletes this form while the plugin is active.
     */
     $this->loader->add_action(
-      'gform_after_submission_' . strval(ARIA_API::aria_get_song_upload_form_id()),
-			'ARIA_Music',
+      'gform_after_submission',
+      'ARIA_Music',
       'aria_add_music_from_csv', 10, 2);
 
     /*
@@ -183,11 +183,11 @@ class ARIA {
     'aria_teacher_master_submission', 10, 2);
     */
 
-		/*
+    /*
     The filter registered for this hook is to modify the upload path for NNMTA
     music
     */
-		$this->loader->add_filter('gform_upload_path', 'ARIA_Music',
+    $this->loader->add_filter('gform_upload_path', 'ARIA_Music', 
       'aria_modify_upload_path', 10, 2);
 
     /*
