@@ -160,7 +160,7 @@ class ARIA_Registration_Handler {
     // check to see if any of the entries in the teacher master have $teacher_hash
     $search_criteria = array(
 			'field_filters' => array(
-				'mode' => 'any',
+				'mode' => 'all',
 				array(
 					'key' => (string) $hash_field_id,
 					'value' => $teacher_hash
@@ -169,6 +169,7 @@ class ARIA_Registration_Handler {
 		);
 
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
+
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
       // it's reaching this wp_die()
       //wp_die("After get_entries, inside if statement: " . print_r($entries));
@@ -181,19 +182,18 @@ class ARIA_Registration_Handler {
 	/**
 	 * Function to check if a student is assigned to a teacher.
 	 */
-   public static function aria_check_student_teacher_relationship($prepended_title, $student_hash, $teacher_hash) {
-		 $related_forms = self::aria_find_related_forms_ids($prepended_tite);
-
+   public static function aria_check_student_teacher_relationship($related_forms, $student_hash, $teacher_hash) {
+     // Get field ids
 		 $students_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['students'];
 
      // Get the teacher entry
-     $teacher_entry = self::aria_find_teacher_entry($related_forms[self::TEACHER_MASTER], $teacher_hash);
+     $teacher_entry = self::aria_find_teacher_entry($related_forms['teacher_master_form_id'], $teacher_hash);
 
      // return if teacher entry does not exist.
      if($teacher_entry == false) return false;
 
      // get the array of students the teacher is assigned.
-     $students = rgar($teacher_entry, (string) $students_field_id);
+     $students = unserialize(rgar($teacher_entry, (string) $students_field_id));
 
      // find the student name in the array of students.
      foreach($students as $student) {
@@ -205,9 +205,7 @@ class ARIA_Registration_Handler {
 	/**
 	 * Function to get pre-populate values based on teacher-master.
 	 */
-	 public static function aria_get_teacher_pre_populate($prepended_title, $teacher_hash) {
-		 $all_forms = self::aria_find_related_forms_ids($prepended_title);
-
+	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
 		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['hash'];
 
 		 $search_criteria = array(
@@ -220,7 +218,7 @@ class ARIA_Registration_Handler {
        )
 		 );
 
-		 $entries = GFAPI::get_entries($all_forms[self::TEACHER_MASTER], $search_criteria);
+		 $entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria);
 
 		 if (is_wp_error($entries)) {
  			wp_die($entries->get_error_message());
@@ -244,9 +242,7 @@ class ARIA_Registration_Handler {
 	/**
 	 * Function to get pre-populate values based on student-master.
 	 */
-	 public static function aria_get_student_pre_populate($prepended_title, $student_hash) {
-		 $all_forms = self::aria_find_related_forms_ids($prepended_title);
-
+	 public static function aria_get_student_pre_populate($related_forms, $student_hash) {
 		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_student_field_id_array()['hash'];
 
 		 $search_criteria = array(
@@ -259,7 +255,7 @@ class ARIA_Registration_Handler {
        )
 		 );
 
-		 $entries = GFAPI::get_entries($all_forms[self::STUDENT_MASTER], $search_criteria);
+		 $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria);
 
 		 if (is_wp_error($entries)) {
  			wp_die($entries->get_error_message());
