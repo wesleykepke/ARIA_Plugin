@@ -156,6 +156,41 @@ class ARIA_API {
     return $csv_full_file_path;
 	}
 
+  /**
+   * This function will create a new page with a specific form.
+   *
+   * When a new form is created, that form most likely needs to be published
+   * to a page so that it can be used. This function is responsible for creating
+   * a published page with a form on it.
+   *
+   * @param String $form_title The title of the form.
+   * @param Int $form_id The id of the form.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_publish_form($form_title, $form_id){
+    // Set Parameters for the form
+    $postarr = array(
+      'post_title' => $form_title,
+      'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
+      'post_status' => 'publish',
+      'post_type' => 'page'
+    );
+
+    // Force a wp_error to be returned on failure
+    $return_wp_error_on_failure = true;
+
+    // Create a wp_post
+    $post_id = wp_insert_post($postarr, $return_wp_error_on_failure);
+
+    // If not a wp_error, get the url from the post and return.
+    if(!is_wp_error($post_id)) {
+      return esc_url(get_permalink($post_id));
+    }
+    return $post_id;
+  }
+
 	/**
 	 * This function will return the title of a form given its ID.
 	 *
