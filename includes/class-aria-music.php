@@ -41,28 +41,25 @@ class ARIA_Music {
    * @author KREW
    */
   public static function aria_add_music_from_csv($entry, $form) {
-    // only perform processing if the music uploading form was used 
-    if (!array_key_exists('isMusicUploadForm', $form) 
+    // only perform processing if the music uploading form was used
+    if (!array_key_exists('isMusicUploadForm', $form)
         || !$form['isMusicUploadForm']) {
-      return; 
+      return;
     }
 
-    // check if the form for uploading exists 
-    $music_upload_form_id = ARIA_API::aria_get_song_upload_form_id(); 
+    // check if the form for uploading exists
+    $music_upload_form_id = ARIA_API::aria_get_song_upload_form_id();
     if ($music_upload_form_id == -1) {
-      self::aria_create_music_upload_form(); 
+      self::aria_create_music_upload_form();
     }
 
-    // check if the form for storing NNMTA music exists 
+    // check if the form for storing NNMTA music exists
     $music_db_form_id = ARIA_API::aria_get_nnmta_database_form_id();
-    
-    //wp_die('top: ' . $music_db_form_id); 
+
+    //wp_die('top: ' . $music_db_form_id);
     if ($music_db_form_id === -1) {
       self::aria_create_nnmta_music_form();
     }
-
-
-    $num_songs = 0;
 
     // locate the full path of the csv file
     $csv_music_file = ARIA_API::aria_get_music_csv_file_path($entry, $form);
@@ -77,9 +74,9 @@ class ARIA_Music {
       // add new music
       while (($single_song_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
         $single_song = array();
-        for ($i = 1; $i <= count($single_song_data); $i++){ //count($single_song_data); $i++) {  	
+        for ($i = 1; $i <= count($single_song_data); $i++) {
           $single_song[(string) $i] = $single_song_data[$i - 1];
-	}
+        }
         $all_songs[] = $single_song;
         unset($single_song);
       }
@@ -104,9 +101,9 @@ class ARIA_Music {
 
   /**
    * This function is responsible for creating the NNMTA music uploading form
-   * if it does not exist. 
+   * if it does not exist.
    *
-   * This function is intended to be used in the event where the form for 
+   * This function is intended to be used in the event where the form for
    * uploading music does not previously exist. If no such form exists, this
    * function will create the form used for uploading music.
    *
@@ -118,23 +115,22 @@ class ARIA_Music {
     $form = new GF_FORM($form_name, "");
 
     // CSV file upload
-    $csv_file_upload = new GF_Field_FileUpload(); 
-    $csv_file_upload->label = CSV_UPLOAD_FIELD_NAME; 
+    $csv_file_upload = new GF_Field_FileUpload();
+    $csv_file_upload->label = CSV_UPLOAD_FIELD_NAME;
     $csv_file_upload->id = 1;
     $csv_file_upload->isRequired = true;
     $form->fields[] = $csv_file_upload;
 
-    // Identify form as a music uploading form 
-    $form_array = $form->createFormArray(); 
-    $form_array['isMusicUploadForm'] = true; 
-    
-    // Add form to dashboard 
+    // Identify form as a music uploading form
+    $form_array = $form->createFormArray();
+    $form_array['isMusicUploadForm'] = true;
+
+    // Add form to dashboard
     $result = GFAPI::add_form($form_array);
     if (is_wp_error($result)) {
       wp_die($result->get_error_message());
-    } 
+    }
   }
-
 
   /**
    * This function is responsible for creating the NNMTA music form if it does
@@ -188,8 +184,8 @@ class ARIA_Music {
      $nnmta_music_form->fields[] = $song_catalog_field;
 
      // add the new form to the festival chairman's dashboardi
-     $nnmta_music_form_array = $nnmta_music_form->createFormArray(); 
-     $nnmta_music_form_array['isMusicUploadForm'] = false; 
+     $nnmta_music_form_array = $nnmta_music_form->createFormArray();
+     $nnmta_music_form_array['isMusicUploadForm'] = false;
      $new_form_id = GFAPI::add_form($nnmta_music_form_array);
 
      // make sure the new form was added without error
