@@ -14,6 +14,7 @@
  */
 
 require_once("class-aria-api.php");
+require_once("class-aria-create-competition.php");
 
 /**
  * The teacher upload class.
@@ -72,7 +73,7 @@ class ARIA_Teacher {
    */
   public static function aria_create_teacher_upload_form() {
     // check if form already exists
-    if (aria_get_teacher_upload_form_id() !== -1) {
+    if (ARIA_API::aria_get_teacher_upload_form_id() !== -1) {
       return;
     }
 
@@ -95,6 +96,7 @@ class ARIA_Teacher {
     $teacher_name_field->label = "Teacher Name";
     $teacher_name_field->id = $field_mapping['teacher_name'];
     $teacher_name_field->isRequired = false;
+    $teacher_name_field = ARIA_Create_Competition::aria_add_default_name_inputs($teacher_name_field);
     $form->fields[] = $teacher_name_field;
 
     $teacher_email_field = new GF_Field_Email();
@@ -108,9 +110,12 @@ class ARIA_Teacher {
     $form_array['isTeacherUploadForm'] = true;
 
     // Add form to dashboard
-    $result = GFAPI::add_form($form_array);
-    if (is_wp_error($result)) {
-      wp_die($result->get_error_message());
+    $new_form_id = GFAPI::add_form($form_array);
+    if (is_wp_error($new_form_id)) {
+      wp_die($new_form_id->get_error_message());
+    }
+    else {
+      ARIA_API::aria_publish_form(TEACHER_UPLOAD_FORM_NAME, $new_form_id);
     }
   }
 
@@ -135,13 +140,29 @@ class ARIA_Teacher {
       return;
     }
 
-    // create the teacher upload form if it doesn't exist
-    self::aria_create_teacher_upload_form();
+    $field_mapping = self::aria_teacher_upload_field_id_array();
+
+    //wp_die(json_encode($entry));
+
+/*
+    if (!empty($entry[strval($field_mapping['teacher_last_name'])])) {
+      wp_die('there is a last name');
+    }
+*/
 
     // if a csv file was given, upload the content
+    $csv_given = false; 
+    if (!empty($entry[strval($field_mapping['csv_upload'])])) {
+      $csv_given = true;
+    }
 
     // if a teacher's information was entered by hand, add it
+    $teacher_given = (!empty($entry[strval($field_mapping['teacher_first_name'])])) &&
+      (!empty($entry[strval($field_mapping['teacher_last_name'])])) &&
+      (!empty($entry[strval($field_mapping['teacher_email'])]));
+    if ($teacher_given) {
+      wp_die('all attributes given');
+    }
+      wp_die(print_r($teacher_given) . print_r($csv_given));
   }
-
-
 }
