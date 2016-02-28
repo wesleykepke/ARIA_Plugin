@@ -50,6 +50,29 @@ class ARIA_API {
   }
 
   /**
+   * This function will find the ID of the form used to upload music teachers.
+   *
+   * This function will iterate through all of the active form objects and return
+   * the ID of the form that is used to upload music teachers. If no such form
+   * exists, the function will return -1.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_teacher_upload_form_id() {
+    $form_id = -1;
+    $all_active_forms = GFAPI::get_forms();
+
+    foreach ($all_active_forms as $form) {
+      if ($form['title'] === TEACHER_UPLOAD_FORM_NAME) {
+        $form_id = $form['id'];
+      }
+    }
+
+    return $form_id;
+  }
+
+  /**
    * This function will find the ID of the form used to upload songs to the
    * database.
    *
@@ -88,12 +111,12 @@ class ARIA_API {
     foreach ($all_active_forms as $form) {
       if ($form['title'] == NNMTA_MUSIC_DATABASE_NAME) {
         $nnmta_music_database_form_id = $form['id'];
-        //echo 'yes!' . $nnmta_music_database_form_id; 
+        //echo 'yes!' . $nnmta_music_database_form_id;
       }
       //echo $form['title'];
     }
 
-//wp_die(); 
+//wp_die();
 
     return $nnmta_music_database_form_id;
 	}
