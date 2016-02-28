@@ -36,10 +36,13 @@ class ARIA_Activator {
 
     // make sure that the Gravity Forms plugin is enabled
     if (is_plugin_active('gravityforms/gravityforms.php')) {
-      // create the form for creating new music competitions
+      // create various forms upon initialization
       require_once("class-aria-create-competition.php");
+      require_once("class-aria-teacher-upload.php");
+      require_once("class-aria-music.php");
       ARIA_Create_Competition::aria_create_competition_activation();
-      ARIA_Music::aria_create_music_upload_form(); 
+      ARIA_Music::aria_create_music_upload_form();
+      ARIA_Teacher::aria_create_teacher_upload_form();
     }
     else {
       wp_die("Error: ARIA requires the Gravity Forms plugin to be installed

@@ -44,6 +44,9 @@ class ARIA_Create_Competition {
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
     }
+
+    // publish the new form
+    ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id);
   }
 
   /**
@@ -70,8 +73,8 @@ class ARIA_Create_Competition {
 			// create the student and teacher forms
       $student_form_id = self::aria_create_student_form($entry);
       $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
-      $student_form_url = self::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
-      $teacher_form_url = self::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
+      $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
+      $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
 			// create the sutdent and teacher (master) forms
 			$student_master_form_id =
@@ -394,7 +397,6 @@ class ARIA_Create_Competition {
     );
     return $field;
   }
-
 
   /**
 
@@ -1071,26 +1073,4 @@ class ARIA_Create_Competition {
     $student_form = get_page_by_title("Wes CC");
 		wp_die("DB id: " . $student_form->ID);
 	}
-
-  public static function aria_publish_form($form_title, $form_id){
-    // Set Parameters for the form
-    $postarr = array(
-      'post_title' => $form_title,
-      'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
-      'post_status' => 'publish',
-      'post_type' => 'page'
-    );
-
-    // Force a wp_error to be returned on failure
-    $return_wp_error_on_failure = true;
-
-    // Create a wp_post
-    $post_id = wp_insert_post($postarr, $return_wp_error_on_failure);
-
-    // If not a wp_error, get the url from the post and return.
-    if(!is_wp_error($post_id)) {
-      return esc_url(get_permalink($post_id));
-    }
-    return $post_id;
-  }
 }

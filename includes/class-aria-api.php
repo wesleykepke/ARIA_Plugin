@@ -50,6 +50,29 @@ class ARIA_API {
   }
 
   /**
+   * This function will find the ID of the form used to upload music teachers.
+   *
+   * This function will iterate through all of the active form objects and return
+   * the ID of the form that is used to upload music teachers. If no such form
+   * exists, the function will return -1.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_teacher_upload_form_id() {
+    $form_id = -1;
+    $all_active_forms = GFAPI::get_forms();
+
+    foreach ($all_active_forms as $form) {
+      if ($form['title'] === TEACHER_UPLOAD_FORM_NAME) {
+        $form_id = $form['id'];
+      }
+    }
+
+    return $form_id;
+  }
+
+  /**
    * This function will find the ID of the form used to upload songs to the
    * database.
    *
@@ -88,12 +111,12 @@ class ARIA_API {
     foreach ($all_active_forms as $form) {
       if ($form['title'] == NNMTA_MUSIC_DATABASE_NAME) {
         $nnmta_music_database_form_id = $form['id'];
-        //echo 'yes!' . $nnmta_music_database_form_id; 
+        //echo 'yes!' . $nnmta_music_database_form_id;
       }
       //echo $form['title'];
     }
 
-//wp_die(); 
+//wp_die();
 
     return $nnmta_music_database_form_id;
 	}
@@ -132,6 +155,41 @@ class ARIA_API {
     $csv_full_file_path .= $csv_file_url_atomic_strings[count($csv_file_url_atomic_strings) - 1];
     return $csv_full_file_path;
 	}
+
+  /**
+   * This function will create a new page with a specific form.
+   *
+   * When a new form is created, that form most likely needs to be published
+   * to a page so that it can be used. This function is responsible for creating
+   * a published page with a form on it.
+   *
+   * @param String $form_title The title of the form.
+   * @param Int $form_id The id of the form.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_publish_form($form_title, $form_id){
+    // Set Parameters for the form
+    $postarr = array(
+      'post_title' => $form_title,
+      'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
+      'post_status' => 'publish',
+      'post_type' => 'page'
+    );
+
+    // Force a wp_error to be returned on failure
+    $return_wp_error_on_failure = true;
+
+    // Create a wp_post
+    $post_id = wp_insert_post($postarr, $return_wp_error_on_failure);
+
+    // If not a wp_error, get the url from the post and return.
+    if(!is_wp_error($post_id)) {
+      return esc_url(get_permalink($post_id));
+    }
+    return $post_id;
+  }
 
 	/**
 	 * This function will return the title of a form given its ID.
