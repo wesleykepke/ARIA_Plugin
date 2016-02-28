@@ -13,8 +13,7 @@
  * @subpackage ARIA/includes
  */
 
-// Require the ARIA API
-//require_once("class-aria-api.php");
+require_once("class-aria-api.php");
 
 /**
  * The create competition class.
@@ -126,9 +125,12 @@ class ARIA_Music {
     $form_array['isMusicUploadForm'] = true;
 
     // Add form to dashboard
-    $result = GFAPI::add_form($form_array);
-    if (is_wp_error($result)) {
-      wp_die($result->get_error_message());
+    $new_form_id = GFAPI::add_form($form_array);
+    if (is_wp_error($new_form_id)) {
+      wp_die($new_form_id->get_error_message());
+    }
+    else {
+      ARIA_API::aria_publish_form(MUSIC_UPLOAD_FORM_NAME, $new_form_id);
     }
   }
 
