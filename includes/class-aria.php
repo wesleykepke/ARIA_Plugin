@@ -127,6 +127,7 @@ class ARIA {
 		require_once("class-aria-create-competition.php");
 		require_once("class-aria-music.php");
 		require_once("class-aria-form-hooks.php");
+    require_once("class-aria-teacher-upload.php"); 
 
 		// Register all of the hooks needed by ARIA
 
@@ -140,9 +141,17 @@ class ARIA {
     is to deactivate and reactivate the plugin.
     */
     $this->loader->add_action(
-      'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),    
+      'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),
       'ARIA_Create_Competition',
       'aria_create_teacher_and_student_forms', 10, 4);
+
+    /*
+    The action registered for this hook is to invoke processing after the
+    festival chairman has uploaded teacher information to be stored in a
+    teacher-master form.
+    */
+    $this->loader->add_action('gform_after_submission',
+      'ARIA_Teacher', 'aria_upload_teachers', 9, 2);
 
     /*
     The action registered for this hook is to invoke processing after a student
@@ -192,7 +201,7 @@ class ARIA {
     The filter registered for this hook is to modify the upload path for NNMTA
     music
     */
-    $this->loader->add_filter('gform_upload_path', 'ARIA_Music', 
+    $this->loader->add_filter('gform_upload_path', 'ARIA_Music',
       'aria_modify_upload_path', 10, 2);
 
     /*
