@@ -123,9 +123,9 @@ class ARIA_Teacher {
    *
    * This function will add teachers to a specified music competition.
    *
-   * This function will parse the contents of the csv file that is used to
-   * store teacher data and upload this information to the corresponding
-   * teacher-master form for a specific competition.
+   * This function will extract the incoming csv file containing teacher
+   * information and call another function that is responsible for uploading
+   * this information to the corresponding teacher-master form.
    *
    * @param Entry Object $entry The entry object from the upload form.
    * @param Form Object $form The form object used to upload data.
@@ -140,29 +140,45 @@ class ARIA_Teacher {
       return;
     }
 
-    $field_mapping = self::aria_teacher_upload_field_id_array();
-
-    //wp_die(json_encode($entry));
-
-/*
-    if (!empty($entry[strval($field_mapping['teacher_last_name'])])) {
-      wp_die('there is a last name');
-    }
-*/
+    $field_mapping = ARIA_Create_Competition::aria_competition_field_id_array();
 
     // if a csv file was given, upload the content
-    $csv_given = false; 
-    if (!empty($entry[strval($field_mapping['csv_upload'])])) {
-      $csv_given = true;
+    if (!empty($entry[strval($field_mapping['competition_teacher_csv_upload'])])) {
+      self::aria_upload_from_csv($entry, $form);
     }
 
     // if a teacher's information was entered by hand, add it
+/*
     $teacher_given = (!empty($entry[strval($field_mapping['teacher_first_name'])])) &&
       (!empty($entry[strval($field_mapping['teacher_last_name'])])) &&
       (!empty($entry[strval($field_mapping['teacher_email'])]));
     if ($teacher_given) {
       wp_die('all attributes given');
     }
-      wp_die(print_r($teacher_given) . print_r($csv_given));
+      wp_die(print_r($teacher_given) . print_r($csv_given)); */
+  }
+
+  /**
+   *
+   *
+   * This function will parse the contents of the csv file that is used to
+   * store teacher data and upload this information to the corresponding
+   * teacher-master form for a specific competition.
+   */
+  private static function aria_upload_from_csv($entry, $form) {
+    // get the file path of the csv file
+    $csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
+
+    // 
+
+    // remove the uploaded file from the current WP directory
+    unlink($csv_file_path);
+  }
+
+  /**
+   * TODO? Implement code to upload a single teacher with a seperate form?
+   */
+  private static function aria_upload_from_form($entry, $form) {
+
   }
 }
