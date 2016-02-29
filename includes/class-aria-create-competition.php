@@ -15,6 +15,7 @@
 
 //require_once("class-aria-api.php");
 require_once("class-aria-create-master-forms.php");
+require_once("aria-constants.php");
 
 /**
  * The create competition class.
@@ -171,7 +172,8 @@ class ARIA_Create_Competition {
       'competition_student_reg_end' => 5,
       'competition_teacher_reg_start' => 6,
       'competition_teacher_reg_end' => 7,
-      'competition_volunteer_times' => 8
+      'competition_volunteer_times' => 8,
+      'competition_teacher_csv_upload' => 9
     );
   }
 
@@ -186,7 +188,10 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   private static function aria_create_competition_form() {
-    $competition_creation_form = new GF_Form("ARIA: Create a Competition", "");
+    $competition_creation_form = new GF_Form(CREATE_COMPETITION_FORM_NAME, "");
+
+    // TODO: replace all the id's with their associative array offsets
+    $field_mapping = self::aria_competition_field_id_array();
 
     // name
     $competition_name_field = new GF_Field_Text();
@@ -251,6 +256,13 @@ class ARIA_Create_Competition {
     $teacher_volunteer_times_field->description = "e.g. Saturday (10am-4pm), Either Saturday or Sunday, etc.";
     $teacher_volunteer_times_field->descriptionPlacement = 'above';
 
+    // teacher csv file upload
+
+    $teacher_csv_file_upload = new GF_Field_FileUpload();
+    $teacher_csv_file_upload->label = CSV_TEACHER_FIELD_NAME;
+    $teacher_csv_file_upload->id = $field_mapping['competition_teacher_csv_upload'];
+    $teacher_csv_file_upload->isRequired = false;
+
     // assign all of the previous attributes to our newly created form
     $competition_creation_form->fields[] = $competition_name_field;
     $competition_creation_form->fields[] = $competition_date_field;
@@ -260,20 +272,14 @@ class ARIA_Create_Competition {
     $competition_creation_form->fields[] = $teacher_registration_start_date_field;
     $competition_creation_form->fields[] = $teacher_registration_end_date_field;
     $competition_creation_form->fields[] = $teacher_volunteer_times_field;
+    $competition_creation_form->fields[] = $teacher_csv_file_upload;
 
-    // custom submission message to let the festival chairman know the creation was
-    // a success
-    $successful_submission_message = 'Congratulations! A new music competition has been created.';
-    $successful_submission_message .= ' There are now two new forms for students and teacher to use';
-    $successful_submission_message .= ' for registration. The name for each new form is prepended with';
-    $successful_submission_message .= ' the name of the new music competition previously created.';
-    $competition_creation_form->confirmation['type'] = 'message';
-    $competition_creation_form->confirmation['message'] = $successful_submission_message;
+    // Identify form as a teacher uploading form
+    $form_array = $competition_creation_form->createFormArray();
+    $form_array['isTeacherUploadForm'] = true;
 
-    // add the new form to the festival chairman's dashboard
-    $new_form_id = GFAPI::add_form($competition_creation_form->createFormArray());
-
-    // make sure the new form was added without error
+    // Add form to dashboard
+    $new_form_id = GFAPI::add_form($form_array);
     if (is_wp_error($new_form_id)) {
       wp_die($new_form_id->get_error_message());
     }
