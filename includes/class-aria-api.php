@@ -156,6 +156,42 @@ class ARIA_API {
     return $csv_full_file_path;
 	}
 
+	/**
+	 * This function will find the file path of the uploaded csv teacher file.
+	 *
+	 * This function will extract the name of the csv file containing the teacher
+   * data that was uploaded during the create competition form and return the
+   * file path so that it can be used in other functions.
+	 *
+	 * @param		Entry Object	$entry	The entry object from the upload form.
+	 * @param		Form Object		$form		The form object that contains $entry.
+	 *
+	 * @since 1.0.0
+	 * @author KREW
+	 */
+	public static function aria_get_teacher_csv_file_path($entry, $form) {
+    // find the field entry used to upload the csv file
+    $teacher_csv_field_id = NULL;
+    foreach ($form['fields'] as $field) {
+      if ($field['label'] === CSV_TEACHER_FIELD_NAME) {
+        $teacher_csv_field_id = $field['id'];
+      }
+    }
+
+    if (!isset($teacher_csv_field_id)) {
+      wp_die('Form named \'' . $form['title'] . '\' does not have a field named \''
+      . CSV_TEACHER_FIELD_NAME . '\'. Please create this field and try uploading
+      music again.');
+    }
+
+    // parse the url and obtain the file path for the csv file
+    $csv_file_url = $entry[strval($teacher_csv_field_id)];
+    $csv_file_url_atomic_strings = explode('/', $csv_file_url);
+    $csv_full_file_path = '/var/www/html/wp-content/uploads/testpath/'; // this may need to change
+    $csv_full_file_path .= $csv_file_url_atomic_strings[count($csv_file_url_atomic_strings) - 1];
+    return $csv_full_file_path;
+	}
+
   /**
    * This function will create a new page with a specific form.
    *
