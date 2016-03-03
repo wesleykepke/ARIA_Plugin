@@ -168,8 +168,31 @@ class ARIA_Teacher {
   private static function aria_upload_from_csv($entry, $form) {
     // get the file path of the csv file
     $csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
+    wp_die('csv file path: ' . $csv_file_path);
 
-    // 
+    // check incoming object
+    wp_die('incoming entry object: ' . json_encode($entry));
+
+    // check the related forms to ensure this data gets put in the correct
+    // teacher master form
+    wp_die('checking related forms: ' . print_r($form));
+
+    // upload all of the teachers in the file
+    $all_teachers = array();
+    if (($file_ptr = fopen($csv_file_path, "r")) !== FALSE) {
+      while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
+        $single_teacher = array();
+        for ($i = 1; $i <= count($single_teacher_data); $i++) {
+				  $single_teacher[(string) $i] = $single_teacher_data[$i - 1];
+				}
+        $all_teachers[] = $single_teacher;
+        unset($single_teacher);
+      }
+
+      // hash all of the teachers names
+
+      // add all data to the corresponding teacher-master form
+    }
 
     // remove the uploaded file from the current WP directory
     unlink($csv_file_path);
