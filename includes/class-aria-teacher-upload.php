@@ -183,8 +183,8 @@ class ARIA_Teacher {
       while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
         $single_teacher = array();
         for ($i = 1; $i <= count($single_teacher_data); $i++) {
-				  $single_teacher[(string) $i] = $single_teacher_data[$i - 1];
-				}
+          $single_teacher[(string) $i] = $single_teacher_data[$i - 1];
+        }
         $all_teachers[] = $single_teacher;
         unset($single_teacher);
       }
