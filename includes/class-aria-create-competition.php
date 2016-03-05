@@ -16,6 +16,7 @@
 //require_once("class-aria-api.php");
 require_once("class-aria-create-master-forms.php");
 require_once("aria-constants.php");
+require_once("class-aria-teacher-upload.php");
 
 /**
  * The create competition class.
@@ -28,10 +29,10 @@ require_once("aria-constants.php");
 class ARIA_Create_Competition {
 
   /**
-   * This function will create the form that can create new competitions.
+   * This function will create the form that can create new music competitions.
    *
-   * This function is called in "class-aria-activator.php" and is responsible for
-   * creating the form that allows the festival chairman to create new music
+   * This function is called in "class-aria-activator.php" and is responsible
+   * for creating the form that allows the festival chairman to create new music
    * competitions (if this form does not already exist). If no such form exists,
    * this function will create a new form designed specifically for creating new
    * music competitions.
@@ -92,6 +93,12 @@ class ARIA_Create_Competition {
         'student_public_form_url' => $student_form_url,
         'teacher_public_form_url' => $teacher_form_url
       );
+
+      //
+      $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
+      //wp_die($teacher_csv_file_path);
+      //wp_die('aria_create_teacher_and_student_forms: ' . json_encode($entry));
+      ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
       // obtain form objects for each of the four forms
       $student_public_form = GFAPI::get_form($student_form_id);
