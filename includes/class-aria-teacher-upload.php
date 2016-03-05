@@ -144,7 +144,10 @@ class ARIA_Teacher {
 
     // if a csv file was given, upload the content
     if (!empty($entry[strval($field_mapping['competition_teacher_csv_upload'])])) {
-      self::aria_upload_from_csv($entry, $form);
+      //self::aria_upload_from_csv($entry, $form);
+    }
+    else {
+    wp_die('No teacher csv file given.');
     }
 
     // if a teacher's information was entered by hand, add it
@@ -159,24 +162,19 @@ class ARIA_Teacher {
   }
 
   /**
-   *
+   * This function will place teacher data from a file into a teacher-master form.
    *
    * This function will parse the contents of the csv file that is used to
    * store teacher data and upload this information to the corresponding
    * teacher-master form for a specific competition.
+   *
+   * @param $csv_file_path String The file path of the teacher CSV file_path
+   * @param $teacher_master_form_id Integer The id of the teacher-master form
+   *
+   * @since 1.0.0
+   * @author KREW
    */
-  private static function aria_upload_from_csv($entry, $form) {
-    // get the file path of the csv file
-    $csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
-    wp_die('csv file path: ' . $csv_file_path);
-
-    // check incoming object
-    wp_die('incoming entry object: ' . json_encode($entry));
-
-    // check the related forms to ensure this data gets put in the correct
-    // teacher master form
-    wp_die('checking related forms: ' . print_r($form));
-
+  public static function aria_upload_from_csv($csv_file_path, $teacher_master_form_id) {
     // upload all of the teachers in the file
     $all_teachers = array();
     if (($file_ptr = fopen($csv_file_path, "r")) !== FALSE) {
@@ -189,15 +187,24 @@ class ARIA_Teacher {
         unset($single_teacher);
       }
 
-      // hash all of the teachers names
+      // hash all of the uploaded teacher names
+      foreach ($all_teachers as $teacher => &$attributes) {
+        $first_name = $attributes[1];
+        $last_name = $attributes[2];
+        $teacher_hash = hash("md5", $first_name . $last_name);
+        $attributes[count($attributes) + 1] = $teacher_hash;
+      }
 
       // add all data to the corresponding teacher-master form
+      $result = GFAPI::add_entries($all_teachers, $teacher_master_form_id);
+      if (is_wp_error($result)) {
+        wp_die($result->get_error_message());
+      }
     }
 
     // remove the uploaded file from the current WP directory
     unlink($csv_file_path);
   }
-
   /**
    * TODO? Implement code to upload a single teacher with a seperate form?
    */
