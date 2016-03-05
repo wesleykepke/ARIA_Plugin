@@ -13,7 +13,6 @@
  * @subpackage ARIA/includes
  */
 
-// Require the ARIA API
 require_once("class-aria-api.php");
 
 /**
@@ -127,7 +126,7 @@ class ARIA {
 		require_once("class-aria-create-competition.php");
 		require_once("class-aria-music.php");
 		require_once("class-aria-form-hooks.php");
-    require_once("class-aria-teacher-upload.php"); 
+    require_once("class-aria-teacher-upload.php");
 
 		// Register all of the hooks needed by ARIA
 
@@ -150,9 +149,10 @@ class ARIA {
     festival chairman has uploaded teacher information to be stored in a
     teacher-master form.
     */
+/*
     $this->loader->add_action('gform_after_submission',
       'ARIA_Teacher', 'aria_upload_teachers', 9, 2);
-
+*/
     /*
     The action registered for this hook is to invoke processing after a student
     has submitted their registration.
