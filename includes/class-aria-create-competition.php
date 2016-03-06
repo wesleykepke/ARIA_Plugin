@@ -66,77 +66,65 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_teacher_and_student_forms($confirmation, $form, $entry, $ajax) {
-    // make sure the create competition form is calling this function
-    $competition_creation_form_id = ARIA_API::aria_get_create_competition_form_id();
-    if ($form['id'] === $competition_creation_form_id) {
-			$field_mapping = ARIA_API::aria_competition_field_id_array();
-			$competition_name = $entry[$field_mapping['competition_name']];
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
+    $competition_name = $entry[$field_mapping['competition_name']];
 
-			// create the student and teacher forms
-      $student_form_id = self::aria_create_student_form($entry);
-      $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
-      $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
-      $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
+    // create the student and teacher forms
+    $student_form_id = self::aria_create_student_form($entry);
+    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+    $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
+    $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
-			// create the sutdent and teacher (master) forms
-			$student_master_form_id =
-      ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name);
-			$teacher_master_form_id =
-      ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name);
+    // create the sutdent and teacher (master) forms
+    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name);
+    $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name);
 
-      // associate all of the related forms
-      $related_forms = array(
-        'student_public_form_id' => $student_form_id,
-        'teacher_public_form_id' => $teacher_form_id,
-        'student_master_form_id' => $student_master_form_id,
-        'teacher_master_form_id' => $teacher_master_form_id,
-        'student_public_form_url' => $student_form_url,
-        'teacher_public_form_url' => $teacher_form_url
-      );
+    // upload content of the teacher csv file into the teacher master form
+/*
+needs testing!
+*/
+    //$teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
+    //ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
-      // upload content of teacher csv file to the newly created teacher-master form
-      $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
-      //wp_die($teacher_csv_file_path);
-      //wp_die('aria_create_teacher_and_student_forms: ' . json_encode($entry));
-      ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
+    // associate all of the related forms
+    $related_forms = array(
+      'student_public_form_id' => $student_form_id,
+      'teacher_public_form_id' => $teacher_form_id,
+      'student_master_form_id' => $student_master_form_id,
+      'teacher_master_form_id' => $teacher_master_form_id,
+      'student_public_form_url' => $student_form_url,
+      'teacher_public_form_url' => $teacher_form_url
+    );
 
-      // obtain form objects for each of the four forms
-      $student_public_form = GFAPI::get_form($student_form_id);
-      $teacher_public_form = GFAPI::get_form($teacher_form_id);
-      $student_master_form = GFAPI::get_form($student_master_form_id);
-      $teacher_master_form = GFAPI::get_form($teacher_master_form_id);
+    // obtain form objects for each of the four forms
+    $student_public_form = GFAPI::get_form($student_form_id);
+    $teacher_public_form = GFAPI::get_form($teacher_form_id);
+    $student_master_form = GFAPI::get_form($student_master_form_id);
+    $teacher_master_form = GFAPI::get_form($teacher_master_form_id);
 
-      // assign the related form objects
-      $student_public_form['aria_relations'] = $related_forms;
-      $teacher_public_form['aria_relations'] = $related_forms;
-      $student_master_form['aria_relations'] = $related_forms;
-      $teacher_master_form['aria_relations'] = $related_forms;
+    // assign the related form objects
+    $student_public_form['aria_relations'] = $related_forms;
+    $teacher_public_form['aria_relations'] = $related_forms;
+    $student_master_form['aria_relations'] = $related_forms;
+    $teacher_master_form['aria_relations'] = $related_forms;
 
-      // update the related forms
-      GFAPI::update_form($student_public_form);
-      GFAPI::update_form($teacher_public_form);
-      GFAPI::update_form($student_master_form);
-      GFAPI::update_form($teacher_master_form);
+    // update the related forms
+    GFAPI::update_form($student_public_form);
+    GFAPI::update_form($teacher_public_form);
+    GFAPI::update_form($student_master_form);
+    GFAPI::update_form($teacher_master_form);
 
-      $teacher_public_form = GFAPI::get_form($teacher_form_id);
-
-      // change the confirmation message that the festival chairman sees
-      // after competition creation
-      $confirmation = 'Congratulations! A new music competition has been ';
-      $confirmation .= 'created. The following forms are now available for ';
-      $confirmation .= ' students and teachers to use for registration: </br>';
-      $confirmation .= "<a href={$student_form_url}>{$competition_name} Student Registration</a>";
-      $confirmation .= " was published. </br>";
-      $confirmation .= "<a href={$teacher_form_url}> {$competition_name} Teacher Registration </a>";
-      $confirmation .= " was published.";
-      return $confirmation;
-    }
-    else {
-      wp_die("ERROR: No form currently exists that allows the festival chairman
-      to create a new music competition \n FormID: {$form[id]} \n func_call {$competition_creation_form_id}");
-    }
+    // change the confirmation message that the festival chairman sees
+    // after competition creation
+    $confirmation = 'Congratulations! A new music competition has been ';
+    $confirmation .= 'created. The following forms are now available for ';
+    $confirmation .= ' students and teachers to use for registration: </br>';
+    $confirmation .= "<a href={$student_form_url}>{$competition_name} Student Registration</a>";
+    $confirmation .= " was published. </br>";
+    $confirmation .= "<a href={$teacher_form_url}> {$competition_name} Teacher Registration </a>";
+    $confirmation .= " was published.";
+    return $confirmation;
   }
-
 
   /**
    * This function will create a new form for creating music competitions.
@@ -347,6 +335,7 @@ class ARIA_Create_Competition {
     // identify form as necessary
     $form_array = $form->createFormArray();
     $form_array['isTeacherUploadForm'] = true;
+    $form_array['isCompetitionCreationForm'] = true;
 
     // add form to dashboard
     $new_form_id = GFAPI::add_form($form_array);
