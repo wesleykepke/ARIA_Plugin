@@ -13,7 +13,7 @@
  * @subpackage ARIA/includes
  */
 
-//require_once("class-aria-api.php");
+require_once("class-aria-api.php");
 require_once("class-aria-create-master-forms.php");
 require_once("aria-constants.php");
 require_once("class-aria-teacher-upload.php");
@@ -69,7 +69,7 @@ class ARIA_Create_Competition {
     // make sure the create competition form is calling this function
     $competition_creation_form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form['id'] === $competition_creation_form_id) {
-			$field_mapping = self::aria_competition_field_id_array();
+			$field_mapping = ARIA_API::aria_competition_field_id_array();
 			$competition_name = $entry[$field_mapping['competition_name']];
 
 			// create the student and teacher forms
@@ -137,52 +137,6 @@ class ARIA_Create_Competition {
     }
   }
 
-	/**
-   * This function will return an associative array with entry meta data for the
-   * competition form.
-   *
-   * Every time an entry is submitted using the form for creating a competition, the
-   * submission is an Entry object, which is an associative array that has a plethora
-   * of information. Also included inside the Entry object is the infomation that was
-   * input by the user. This function simply returns an associative array that can be
-   * used by other functions to offset into the Entry object's user data, because
-   * otherwise, the offset all involves magic integers that are otherwise not very
-   * descriptive.
-   *
-   * @since 1.0.5
-   * @author KREW
-   */
-  public static function aria_competition_field_id_array() {
-    /*
-    CAUTION, This array is used as a source of truth. Changing these values may
-    result in catastrophic failure. If you do not want to feel the bern,
-    consult an aria developer before making changes to this portion of code.
-
-    This is super important and can't be emphasized enough! These values must
-    be changed if the corresponding form is modified. Use the function
-    json_encode($entry) to view the JSON and make sure it matches what this
-    function returns.
-
-    Last modified by wes on 2/20/2016 at 1:56 PM.
-    */
-    return array(
-      'competition_name' => 1,
-      'competition_date' => 2,
-      'competition_location' => 3,
-      'competition_address_first' => 3.1,
-      'competition_address_second' => 3.2,
-      'competition_city' => 3.3,
-      'competition_state_province_region' => 3.4,
-      'competition_zip_postal' => 3.5,
-      'competition_country' => 3.6,
-      'competition_student_reg_start' => 4,
-      'competition_student_reg_end' => 5,
-      'competition_teacher_reg_start' => 6,
-      'competition_teacher_reg_end' => 7,
-      'competition_volunteer_times' => 8,
-      'competition_teacher_csv_upload' => 9
-    );
-  }
 
   /**
    * This function will create a new form for creating music competitions.
@@ -198,7 +152,7 @@ class ARIA_Create_Competition {
     $competition_creation_form = new GF_Form(CREATE_COMPETITION_FORM_NAME, "");
 
     // TODO: replace all the id's with their associative array offsets
-    $field_mapping = self::aria_competition_field_id_array();
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     // name
     $competition_name_field = new GF_Field_Text();
@@ -439,60 +393,6 @@ class ARIA_Create_Competition {
   }
 
   /**
-   * This function defines an associative array used in the teacher form.
-   *
-   * This function returns an array that maps all of the names of the fields in the
-   * teacher form to a unique integer so that they can be referenced. Moreover, this
-   * array helps prevent the case where the names of these fields are modified from
-   * the dashboard.
-   *
-   * @since 1.0.0
-   * @author KREW
-   */
-  public static function aria_teacher_field_id_array() {
-    /*
-    CAUTION, This array is used as a source of truth. Changing these values may
-    result in catastrophic failure. If you do not want to feel the bern,
-    consult an aria developer before making changes to this portion of code.
-
-    This is super important and can't be emphasized enough! These values must
-    be changed if the corresponding form is modified. Use the function
-    json_encode($entry) to view the JSON and make sure it matches what this
-    function returns.
-    */
-    return array(
-      'name' => 1,
-			'first_name' => 1.3,
-			'last_name' => 1.6,
-      'email' => 2,
-      'phone' => 3,
-      'volunteer_preference' => 4,
-      'volunteer_time' => 5,
-      'student_name' => 6,
-			'student_first_name' => 6.1,
-			'student_last_name' => 6.2,
-      'song_1_period' => 7,
-      'song_1_composer' => 8,
-      'song_1_selection' => 9,
-      'song_2_period' => 10,
-      'song_2_composer' => 11,
-      'song_2_selection' => 12,
-      'theory_score' => 13,
-      'alternate_theory' => 14,
-      'competition_format' => 15,
-      'timing_of_pieces' => 16,
-      'is_judging' => 17, // !!!DO WE WANT TO CHANGE THIS NUMBER
-      'student_level' => 18,
-      'alt_song_2_composer' => 19,
-      'alt_song_2_selection' => 20,
-      'alt_song_2_key' => 21,
-      'alt_song_2_movement_number' => 22,
-      'alt_song_2_movement_description' => 23,
-      'alt_song_2_identifying_number' => 24
-    );
-  }
-
-  /**
    * This function will create a new form for the teachers to use to register student
    * information.
    *
@@ -506,11 +406,11 @@ class ARIA_Create_Competition {
    * @author KREW
    */
    private static function aria_create_teacher_form($competition_entry, $volunteer_time_options_array) {
-    $field_mapping = self::aria_competition_field_id_array();
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     $competition_name = $competition_entry[$field_mapping['competition_name']];
     $teacher_form = new GF_Form("{$competition_name} Teacher Registration", "");
-    $field_id_arr = self::aria_teacher_field_id_array();
+    $field_id_arr = ARIA_API::aria_teacher_field_id_array();
 
     // teacher name
     $teacher_name_field = new GF_Field_Name();
@@ -884,52 +784,6 @@ class ARIA_Create_Competition {
   }
 
   /**
-   * This function defines an associative array used in the student form.
-   *
-   * This function returns an array that maps all of the names of the fields in the
-   * student form to a unique integer so that they can be referenced. Moreover, this
-   * array helps prevent the case where the names of these fields are modified from
-   * the dashboard.
-   *
-   * @since 1.0.0
-   * @author KREW
-   */
-  public static function aria_student_field_id_array() {
-    /*
-    CAUTION, This array is used as a source of truth. Changing these values may
-    result in catastrophic failure. If you do not want to feel the bern,
-    consult an aria developer before making changes to this portion of code.
-
-    This is super important and can't be emphasized enough! These values must
-    be changed if the corresponding form is modified. Use the function
-    json_encode($entry) to view the JSON and make sure it matches what this
-    function returns.
-
-    Last modified by wes on 2/20/2016 at 1:41 PM.
-    */
-    return array(
-      'parent_name' => 1,
-			'parent_first_name' => 1.3,
-			'parent_last_name' => 1.6,
-      'parent_email' => 2,
-      'student_name' => 3,
-			'student_first_name' => 3.3,
-			'student_last_name' => 3.6,
-      'student_birthday' => 4,
-      'teacher_name' => 5,
-      'not_listed_teacher_name' => 6,
-      'available_festival_days' => 7,
-      'available_festival_days_saturday' => 7.1,
-      'available_festival_days_sunday' => 7.2,
-      'preferred_command_performance' => 8,
-      'preferred_command_performance_earlier' => 8.1,
-      'preferred_command_performance_later' => 8.2,
-      'compliance_statement' => 9,
-      'compliance_statement_agreement' => 9.1
-    );
-  }
-
-  /**
    * This function will create a new form for student registration.
    *
    * This function is responsible for creating and adding all of the associated
@@ -942,11 +796,11 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   private static function aria_create_student_form( $competition_entry ) {
-    $field_mapping = self::aria_competition_field_id_array();
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     $competition_name = $competition_entry[$field_mapping['competition_name']];
     $student_form = new GF_Form("{$competition_name} Student Registration", "");
-    $field_id_array = self::aria_student_field_id_array();
+    $field_id_array = ARIA_API::aria_student_field_id_array();
 
     // parent name
     $parent_name_field = new GF_Field_Name();
@@ -1078,12 +932,4 @@ class ARIA_Create_Competition {
 
     return $new_form_id;
   }
-
-	/**
-	 * Function that tries to retrieve page IDs.
-	 */
-  public static function aria_update_page_ids() {
-    $student_form = get_page_by_title("Wes CC");
-		wp_die("DB id: " . $student_form->ID);
-	}
 }

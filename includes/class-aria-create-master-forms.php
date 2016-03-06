@@ -11,8 +11,7 @@
  * @subpackage ARIA/includes
  */
 
-// Require the ARIA API
-//require_once("class-aria-api.php");
+require_once("class-aria-api.php");
 
 /**
  * The create master forms class.
@@ -41,7 +40,7 @@ class ARIA_Create_Master_Forms {
   public static function aria_create_student_master_form($competition_name) {
     $student_master_form
         = new GF_Form($competition_name . " Student Master", "");
-    $field_id_array = self::aria_master_student_field_id_array();
+    $field_id_array = ARIA_API::aria_master_student_field_id_array();
 
     // parent name
     $parent_name_field = new GF_Field_Name();
@@ -221,61 +220,6 @@ class ARIA_Create_Master_Forms {
   }
 
 	/**
-	 * This function defines an associative array used in the student form.
-	 *
-	 * This function returns an array that maps all of the names of the fields in the
-	 * student form to a unique integer so that they can be referenced. Moreover, this
-	 * array helps prevent the case where the names of these fields are modified from
-	 * the dashboard.
-	 *
-	 * @since 1.0.0
-	 * @author KREW
-	 */
-	public static function aria_master_student_field_id_array() {
-	  /*
-    CAUTION, This array is used as a source of truth. Changing these values may
-    result in catastrophic failure. If you do not want to feel the bern,
-    consult an aria developer before making changes to this portion of code.
-
-    This is super important and can't be emphasized enough! These values must
-    be changed if the corresponding form is modified. Use the function
-    json_encode($entry) to view the JSON and make sure it matches what this
-    function returns.
-
-    Last modified by wes on 2/20/2016 at 3:23 PM.
-    */
-	  return array(
-	    'parent_name' => 1,
-			'parent_first_name' => 1.3,
-			'parent_last_name' => 1.6,
-      'parent_email' => 2,
-      'student_name' => 3,
-			'student_first_name' => 3.3,
-			'student_last_name' => 3.6,
-      'student_birthday' => 4,
-      'teacher_name' => 5,
-      'not_listed_teacher_name' => 6,
-      'available_festival_days' => 7,
-      'available_festival_days_saturday' => 7.1,
-      'available_festival_days_sunday' => 7.2,
-      'preferred_command_performance' => 8,
-      'preferred_command_performance_earlier' => 8.1,
-      'preferred_command_performance_later' => 8.2,
-	    'song_1_period' => 9,
-	    'song_1_composer' => 10,
-	    'song_1_selection' => 11,
-	    'song_2_period' => 12,
-	    'song_2_composer' => 13,
-	    'song_2_selection' => 14,
-	    'theory_score' => 15,
-	    'alternate_theory' => 16,
-	    'competition_format' => 17,
-	    'timing_of_pieces' => 18,
-      'hash' => 19
-	  );
-	}
-
-	/**
 	 * This function will create the form that will be the source of truth for
 	 * a certain competitions teachers.
 	 *
@@ -293,7 +237,7 @@ class ARIA_Create_Master_Forms {
     $teacher_master_form
         = new GF_Form($competition_name . " Teacher Master", "");
 
-    $field_id_array = self::aria_master_teacher_field_id_array();
+    $field_id_array = ARIA_API::aria_master_teacher_field_id_array();
 
     // Students
     $parent_name_field = new GF_Field_List();
@@ -417,42 +361,4 @@ class ARIA_Create_Master_Forms {
     return GFAPI::add_form($teacher_master_form_array);
   }
 
-	/**
-	 * This function defines an associative array used in the student form.
-	 *
-	 * This function returns an array that maps all of the names of the fields in the
-	 * student form to a unique integer so that they can be referenced. Moreover, this
-	 * array helps prevent the case where the names of these fields are modified from
-	 * the dashboard.
-	 *
-	 * @since 1.0.0
-	 * @author KREW
-	 *
-	 */
-  public static function aria_master_teacher_field_id_array() {
-    /*
-    CAUTION, This array is used as a source of truth. Changing these values may
-    result in catastrophic failure. If you do not want to feel the bern,
-    consult an aria developer before making changes to this portion of code.
-
-    This is super important and can't be emphasized enough! These values must
-    be changed if the corresponding form is modified. Use the function
-    json_encode($entry) to view the JSON and make sure it matches what this
-    function returns.
-
-    Last modified by wes on 2/20/2016 at 3:37 PM.
-    */
-    return array(
-      'students' => 6,
-      'name' => 1,
-      'first_name' => 1.3,
-      'last_name' => 1.6,
-      'email' => 2,
-      'phone' => 3,
-      'volunteer_preference' => 4, // needs checking!
-      'volunteer_time' => 5, // needs checking!
-      'is_judging' => 7, // needs checking!
-      'hash' => 8 // needs checking!
-    );
-	}
 }
