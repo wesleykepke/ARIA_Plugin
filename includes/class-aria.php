@@ -140,7 +140,7 @@ class ARIA {
     is to deactivate and reactivate the plugin.
     */
     $this->loader->add_action(
-      'gform_confirmation_' . strval(ARIA_API::aria_get_create_competition_form_id()),
+      'gform_confirmation',
       'ARIA_Create_Competition',
       'aria_create_teacher_and_student_forms', 10, 4);
 
