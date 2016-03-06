@@ -4,14 +4,15 @@
  * The file that provides teacher uploading functionality.
  *
  * A class definition that includes functions that allow the festival chairman
- * to upload music teachers to a specific music competition.
+ * to upload music teachers to the teacher-master form  of a specific music
+ * competition.
  *
-  * @link       http://wesleykepke.github.io/ARIA/
-  * @since      1.0.0
-  *
-  * @package    ARIA
-  * @subpackage ARIA/includes
- */
+* @link       http://wesleykepke.github.io/ARIA/
+* @since      1.0.0
+*
+* @package    ARIA
+* @subpackage ARIA/includes
+*/
 
 require_once("class-aria-api.php");
 require_once("class-aria-create-competition.php");
@@ -47,8 +48,6 @@ class ARIA_Teacher {
     be changed if the corresponding form is modified. Use the function
     json_encode($entry) to view the JSON and make sure it matches what this
     function returns.
-
-    Last modified by wes on 2/27/2016 at 10:00 PM.
     */
     return array (
       'csv_upload' => 1,
@@ -140,7 +139,7 @@ class ARIA_Teacher {
       return;
     }
 
-    $field_mapping = ARIA_Create_Competition::aria_competition_field_id_array();
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     // if a csv file was given, upload the content
     if (!empty($entry[strval($field_mapping['competition_teacher_csv_upload'])])) {
@@ -175,27 +174,29 @@ class ARIA_Teacher {
    * @author KREW
    */
   public static function aria_upload_from_csv($csv_file_path, $teacher_master_form_id) {
-    // upload all of the teachers in the file
+    // obtain the field mappings of the teacher master form
+    $field_mappings = ARIA_API::aria_master_teacher_field_id_array();
+
+    // read teacher data from file, line by line
     $all_teachers = array();
     if (($file_ptr = fopen($csv_file_path, "r")) !== FALSE) {
       while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
         $single_teacher = array();
-        for ($i = 1; $i <= count($single_teacher_data); $i++) {
-          $single_teacher[(string) $i] = $single_teacher_data[$i - 1];
-        }
+
+        // assign attributes to teacher from the csv file
+        $single_teacher[strval($field_mappings['first_name'])] = $single_teacher_data[0];
+        $single_teacher[strval($field_mappings['last_name'])] = $single_teacher_data[1];
+        $single_teacher[strval($field_mappings['email'])] = $single_teacher_data[2];
+        $single_teacher[strval($field_mappings['phone'])] = $single_teacher_data[3];
+        $single_teacher[strval($field_mappings['teacher_hash'])] =
+          hash("md5", ($single_teacher_data[0] . ' ' . $single_teacher_data[1]));
+
+        // add single teacher attributes into a cumulative list of teachers
         $all_teachers[] = $single_teacher;
         unset($single_teacher);
       }
 
-      // hash all of the uploaded teacher names
-      foreach ($all_teachers as $teacher => &$attributes) {
-        $first_name = $attributes[1];
-        $last_name = $attributes[2];
-        $teacher_hash = hash("md5", $first_name . $last_name);
-        $attributes[count($attributes) + 1] = $teacher_hash;
-      }
-
-      // add all data to the corresponding teacher-master form
+      // add cumulative list of teachers to the corresponding teacher-master form
       $result = GFAPI::add_entries($all_teachers, $teacher_master_form_id);
       if (is_wp_error($result)) {
         wp_die($result->get_error_message());
