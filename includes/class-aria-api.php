@@ -427,18 +427,19 @@ class ARIA_API {
     function returns.
     */
     return array(
-      'students' => 6,
-      'name' => 1,
-      'first_name' => 1.3,
-      'last_name' => 1.6,
-      'email' => 2,
-      'phone' => 3,
-      'volunteer_preference' => 4, // needs checking!
-      'volunteer_time' => 5, // needs checking!
-      'is_judging' => 7, // needs checking!
-      'hash' => 8 // needs checking!
+      'students' => 1,
+      'name' => 2,
+      'first_name' => 2.3,
+      'last_name' => 2.6,
+      'email' => 3,
+      'phone' => 4,
+      'teacher_hash' => 5,
+      'student_hash' => 6, // needs checking!
+      'volunteer_preference' => 7, // needs checking!
+      'volunteer_time' => 8, // needs checking!
+      'is_judging' => 9 // needs checking!
     );
-	}
+  }
 
   /**
    * This function will publish a new page with a specific form.

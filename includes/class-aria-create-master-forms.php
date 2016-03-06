@@ -234,9 +234,7 @@ class ARIA_Create_Master_Forms {
 	 * @author KREW
 	 */
   public static function aria_create_teacher_master_form($competition_name) {
-    $teacher_master_form
-        = new GF_Form($competition_name . " Teacher Master", "");
-
+    $teacher_master_form = new GF_Form($competition_name . " Teacher Master", "");
     $field_id_array = ARIA_API::aria_master_teacher_field_id_array();
 
     // Students
@@ -267,7 +265,20 @@ class ARIA_Create_Master_Forms {
     $teacher_phone_field->isRequired = false;
     $teacher_master_form->fields[] = $teacher_phone_field;
 
-    // !!!new field
+    // teacher's hash
+    $teacher_hash_field = new GF_Field_Text();
+    $teacher_hash_field->label = 'Teacher Hash';
+    $teacher_hash_field->id = $field_id_array['teacher_hash'];
+    $teacher_hash_field->isRequired = false;
+    $teacher_master_form->fields[] = $teacher_hash_field;
+
+    // student's hash
+    $student_hash_field = new GF_Field_Text();
+    $student_hash_field->label = 'Student Hash';
+    $student_hash_field->id = $field_id_array['student_hash'];
+    $student_hash_field->isRequired = false;
+    $teacher_master_form->fields[] = $student_hash_field;
+
     // teacher is judging
     $teacher_judging_field = new GF_Field_Radio();
     $teacher_judging_field->label = "Are you scheduled to judge for the festival?";
@@ -348,17 +359,9 @@ class ARIA_Create_Master_Forms {
     );
     $teacher_master_form->fields[] = $volunteer_time_field;
 
-    // student's hash
-    $teacher_hash_field = new GF_Field_Text();
-    $teacher_hash_field->label = 'Student Hash';
-    $teacher_hash_field->id = $field_id_array['hash'];
-    $teacher_hash_field->isRequired = false;
-    $teacher_master_form->fields[] = $teacher_hash_field;
-
     $teacher_master_form_array = $teacher_master_form->createFormArray();
     $teacher_master_form_array['isTeacherMasterForm'] = true;
 
     return GFAPI::add_form($teacher_master_form_array);
   }
-
 }

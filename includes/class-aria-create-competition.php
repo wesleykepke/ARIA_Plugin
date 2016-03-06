@@ -94,7 +94,7 @@ class ARIA_Create_Competition {
         'teacher_public_form_url' => $teacher_form_url
       );
 
-      //
+      // upload content of teacher csv file to the newly created teacher-master form
       $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
       //wp_die($teacher_csv_file_path);
       //wp_die('aria_create_teacher_and_student_forms: ' . json_encode($entry));
