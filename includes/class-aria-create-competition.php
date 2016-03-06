@@ -141,70 +141,82 @@ class ARIA_Create_Competition {
   /**
    * This function will create a new form for creating music competitions.
    *
-   * This function is responsible for creating and adding all of the associated
-   * fields that are necessary for the festival chairman to create new music
-   * competitions.
+   * This function is responsible for creating and adding all of the
+   * associated fields that are necessary for the festival chairman to
+   * create new music competitions.
    *
    * @since 1.0.0
    * @author KREW
    */
   private static function aria_create_competition_form() {
-    $competition_creation_form = new GF_Form(CREATE_COMPETITION_FORM_NAME, "");
+    // create the new competition form and generate the field mappings
+    $form = new GF_Form(CREATE_COMPETITION_FORM_NAME, "");
+    $field_mappings = ARIA_API::aria_competition_field_id_array();
 
-    // TODO: replace all the id's with their associative array offsets
-    $field_mapping = ARIA_API::aria_competition_field_id_array();
+    // description
+    $form->description = 'Welcome! Please submit information for all of the';
+    $form->description .= ' fields in the form below in order to create a new';
+    $form->description .= '  NNMTA music competition.';
 
     // name
-    $competition_name_field = new GF_Field_Text();
+    $name_field = new GF_Field_Text();
     // !!! maybe this should be admin label and label should be like
-    // $competition_name_field->label = "Competition Name";
-    $competition_name_field->label = "competition_name";
-    $competition_name_field->id = 1;
-    $competition_name_field->isRequired = false;
+    // $name_field->label = 'competition_name';
+    $name_field->label = "Competition Name";
+    $name_field->id = $field_mappings['competition_name'];
+    $name_field->isRequired = false;
 
-    // date of the competition
-    $competition_date_field = new GF_Field_Date();
-    $competition_date_field->label = "competition_date";
-    $competition_date_field->id = 2;
-    $competition_date_field->isRequired = false;
-    $competition_date_field->calendarIconType = 'calendar';
-    $competition_date_field->dateType = 'datepicker';
+    // start date of the competition
+    $start_date_field = new GF_Field_Date();
+    $start_date_field->label = "Competition Start Date";
+    $start_date_field->id = $field_mappings['competition_start_date'];
+    $start_date_field->isRequired = false;
+    $start_date_field->calendarIconType = 'calendar';
+    $start_date_field->dateType = 'datepicker';
+
+    // end date of the competition
+    $end_date_field = new GF_Field_Date();
+    $end_date_field->label = "Competition End Date";
+    $end_date_field->id = $field_mappings['competition_end_date'];
+    $end_date_field->isRequired = false;
+    $end_date_field->calendarIconType = 'calendar';
+    $end_date_field->dateType = 'datepicker';
 
     // location
-    $competition_location_field = new GF_Field_Address();
-    $competition_location_field->label = "competition_location";
-    $competition_location_field->id = 3;
-    $competition_location_field->isRequired = false;
-    $competition_location_field = self::aria_add_default_address_inputs($competition_location_field);
+    $location_field = new GF_Field_Address();
+    $location_field->label = "Competition Location";
+    $location_field->id = $field_mappings['competition_location'];
+    $location_field->isRequired = false;
+    $location_field = self::aria_add_default_address_inputs($location_field);
 
-    // competition_student_reg_start
+    // student registration begin date
     $student_registration_start_date_field = new GF_Field_Date();
-    $student_registration_start_date_field->label = "competition_student_reg_start";
-    $student_registration_start_date_field->id = 4;
+    $student_registration_start_date_field->label = "Student Registration Start Date";
+    $student_registration_start_date_field->id = $field_mappings['competition_student_reg_start'];
     $student_registration_start_date_field->isRequired = false;
     $student_registration_start_date_field->calendarIconType = 'calendar';
     $student_registration_start_date_field->dateType = 'datepicker';
 
     // student registration deadline
     $student_registration_end_date_field = new GF_Field_Date();
-    $student_registration_end_date_field->label = "competition_student_reg_end";
-    $student_registration_end_date_field->id = 5;
+    $student_registration_end_date_field->label = "Student Registration Deadline";
+    $student_registration_end_date_field->id = $field_mappings['competition_student_reg_end'];
     $student_registration_end_date_field->isRequired = false;
     $student_registration_end_date_field->calendarIconType = 'calendar';
     $student_registration_end_date_field->dateType = 'datepicker';
 
-    // competition_teacher_reg_start
+    // teacher registration start date
     $teacher_registration_start_date_field = new GF_Field_Date();
-    $teacher_registration_start_date_field->label = "competition_teacher_reg_start";
-    $teacher_registration_start_date_field->id = 6;
+    $teacher_registration_start_date_field->label = "Teacher Registration Start Date";
+    $teacher_registration_start_date_field->id = $field_mappings['competition_teacher_reg_start'];
     $teacher_registration_start_date_field->isRequired = false;
     $teacher_registration_start_date_field->calendarIconType = 'calendar';
     $teacher_registration_start_date_field->dateType = 'datepicker';
 
     // teacher registration deadline
     $teacher_registration_end_date_field = new GF_Field_Date();
-    $teacher_registration_end_date_field->label = "competition_teacher_reg_start";
-    $teacher_registration_end_date_field->id = 7;
+    $teacher_registration_end_date_field->label = "Teacher Registration Deadline";
+    $teacher_registration_end_date_field->id = $field_mappings['competition_teacher_reg_end'];
     $teacher_registration_end_date_field->isRequired = false;
     $teacher_registration_end_date_field->calendarIconType = 'calendar';
     $teacher_registration_end_date_field->dateType = 'datepicker';
@@ -212,34 +224,131 @@ class ARIA_Create_Competition {
     // teacher volunteer options
     $teacher_volunteer_times_field = new GF_Field_List();
     $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
-    $teacher_volunteer_times_field->id = 8;
+    $teacher_volunteer_times_field->id = $field_mappings['competition_volunteer_times'];
     $teacher_volunteer_times_field->isRequired = false;
     $teacher_volunteer_times_field->description = "e.g. Saturday (10am-4pm), Either Saturday or Sunday, etc.";
     $teacher_volunteer_times_field->descriptionPlacement = 'above';
 
     // teacher csv file upload
+    $teacher_csv_file_upload_field = new GF_Field_FileUpload();
+    $teacher_csv_file_upload_field->label = CSV_TEACHER_FIELD_NAME;
+    $teacher_csv_file_upload_field->id = $field_mappings['competition_teacher_csv_upload'];
+    $teacher_csv_file_upload_field->isRequired = false;
+    $teacher_csv_file_upload_field->description = 'Browse computer for a CSV';
+    $teacher_csv_file_upload_field->description .= ' file of teachers that';
+    $teacher_csv_file_upload_field->description .= ' will be participating in';
+    $teacher_csv_file_upload_field->description .= ' this music competition.';
+    $teacher_csv_file_upload_field->descriptionPlacement = 'above';
 
-    $teacher_csv_file_upload = new GF_Field_FileUpload();
-    $teacher_csv_file_upload->label = CSV_TEACHER_FIELD_NAME;
-    $teacher_csv_file_upload->id = $field_mapping['competition_teacher_csv_upload'];
-    $teacher_csv_file_upload->isRequired = false;
+    // number of concurrent traditional sections
+    $num_traditional_sections_field = new GF_Field_Number();
+    $num_traditional_sections_field->label = "Number of Concurrent Traditional Sections";
+    $num_traditional_sections_field->id = $field_mappings['competition_num_traditional'];
+    $num_traditional_sections_field->isRequired = false;
+
+    // number of concurrent master class sections
+    $num_master_sections_field = new GF_Field_Number();
+    $num_master_sections_field->label = "Number of Concurrent Master Sections";
+    $num_master_sections_field->id = $field_mappings['competition_num_master'];
+    $num_master_sections_field->isRequired = false;
+
+    // length of sections
+    $section_length_field = new GF_Field_Number();
+    $section_length_field->label = "Section Length (minutes)";
+    $section_length_field->id = $field_mappings['competition_section_length'];
+    $section_length_field->isRequired = false;
+
+    // time buffer required at beginnning (welcome, go over rules, introduce judges, etc.)
+    $beginning_time_buffer_field = new GF_Field_Number();
+    $beginning_time_buffer_field->label = "Competition Introduction Length (minutes)";
+    $beginning_time_buffer_field->id = $field_mappings['competition_beg_time_buffer'];
+    $beginning_time_buffer_field->isRequired = false;
+    $beginning_time_buffer_field->description = 'Enter the amount of time required';
+    $beginning_time_buffer_field->description .= ' for the competition introduction';
+    $beginning_time_buffer_field->description .= ' (welcome, go over rules, ';
+    $beginning_time_buffer_field->description .= ' introduce judges, etc.).';
+    $beginning_time_buffer_field->descriptionPlacement = 'above';
+
+    // time buffer requred at end (award certificates)
+    $ending_time_buffer_field = new GF_Field_Number();
+    $ending_time_buffer_field->label = "Competition Conclusion Length";
+    $ending_time_buffer_field->id = $field_mappings['competition_end_time_buffer'];
+    $ending_time_buffer_field->isRequired = false;
+    $ending_time_buffer_field->description = 'Enter the amount of time required';
+    $ending_time_buffer_field->description .= ' for the competition conclusion';
+    $ending_time_buffer_field->description .= ' (award certificates, closing, ';
+    $ending_time_buffer_field->description .= ' remarks, etc.).';
+    $ending_time_buffer_field->descriptionPlacement = 'above';
+
+    // amount of time per lunch break
+    $lunch_break_field = new GF_Field_Number();
+    $lunch_break_field->label = "Amount of Time for Lunch (minutes)";
+    $lunch_break_field->id = $field_mappings['competition_lunch_break'];
+    $lunch_break_field->isRequired = false;
+
+    // number of judges per sections
+    $num_judges_per_section_field = new GF_Field_Number();
+    $num_judges_per_section_field->label = "Number of Judges per Section";
+    $num_judges_per_section_field->id = $field_mappings['competition_num_judges_per_section'];
+    $num_judges_per_section_field->isRequired = false;
+
+    // number of students per section per level (needed for lower level where
+    // times aren't provided during registration)
+      // not sure how to handle this at the moment
+
+    // number of command performances
+    $num_command_performance_field = new GF_Field_Number();
+    $num_command_performance_field->label = "Number of Command Performance Performances";
+    $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
+    $num_command_performance_field->isRequired = false;
+
+    // date of command performance
+    $command_perf_date_field = new GF_Field_Date();
+    $command_perf_date_field->label = "Command Performance Date";
+    $command_perf_date_field->id = $field_mappings['competition_command_performance_date'];
+    $command_perf_date_field->isRequired = false;
+    $command_perf_date_field->calendarIconType = 'calendar';
+    $command_perf_date_field->dateType = 'datepicker';
+
+    // time of command performance
+    $command_performance_time_field = new GF_Field_Time();
+    $command_performance_time_field->label = "Command Performance Start Time";
+    $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
+    $command_performance_time_field->isRequired = false;
+
+    // theory score required for special recognition
+    $theory_score_field = new GF_Field_Number();
+    $theory_score_field->label = "Theory Score for Recognition (0-100)";
+    $theory_score_field->id = $field_mappings['competition_theory_score'];
+    $theory_score_field->isRequired = false;
 
     // assign all of the previous attributes to our newly created form
-    $competition_creation_form->fields[] = $competition_name_field;
-    $competition_creation_form->fields[] = $competition_date_field;
-    $competition_creation_form->fields[] = $competition_location_field;
-    $competition_creation_form->fields[] = $student_registration_start_date_field;
-    $competition_creation_form->fields[] = $student_registration_end_date_field;
-    $competition_creation_form->fields[] = $teacher_registration_start_date_field;
-    $competition_creation_form->fields[] = $teacher_registration_end_date_field;
-    $competition_creation_form->fields[] = $teacher_volunteer_times_field;
-    $competition_creation_form->fields[] = $teacher_csv_file_upload;
+    $form->fields[] = $name_field;
+    $form->fields[] = $start_date_field;
+    $form->fields[] = $end_date_field;
+    $form->fields[] = $location_field;
+    $form->fields[] = $student_registration_start_date_field;
+    $form->fields[] = $student_registration_end_date_field;
+    $form->fields[] = $teacher_registration_start_date_field;
+    $form->fields[] = $teacher_registration_end_date_field;
+    $form->fields[] = $teacher_volunteer_times_field;
+    $form->fields[] = $teacher_csv_file_upload_field;
+    $form->fields[] = $num_traditional_sections_field;
+    $form->fields[] = $num_master_sections_field;
+    $form->fields[] = $beginning_time_buffer_field;
+    $form->fields[] = $ending_time_buffer_field;
+    $form->fields[] = $lunch_break_field;
+    $form->fields[] = $num_judges_per_section_field;
+    $form->fields[] = $num_command_performance_field;
+    $form->fields[] = $command_perf_date_field;
+    $form->fields[] = $command_performance_time_field;
+    $form->fields[] = $theory_score_field;
 
-    // Identify form as a teacher uploading form
-    $form_array = $competition_creation_form->createFormArray();
+    // identify form as necessary
+    $form_array = $form->createFormArray();
     $form_array['isTeacherUploadForm'] = true;
 
-    // Add form to dashboard
+    // add form to dashboard
     $new_form_id = GFAPI::add_form($form_array);
     if (is_wp_error($new_form_id)) {
       wp_die($new_form_id->get_error_message());
