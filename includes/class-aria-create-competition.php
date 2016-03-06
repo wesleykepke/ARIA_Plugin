@@ -80,11 +80,8 @@ class ARIA_Create_Competition {
     $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name);
 
     // upload content of the teacher csv file into the teacher master form
-/*
-needs testing!
-*/
-    //$teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
-    //ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
+    $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
+    ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // associate all of the related forms
     $related_forms = array(
