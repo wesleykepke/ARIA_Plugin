@@ -178,10 +178,12 @@ class ARIA_Teacher {
     $field_mappings = ARIA_API::aria_master_teacher_field_id_array();
 
     // read teacher data from file, line by line
-    $all_teachers = array();
+    $all_teachers_master = array(); // used to populate teacher-master form
+    $all_teachers_form_dropdown = array(); // used to populate teacher dropdown menu
     if (($file_ptr = fopen($csv_file_path, "r")) !== FALSE) {
       while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
         $single_teacher = array();
+        $first_and_last_names = array();
 
         // assign attributes to teacher from the csv file
         $single_teacher[strval($field_mappings['first_name'])] = $single_teacher_data[0];
@@ -191,13 +193,19 @@ class ARIA_Teacher {
         $single_teacher[strval($field_mappings['teacher_hash'])] =
           hash("md5", ($single_teacher_data[0] . ' ' . $single_teacher_data[1]));
 
+        // find the first and last names for the teacher dropdown
+        $first_and_last_names[0] = $single_teacher_data[0];
+        $first_and_last_names[1] = $single_teacher_data[1];
+
         // add single teacher attributes into a cumulative list of teachers
-        $all_teachers[] = $single_teacher;
+        $all_teachers_master[] = $single_teacher;
+        $all_teachers_form_dropdown[] = $first_and_last_names;
         unset($single_teacher);
+        unset($first_and_last_names);
       }
 
       // add cumulative list of teachers to the corresponding teacher-master form
-      $result = GFAPI::add_entries($all_teachers, $teacher_master_form_id);
+      $result = GFAPI::add_entries($all_teachers_master, $teacher_master_form_id);
       if (is_wp_error($result)) {
         wp_die($result->get_error_message());
       }
@@ -205,6 +213,7 @@ class ARIA_Teacher {
 
     // remove the uploaded file from the current WP directory
     unlink($csv_file_path);
+    return $all_teachers_form_dropdown;
   }
   /**
    * TODO? Implement code to upload a single teacher with a seperate form?
