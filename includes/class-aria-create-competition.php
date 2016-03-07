@@ -69,19 +69,19 @@ class ARIA_Create_Competition {
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
 
-    // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry);
-    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
-    $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
-    $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
-
-    // create the sutdent and teacher (master) forms
+    // create the student and teacher (master) forms
     $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name);
     $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name);
 
     // upload content of the teacher csv file into the teacher master form
     $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
-    ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
+    $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
+
+    // create the student and teacher forms
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names);
+    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+    $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
+    $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
     // associate all of the related forms
     $related_forms = array(
@@ -885,12 +885,13 @@ class ARIA_Create_Competition {
    * fields that are necessary for students to enter data about their upcoming
    * music competition.
    *
-   * @param Entry  $competition_entry The entry of the newly created music competition
+   * @param $competition_entry Entry Object The entry of the newly created music competition
+   * @param $teacher_names Array The array of teacher names in this competition
    *
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_create_student_form( $competition_entry ) {
+  private static function aria_create_student_form($competition_entry, $teacher_names) {
     $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     $competition_name = $competition_entry[$field_mapping['competition_name']];
@@ -940,10 +941,29 @@ class ARIA_Create_Competition {
     $piano_teachers_field->id = $field_id_array['teacher_name'];
     $piano_teachers_field->isRequired = true;
     $piano_teachers_field->description = "TBD";
+
+    // add all of the piano teachers that are competing in this competition
+    $formatted_teacher_names = array();
+    foreach ($teacher_names as $key => $value) {
+      $single_teacher = array(
+        'text' => $value[0] . ' ' . $value[1],
+        'value' => $value[0] . ' ' . $value[1],
+        'isSelected' => false
+      );
+      $formatted_teacher_names[] = $single_teacher;
+      unset($single_teacher);
+    }
+
+    $piano_teachers_field->choices = $formatted_teacher_names;
+
+/*
     $piano_teachers_field->choices = array(
       array('text' => 'Test 1', 'value' => 'Tim', 'isSelected' => false),
       array('text' => 'Test 2', 'value' => 'Jim', 'isSelected' => false)
     );
+*/
+
+
     $student_form->fields[] = $piano_teachers_field;
 
     // student's piano teacher does not exist
