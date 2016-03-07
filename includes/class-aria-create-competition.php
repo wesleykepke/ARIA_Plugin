@@ -892,11 +892,10 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   private static function aria_create_student_form($competition_entry, $teacher_names) {
-    $field_mapping = ARIA_API::aria_competition_field_id_array();
-
-    $competition_name = $competition_entry[$field_mapping['competition_name']];
-    $student_form = new GF_Form("{$competition_name} Student Registration", "");
+    $create_comp_field_mapping = ARIA_API::aria_competition_field_id_array();
     $field_id_array = ARIA_API::aria_student_field_id_array();
+    $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
+    $student_form = new GF_Form("{$competition_name} Student Registration", "");
 
     // parent name
     $parent_name_field = new GF_Field_Name();
@@ -940,7 +939,9 @@ class ARIA_Create_Competition {
     $piano_teachers_field->label = "Piano Teacher's Name";
     $piano_teachers_field->id = $field_id_array['teacher_name'];
     $piano_teachers_field->isRequired = true;
-    $piano_teachers_field->description = "TBD";
+    $piano_teachers_field->description = "Please select your teachers name";
+    $piano_teachers_field->description .= " from the drop-down below.";
+    $piano_teachers_field->descriptionPlacement = 'above';
 
     // add all of the piano teachers that are competing in this competition
     $formatted_teacher_names = array();
@@ -955,15 +956,6 @@ class ARIA_Create_Competition {
     }
 
     $piano_teachers_field->choices = $formatted_teacher_names;
-
-/*
-    $piano_teachers_field->choices = array(
-      array('text' => 'Test 1', 'value' => 'Tim', 'isSelected' => false),
-      array('text' => 'Test 2', 'value' => 'Jim', 'isSelected' => false)
-    );
-*/
-
-
     $student_form->fields[] = $piano_teachers_field;
 
     // student's piano teacher does not exist
@@ -981,6 +973,7 @@ class ARIA_Create_Competition {
     $available_times->isRequired = false;
     $available_times->description = "There is no guarantee that scheduling ".
     "requests will be honored.";
+    $available_times->descriptionPlacement = 'above';
     $available_times->choices = array(
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
       array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
@@ -996,6 +989,7 @@ class ARIA_Create_Competition {
     $command_times->isRequired = false;
     $command_times->description = "Please check the Command Performance time ".
     "that you prefer in the event that your child receives a superior rating.";
+    $command_times->descriptionPlacement = 'above';
     $command_times->choices = array(
       array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
       array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
@@ -1003,6 +997,19 @@ class ARIA_Create_Competition {
     $command_times->inputs = array();
     $command_times = self::aria_add_checkbox_input( $command_times, array('Thursday 5:30', 'Thursday 7:30') );
     $student_form->fields[] = $command_times;
+
+    // student's festival level
+    $festival_level = new GF_Field_Number();
+    $festival_level->label = "Student Festival Level (1-11)";
+    $festival_level->id = $field_id_array['student_festival_level'];
+    $festival_level->isRequired = false;
+    $festival_level->description = "Please enter your student's festival level.";
+    $festival_level->description .= " If you do not know this value, please do";
+    $festival_level->description .= " not submit this form until your child";
+    $festival_level->description .= " contacts his/her instructor and can verify";
+    $festival_level->description .= " this value.";
+    $festival_level->descriptionPlacement = 'above';
+    $student_form->fields[] = $festival_level;
 
     // the compliance field for parents
     $compliance_field = new GF_Field_checkbox();
