@@ -60,11 +60,11 @@ class ARIA_Form_Hooks {
     $related_forms = $form['aria_relations'];
 
     // Find out the information associated with the $entry variable
-    $student_fields = ARIA_Create_Competition::aria_student_field_id_array();
+    $student_fields = ARIA_API::aria_student_field_id_array();
 
     /* teacher master has not been fully checked because form doesn't look complete? */
-    $teacher_master_fields = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
-    $student_master_fields = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
+    $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
+    $student_master_fields = ARIA_API::aria_master_student_field_id_array();
 
     // Hash for teacher (just has the teacher name)
     if (!empty($entry[$student_fields['not_listed_teacher_name']])) {
@@ -75,6 +75,8 @@ class ARIA_Form_Hooks {
       $teacher_name = $entry[(string)$student_fields["teacher_name"]];
     }
     $teacher_hash = hash("md5", $teacher_name);
+
+wp_die('$teacher_hash: ' . $teacher_hash); 
 
     // Hash for student (student name and entry date)
     $student_name_and_entry =
