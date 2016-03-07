@@ -66,6 +66,12 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_teacher_and_student_forms($confirmation, $form, $entry, $ajax) {
+    // Only perform processing if it's the create competition form
+    if (!array_key_exists('isCompetitionCreationForm', $form)
+        || !$form['isCompetitionCreationForm']) {
+          return;
+    }
+
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
 
