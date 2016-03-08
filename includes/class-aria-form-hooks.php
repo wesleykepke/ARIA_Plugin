@@ -70,21 +70,24 @@ class ARIA_Form_Hooks {
     if (!empty($entry[$student_fields['not_listed_teacher_name']])) {
       // student entered a name that didn't appear in the drop-down menu
       $teacher_name = $entry[$student_fields['not_listed_teacher_name']];
+//wp_die('not listed: ' . $teacher_name);
     }
     else {
       $teacher_name = $entry[(string)$student_fields["teacher_name"]];
     }
     $teacher_hash = hash("md5", $teacher_name);
 
-wp_die('$teacher_hash: ' . $teacher_hash); 
+//wp_die('$teacher_hash: ' . $teacher_hash);
 
     // Hash for student (student name and entry date)
     $student_name_and_entry =
         $entry[(string)$student_fields["student_first_name"]];
-    $student_name_and_entry .=
+    $student_name_and_entry .= ' ' .
         $entry[(string)$student_fields["student_last_name"]];
-    $student_name_and_entry .= $entry["date_created"];
+    $student_name_and_entry .= ' ' . $entry["date_created"];
+//wp_die('student name: ' . $student_name_and_entry);
     $student_hash = hash("md5", $student_name_and_entry);
+//wp_die('student hash: ' . $student_hash);
 
     // Search through the teacher master form to see if the teacher has an entry made
     $teacher_entry =
@@ -92,6 +95,8 @@ wp_die('$teacher_hash: ' . $teacher_hash);
         $teacher_hash);
 
     if ($teacher_entry) {
+      //wp_die('should be here');
+
       // Determine whether a student has been added or not (if it's an array)
       $students = $teacher_entry[strval($teacher_master_fields["students"])];
       $students = unserialize($students);
@@ -103,6 +108,8 @@ wp_die('$teacher_hash: ' . $teacher_hash);
       // Add the newly registered student to the teacher's list of student hashes
       $students[] = $student_hash;
       $teacher_entry[strval($teacher_master_fields["students"])] = serialize($students);
+
+//wp_die('teacher entry: ' . print_r($teacher_entry));
 
       // Update the teacher entry with the new student edition
       $result = GFAPI::update_entry($teacher_entry);
@@ -123,7 +130,7 @@ wp_die('$teacher_hash: ' . $teacher_hash);
         strval($teacher_master_fields["volunteer_preference"]) => null,
         strval($teacher_master_fields["volunteer_time"]) => null,
         strval($teacher_master_fields["is_judging"]) => null,
-        strval($teacher_master_fields["hash"]) => $teacher_hash
+        strval($teacher_master_fields["teacher_hash"]) => $teacher_hash
       );
 
       $result = GFAPI::add_entries($new_teacher_entry, $related_forms['teacher_master_form_id']);
@@ -132,7 +139,7 @@ wp_die('$teacher_hash: ' . $teacher_hash);
       }
     }
 
-    // Make a new student master entry with the  student hash
+    // Make a new student master entry with the student hash
     $new_student_master_entry = array();
     $new_student_master_entry[] = array(
       strval($student_master_fields["parent_name"]) => null,
@@ -164,12 +171,13 @@ wp_die('$teacher_hash: ' . $teacher_hash);
       strval($student_master_fields["hash"]) => $student_hash
     );
 
-
-
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);
     if (is_wp_error($student_result)) {
       wp_die(__LINE__.$student_result->get_error_message());
     }
+
+    ARIA_Registration_Handler::aria_send_registration_emails($teacher_hash,
+      $teacher_entry[strval($teacher_master_fields["phone"])], $student_hash); 
   }
 
   public static function aria_before_teacher_render($form, $is_ajax) {
