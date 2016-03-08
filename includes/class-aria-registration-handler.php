@@ -139,7 +139,7 @@ class ARIA_Registration_Handler {
    * @author KREW
 	 */
   public static function aria_find_student_entry($student_master_form_id, $student_hash) {
-    $hash_field_id = ARIA_Create_Master_Forms::aria_master_student_field_id_array()['hash'];
+    $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
 
     // check to see if any of the entries in the student master have $student_hash
     $search_criteria = array(
@@ -232,7 +232,7 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on teacher-master.
 	 */
 	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
-		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['hash'];
+		 $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['hash'];
 
 		 $search_criteria = array(
        'field_filters' => array(
@@ -250,7 +250,7 @@ class ARIA_Registration_Handler {
  			wp_die($entries->get_error_message());
  		}
 
-		$field_ids = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
+		$field_ids = ARIA_API::aria_master_teacher_field_id_array();
 
 		return array(
 			'name' => rgar( $entries[0], (string) $field_ids['name'] ),
@@ -269,7 +269,7 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on student-master.
 	 */
 	 public static function aria_get_student_pre_populate($related_forms, $student_hash) {
-		 $hash_field_id = ARIA_Create_Master_Forms::aria_master_student_field_id_array()['hash'];
+		 $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
 
 		 $search_criteria = array(
        'field_filters' => array(
@@ -287,7 +287,7 @@ class ARIA_Registration_Handler {
  			wp_die($entries->get_error_message());
  		}
 
-		$field_ids = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
+		$field_ids = ARIA_API::aria_master_student_field_id_array();
 
 		return array(
 			'parent_name' => rgar( $entries[0], (string) $field_ids['parent_name']),
