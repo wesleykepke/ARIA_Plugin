@@ -13,7 +13,7 @@
  * @subpackage ARIA/includes
  */
 
-require_once("class-aria-api.php");
+//require_once("class-aria-api.php");
 
 /**
  * The create competition class.

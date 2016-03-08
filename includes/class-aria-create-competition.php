@@ -13,7 +13,7 @@
  * @subpackage ARIA/includes
  */
 
-require_once("class-aria-api.php");
+//require_once("class-aria-api.php");
 require_once("class-aria-create-master-forms.php");
 require_once("aria-constants.php");
 require_once("class-aria-teacher-upload.php");
