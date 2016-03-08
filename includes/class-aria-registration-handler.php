@@ -232,7 +232,7 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on teacher-master.
 	 */
 	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
-		 $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['hash'];
+		 $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
 
 		 $search_criteria = array(
        'field_filters' => array(
@@ -260,7 +260,7 @@ class ARIA_Registration_Handler {
 			'volunteer_time' => rgar( $entries[0], (string) $field_ids['volunteer_time'] ),
 			'students' => rgar( $entries[0], (string) $field_ids['students'] ),
 			'is_judging' => rgar( $entries[0], (string) $field_ids['is_judging'] ),
-			'hash' => rgar( $entries[0], (string) $field_ids['hash'])
+			'teacher_hash' => rgar( $entries[0], (string) $field_ids['teacher_hash'])
 
 		);
 	 }
