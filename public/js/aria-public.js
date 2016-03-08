@@ -393,7 +393,7 @@ jQuery(document).ready(function($) {
 	            async: false,
 
 	            success: function(result) {
-					alert(stringify(result));
+					alert(JSON.stringify(result));
 	            }
 	        }).then( function(){
 	        	returnedValue = test;
