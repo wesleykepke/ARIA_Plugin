@@ -50,7 +50,7 @@ class ARIA_Registration_Handler {
 
     $message = "Congratulations. One of your students has registered for an NNMTA";
     $message .= " music competition. Please click on the following link to finish";
-    $message .= " registering your student: " . $teacher_link;
+    $message .= " registering your student: " . $teacher_url;
 
     $subject = "NNMTA Music Competition - Registration";
 
