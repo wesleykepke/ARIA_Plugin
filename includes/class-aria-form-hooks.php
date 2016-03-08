@@ -177,7 +177,8 @@ class ARIA_Form_Hooks {
     }
 
     ARIA_Registration_Handler::aria_send_registration_emails($teacher_hash,
-      $teacher_entry[strval($teacher_master_fields["phone"])], $student_hash); 
+      $related_forms['teacher_public_form_url'],
+      $teacher_entry[strval($teacher_master_fields["phone"])], $student_hash);
   }
 
   public static function aria_before_teacher_render($form, $is_ajax) {
