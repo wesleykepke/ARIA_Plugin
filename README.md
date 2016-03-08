@@ -1,6 +1,7 @@
 # ARIA
 
-<img src="https://s.w.org/about/images/logos/wordpress-logo-stacked-rgb.png">
+<img src="https://s.w.org/about/images/logos/wordpress-logo-stacked-rgb.png" style="width:300px; height:230px;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/2000px-PHP-logo.svg.png" style="width:300px; height:230px;">
 
 The Northern Nevada Music Teachers Association (NNMTA) is an organization comprised of students and teachers who share a common interest in music. The NNMTA provides opportunities for aspiring musicians and music aficionados by holding competitions, festivals, networking events, and other music-related functions. Despite the diverse array of events held by the NNMTA, music competitions are their most prominent affair (with enrollment/participation growing).  
 
