@@ -31,7 +31,7 @@ class ARIA_Registration_Handler {
 	/**
 	 * Function for sending emails.
 	 */
-  public static function aria_send_registration_emails($teacher_hash, $teacher_email, $student_hash) {
+  public static function aria_send_registration_emails($teacher_hash, $teacher_url, $teacher_email, $student_hash) {
     // this is going to need to iterate through a given teachers array
     // of students and generate a url that has that specific teacher's hash
     // and a hash for each of the students involved in the competition
@@ -40,10 +40,13 @@ class ARIA_Registration_Handler {
     // note the & in between the two hash values
 
     // or, this function can be called everytime a student submits their data:
+/*
     $teacher_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $teacher_link .= "?teacher_hash=" . $teacher_hash;
-//wp_die('email: ' . $teacher_email);
     $teacher_link .= "&student_hash=" . $student_hash;
+*/
+    $teacher_url .= "?teacher_hash=" . $teacher_hash;
+    $teacher_url .= "&student_hash=" . $student_hash;
 
     $message = "Congratulations. One of your students has registered for an NNMTA";
     $message .= " music competition. Please click on the following link to finish";
@@ -52,7 +55,7 @@ class ARIA_Registration_Handler {
     $subject = "NNMTA Music Competition - Registration";
 
     if (!wp_mail((string)$teacher_email, $subject, $message)) {
-      wp_die('???');
+      wp_die('Teacher registration email failed to send.');
     }
 
   }
