@@ -14,7 +14,8 @@ jQuery(document).ready(function($) {
 	//local
 
 	var form_name = $('.gform_title').text();
-
+	get_test();
+/*
 	if( form_name.indexOf( "Teacher Registration" ) != -1 ){
 
 
@@ -160,7 +161,7 @@ jQuery(document).ready(function($) {
 	else{
 		//alert ("not teacher form");
 	}
-
+*/
 
 	// Calculate sig
 	function CalculateSig(stringToSign, privateKey){
@@ -366,5 +367,38 @@ jQuery(document).ready(function($) {
 			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 	}
 
+	// Get test
+	function get_test( ){
 
+        var d = new Date,
+	    expiration = 3600,
+        unixtime = parseInt( d.getTime() / 1000 ),
+	    future_unixtime = expiration + unixtime,
+        method = "GET",
+	    route = "forms/442";
+        stringToSign = public_key + ":" + method + ":" + route + ":" + future_unixtime;
+
+        sig = CalculateSig( stringToSign, private_key );
+        url = host + "/gravityformsapi/" + route;
+		url += "/?api_key=" + public_key;
+		url += "&signature=" + sig + "&expires=" + future_unixtime;
+
+		//NOTE: key in search is just field ID not formID.fieldID
+		// search for entry[levelID] == level
+		var returnedValue;
+		var test;
+		$.ajax({
+	            type: "GET",
+	            url: url,
+	            async: false,
+
+	            success: function(result) {
+					alert(stringify(result));
+	            }
+	        }).then( function(){
+	        	returnedValue = test;
+	        	//alert( test );
+	        });
+		return returnedValue;
+	}// end of get music form id function
 });
