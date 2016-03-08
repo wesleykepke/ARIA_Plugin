@@ -210,7 +210,7 @@ class ARIA_Registration_Handler {
 	 */
    public static function aria_check_student_teacher_relationship($related_forms, $student_hash, $teacher_hash) {
      // Get field ids
-		 $students_field_id = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array()['students'];
+		 $students_field_id = ARIA_API::aria_master_teacher_field_id_array()['students'];
 
      // Get the teacher entry
      $teacher_entry = self::aria_find_teacher_entry($related_forms['teacher_master_form_id'], $teacher_hash);
