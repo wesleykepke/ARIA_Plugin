@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
 	//local
 
 	var form_name = $('.gform_title').text();
-	get_test();
+//	get_test();
 /*
 	if( form_name.indexOf( "Teacher Registration" ) != -1 ){
 
