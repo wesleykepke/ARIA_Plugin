@@ -343,7 +343,7 @@ class ARIA_API {
       'preferred_command_performance' => 8,
       'preferred_command_performance_earlier' => 8.1,
       'preferred_command_performance_later' => 8.2,
-      'student_festival_level' => 9,
+      'student_level' => 9,
       'compliance_statement' => 10,
       'compliance_statement_agreement' => 10.1
     );
@@ -399,7 +399,8 @@ class ARIA_API {
 	    'alternate_theory' => 16,
 	    'competition_format' => 17,
 	    'timing_of_pieces' => 18,
-      'hash' => 19
+      'hash' => 19,
+      'student_level' => 20
 	  );
 	}
 
