@@ -853,7 +853,7 @@ class ARIA_Create_Competition {
     $student_theory_score->rangeMin = 0;
     $student_theory_score->rangeMax = 100;
     $teacher_form->fields[] = $student_theory_score;
-    $ariaFieldIds['theory_score'] = $student_theory_score_field->id;
+    $ariaFieldIds['theory_score'] = $student_theory_score->id;
 
     // student's alternate theory
     $alternate_theory_field = new GF_Field_Checkbox();
@@ -1056,18 +1056,34 @@ class ARIA_Create_Competition {
     }
 
     // student's festival level
-    $festival_level = new GF_Field_Number();
-    $festival_level->label = "Student Festival Level (1-11)";
-    $festival_level->id = $field_id_array['student_festival_level'];
-    $festival_level->isRequired = false;
-    $festival_level->description = "Please enter your student's festival level.";
-    $festival_level->description .= " If you do not know this value, please do";
-    $festival_level->description .= " not submit this form until your child";
-    $festival_level->description .= " contacts his/her instructor and can verify";
-    $festival_level->description .= " this value.";
-    $festival_level->descriptionPlacement = 'above';
-    $student_form->fields[] = $festival_level;
-    $ariaFieldIds['student_festival_level'] = $festival_level->id;
+        // !!!student level
+    $student_level_field = new GF_Field_Select();
+    $student_level_field->label = "Student Level";
+    $student_level_field->id = $field_id_array['student_level'];
+    $student_level_field->isRequired = false;
+    // !!! replace
+    $student_level_field->choices = array(
+
+      array('text' => '1', 'value' => '1', 'isSelected' => false),
+      array('text' => '2', 'value' => '2', 'isSelected' => false),
+      array('text' => '3', 'value' => '3', 'isSelected' => false),
+      array('text' => '4', 'value' => '4', 'isSelected' => false),
+      array('text' => '5', 'value' => '5', 'isSelected' => false),
+      array('text' => '6', 'value' => '6', 'isSelected' => false),
+      array('text' => '7', 'value' => '7', 'isSelected' => false),
+      array('text' => '8', 'value' => '8', 'isSelected' => false),
+      array('text' => '9', 'value' => '9', 'isSelected' => false),
+      array('text' => '10', 'value' => '10', 'isSelected' => false),
+      array('text' => '11', 'value' => '11', 'isSelected' => false)
+    );
+    $student_level_field->description = "Please enter your student's festival level.";
+    $student_level_field->description .= " If you do not know this value, please do";
+    $student_level_field->description .= " not submit this form until your child";
+    $student_level_field->description .= " contacts his/her instructor and can verify";
+    $student_level_field->description .= " this value.";
+    $student_level_field->descriptionPlacement = 'above';
+    $student_form->fields[] = $student_level_field;
+    $ariaFieldIds['student_level'] = $student_level_field->id;
 
     // the compliance field for parents
     $compliance_field = new GF_Field_checkbox();

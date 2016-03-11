@@ -251,9 +251,15 @@ class ARIA_Registration_Handler {
  		}
 
 		$field_ids = ARIA_API::aria_master_teacher_field_id_array();
+		
+/*	!!!	foreach($field_ids as $field => $id){
+			wp_die(print_r((string)$field));
+		}*/
+		//wp_die(print_r($field_ids));
 
 		return array(
-			'name' => rgar( $entries[0], (string) $field_ids['name'] ),
+			'first_name' => rgar( $entries[0], (string) $field_ids['first_name'] ),
+			'last_name' => rgar( $entries[0], (string) $field_ids['last_name'] ),
 			'email' => rgar( $entries[0], (string) $field_ids['email'] ),
 			'phone' => rgar( $entries[0], (string) $field_ids['phone'] ),
 			'volunteer_preference' => rgar( $entries[0], (string) $field_ids['volunteer_preference'] ),
@@ -292,7 +298,9 @@ class ARIA_Registration_Handler {
 		return array(
 			'parent_name' => rgar( $entries[0], (string) $field_ids['parent_name']),
 	    'parent_email' => rgar( $entries[0], (string) $field_ids['parent_email']),
-	    'student_name' => rgar( $entries[0], (string) $field_ids['student_name']),
+	    'student_first_name' => rgar( $entries[0], (string) $field_ids['student_first_name']),
+	    'student_last_name' => rgar( $entries[0], (string) $field_ids['student_last_name']),
+	    'student_level' => rgar( $entries[0], (string) $field_ids['student_level']),
 	    'student_birthday' => rgar( $entries[0], (string) $field_ids['student_birthday']),
 	    'teacher_name' => rgar( $entries[0], (string) $field_ids['teacher_name']),
 	    'not_listed_teacher_name' => rgar( $entries[0], (string) $field_ids['not_listed_teacher_name']),

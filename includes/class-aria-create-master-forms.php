@@ -90,6 +90,26 @@ class ARIA_Create_Master_Forms {
     $teacher_missing_field->isRequired = false;
     $student_master_form->fields[] = $teacher_missing_field;
 
+    // student's level
+    $student_level_field = new GF_Field_Select();
+    $student_level_field->label = "Student Level";
+    $student_level_field->id = $field_id_array['student_level'];
+    $student_level_field->isRequired = false;
+    $student_level_field->choices = array(
+      array('text' => '1', 'value' => '1', 'isSelected' => false),
+      array('text' => '2', 'value' => '2', 'isSelected' => false),
+      array('text' => '3', 'value' => '3', 'isSelected' => false),
+      array('text' => '4', 'value' => '4', 'isSelected' => false),
+      array('text' => '5', 'value' => '5', 'isSelected' => false),
+      array('text' => '6', 'value' => '6', 'isSelected' => false),
+      array('text' => '7', 'value' => '7', 'isSelected' => false),
+      array('text' => '8', 'value' => '8', 'isSelected' => false),
+      array('text' => '9', 'value' => '9', 'isSelected' => false),
+      array('text' => '10', 'value' => '10', 'isSelected' => false),
+      array('text' => '11', 'value' => '11', 'isSelected' => false)
+    );
+    $student_master_form->fields[] = $student_level_field;
+
     // student's available times to compete
     $available_times = new GF_Field_Checkbox();
     $available_times->label = "Available Festival Days (check all available times)";

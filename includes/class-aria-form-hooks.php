@@ -149,6 +149,7 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_name"]) => null,
       strval($student_master_fields["student_first_name"]) => $entry[strval($student_fields["student_first_name"])],
       strval($student_master_fields["student_last_name"]) => $entry[strval($student_fields["student_last_name"])],
+      strval($student_master_fields["student_level"]) => $entry[strval($student_fields["student_level"])],
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
       strval($student_master_fields["not_listed_teacher_name"]) => $entry[strval($student_fields["not_listed_teacher_name"])],
@@ -211,7 +212,7 @@ class ARIA_Form_Hooks {
     // Do form prepopulation
     $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($related_forms, $teacher_hash);
     $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($related_forms, $student_hash);
-
+//wp_die(print_r($teacher_prepopulation_values) + print_r($student_prepopulation_values));
     return $form;
   }
 
@@ -297,10 +298,10 @@ class ARIA_Form_Hooks {
     $student_master_entry[strval($student_master_field_ids['student_last_name'])] =
       $entry[strval($teacher_public_field_ids['student_last_name'])];
 
-    /* level not currently in student master ?
-    $student_master_entry[strval($student_master_field_ids['student_first_name'])] =
-      $entry[strval($teacher_public_field_ids['student_first_name'])];
-    */
+    /* level not currently in student master ? */
+    $student_master_entry[strval($student_master_field_ids['student_level'])] =
+      $entry[strval($teacher_public_field_ids['student_level'])];
+    
 
     $student_master_entry[strval($student_master_field_ids['song_1_period'])] =
       $entry[strval($teacher_public_field_ids['song_1_period'])];
