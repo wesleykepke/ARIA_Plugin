@@ -10,6 +10,8 @@
  * @subpackage ARIA/admin
  */
 
+require_once("../../includes/aria-constants.php");
+
 /**
  * The student object used for scheduling.
  *
@@ -53,16 +55,38 @@ class Student {
   private $songs;
 
   /**
+   * The type of section the student will be competing in (traditional,
+   * master-class, non-competitive, or command performance).
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$type 	The type of section the student registered as.
+   */
+  private $type;
+
+  /**
+   * The day preference that the student requested.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$day_preference 	The day that the student would like to compete.
+   */
+  private $day_preference;
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
    * @param	string	$first_name 	The first name of the student.
    * @param	string 	$last_name 	The last name of the student.
+   * @param	int 	$type 	The type of section the student registered as.
    */
-  function __construct($first_name, $last_name) {
+  function __construct($first_name, $last_name, $type, $day_preference) {
     $this->first_name = $first_name;
     $this->last_name = $last_name;
+    $this->type = $type;
     $this->songs = array();
+    $this->day_preference = $day_preference;
   }
 
   /**
@@ -82,6 +106,27 @@ class Student {
   }
 
   /**
+   * The function will return the type of competition that the student
+   * registered for.
+   *
+   * @since 1.0.0
+   * @return integer Represents type of section that the student registered for.
+   */
+  public function get_type() {
+    return $this->type;
+  }
+
+  /**
+   * The function will return the requested competition day for the student.
+   *
+   * @since 1.0.0
+   * @return integer Represents the student's requested competition day.
+   */
+  public function get_day_preference() {
+    return $this->day_preference;
+  }
+
+  /**
    * The destructor used when a student object is destroyed.
    *
    * @since 1.0.0
@@ -89,6 +134,7 @@ class Student {
   function __destruct() {
     unset($this->first_name);
     unset($this->last_name);
+    unset($this->type);
     unset($this->songs);
   }
 }

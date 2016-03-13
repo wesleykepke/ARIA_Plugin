@@ -31,3 +31,17 @@ const STUDENT_FORM = 1;
 const STUDENT_MASTER = 2;
 const TEACHER_FORM = 3;
 const TEACHER_MASTER = 4;
+
+/**
+ * These constants are used to determine the type of section (traditional,
+ * master-class, non-competitive, or command performance).
+ */
+const SECTION_MASTER = 0;
+const SECTION_TRADITIONAL = 1;
+const SECTION_NON_COMPETITIVE = 2;
+const SECTION_COMMAND_PERFORMANCE = 3;
+
+// Constants used to help schedule the student on a particular day
+const SAT = 0;
+const SUN = 1;
+const COMMAND = 2;
