@@ -10,6 +10,8 @@
  * @subpackage ARIA/admin
  */
 
+require_once("../../includes/aria-constants.php");
+
 /**
  * The section object used for scheduling.
  *
@@ -28,6 +30,11 @@
  * @author     KREW
  */
 class Section {
+
+  /**
+   * The time limit per section.
+   */
+  const SECTION_TIME_LIMIT = 35;
 
   /**
    * The type of section (either traditional, master-class, non-competitive, or
@@ -62,4 +69,89 @@ class Section {
    * @var 	int 	$current_time 	The current time for all songs to be played.
    */
   private $current_time;
+
+  /**
+   * The constructor used to instantiate a new section object.
+   *
+   * @since 1.0.0
+   */
+  function __construct() {
+    $this->type = null;
+    $this->students = array();
+    $this->current_time = 0;
+  }
+
+  /**
+   * The function used to determine if a section is full.
+   *
+   * This function will compare the current playing time with the section time
+   * limit and determine if there is still enough time to add another student.
+   *
+   * @return true if section is full, false otherwise
+   */
+  public function is_full() {
+    return ($this->current_time > self::SECTION_TIME_LIMIT);
+  }
+
+  /**
+   * The function used to determine if a section is empty.
+   *
+   * This function will return true if the current section is empty and false
+   * otherwise.
+   *
+   * @return true if section is empty, false otherwise
+   */
+  public function is_empty() {
+    return (empty($this->students));
+  }
+
+  /**
+   * The function used to determine the type of section.
+   *
+   * @return integer Represents type of section
+   */
+  public function get_type() {
+    return $this->type;
+  }
+
+  /**
+   * The function used to add a student to the current section.
+   *
+   * If the current section matches the type of student competing (traditional,
+   * master-class, non-competitive, or command performance) and the current
+   * section is not full, then the incoming student object passed as a
+   * parameter will be added to the list of students competing in the current
+   * section.
+   *
+   * @param Student 	$student 	The student that is being added to the section.
+   *
+   * @return true if student was added, false otherwise
+   */
+  public function add_student($student) {
+    // Section is full or incoming student's type doesn't match section type
+    if ($this->is_full() || ($this->type !== $student->get_type())) {
+      return false;
+    }
+
+    // Section type not yet determined
+    if (is_null($this->type)) {
+      $this->type = $student->get_type();
+    }
+
+    // Add student to this section
+    $this->students[] = $student;
+    $this->current_time += $student->get_song_duration();
+    return true;
+  }
+
+  /**
+   * The destructor used when a section object is destroyed.
+   *
+   * @since 1.0.0
+   */
+  function __destruct() {
+    unset($this->type);
+    unset($this->students);
+    unset($this->current_time);
+  }
 }

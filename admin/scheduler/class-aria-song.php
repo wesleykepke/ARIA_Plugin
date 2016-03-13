@@ -38,7 +38,7 @@ class Song {
    *
    * @since 1.0.0
    * @access private
-   * @var 	float 	$duration 	The duration of the song.
+   * @var 	int 	$duration 	The duration of the song.
    */
   private $duration;
 
