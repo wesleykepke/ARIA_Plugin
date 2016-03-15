@@ -213,6 +213,40 @@ class ARIA_Form_Hooks {
     $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($related_forms, $teacher_hash);
     $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($related_forms, $student_hash);
 //wp_die(print_r($teacher_prepopulation_values) + print_r($student_prepopulation_values));
+    $teacher_public_fields = ARIA_API::aria_teacher_field_id_array();
+
+
+  // Prepopulate teacher name
+  $search_field = $teacher_public_fields['name'];
+  $name_field = self::aria_find_field_by_id($form['fields'], $search_field);
+  $search_field = $teacher_public_fields['first_name'];
+  $first_name_field = self::aria_find_field_by_id($form['fields'][$name_field]['inputs'], $search_field);
+  $search_field = $teacher_public_fields['last_name'];
+  $last_name_field = self::aria_find_field_by_id($form['fields'][$name_field]['inputs'], $search_field);
+  if($first_name_field == null || $last_name_field == null) {
+    //wp_die("error");
+  }
+  $name = $form['fields'][$name_field]['inputs'];
+  $name[$first_name_field]['defaultValue'] = $teacher_prepopulation_values['first_name'];
+  $name[$last_name_field]['defaultValue'] = $teacher_prepopulation_values['last_name'];
+  $form['fields'][$name_field]['inputs'] = $name;
+
+  // Prepopulate student name
+  $search_field = $teacher_public_fields['student_name'];
+  $student_name_field = self::aria_find_field_by_id($form['fields'], $search_field);
+  $search_field = $teacher_public_fields['student_first_name'];
+  $first_name_field = self::aria_find_field_by_id($form['fields'][$student_name_field]['inputs'], $search_field);
+  $search_field = $teacher_public_fields['student_last_name'];
+  $last_name_field = self::aria_find_field_by_id($form['fields'][$student_name_field]['inputs'], $search_field);
+  // error?
+  $name = $form['fields'][$student_name_field]['inputs'];
+  wp_die($first_name_field);
+  wp_die(print_r($form['fields'][$student_name_field]['inputs']));
+  $name[$first_name_field]['defaultValue'] = $student_prepopulation_values['student_first_name'];
+  $name[$last_name_field]['defaultValue'] = $student_prepopulation_values['student_last_name'];
+  //$form['fields'][$student_name_field]['inputs'] = $name;
+  //wp_die($teacher_prepopulation_values['first_name']);
+  //wp_die(print_r($form['fields'][$field_num])+ print_r($teacher_prepopulation_values));
     return $form;
   }
 
@@ -349,5 +383,28 @@ class ARIA_Form_Hooks {
     $vars[] = "teacher_hash";
     $vars[] = "student_hash";
     return $vars;
+  }
+
+  /**
+   * This function will find the field number with the specified ID.
+   *
+   * The function will search through the given array of fields and
+   * locate the field with the given ID number. The ID of the field
+   * is then returned.
+   * @param $fields   Array   The array of fields to search through
+   * @param $id       Float     The id of the array to search for
+   *
+   * @since 1.0.0
+   * @author KREW
+  */
+  private static function aria_find_field_by_id( $fields, $id ){
+    $field_num = 0;
+    foreach($fields as $key){
+      if($fields[$field_num]['id'] == $id){
+        return $field_num;
+      }
+      $field_num++;
+    }
+    return null;
   }
 }
