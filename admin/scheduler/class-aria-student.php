@@ -127,6 +127,21 @@ class Student {
   }
 
   /**
+   * The function will return the  total amount of time for the student to play
+   * his/her songs.
+   *
+   * @since 1.0.0
+   * @return integer Represents the student's total song time.
+   */
+  public function get_total_play_time() {
+    $total_time = 0;
+    for ($i = 0; $i < count($this->songs); $i++) {
+      $total_time += $this->songs[$i]->get_song_duration();
+    }
+    return $total_time;
+  }
+
+  /**
    * The destructor used when a student object is destroyed.
    *
    * @since 1.0.0

@@ -133,14 +133,14 @@ class Section {
       return false;
     }
 
-    // Section type not yet determined
+    // Section type not yet determined (section is empty)
     if (is_null($this->type)) {
       $this->type = $student->get_type();
     }
 
     // Add student to this section
     $this->students[] = $student;
-    $this->current_time += $student->get_song_duration();
+    $this->current_time += $student->get_total_time_duration();
     return true;
   }
 
