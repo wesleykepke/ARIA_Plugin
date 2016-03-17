@@ -14,9 +14,9 @@
  */
 
 //require_once("class-aria-api.php");
-require_once("class-aria-create-master-forms.php");
-require_once("aria-constants.php");
-require_once("class-aria-teacher-upload.php");
+//require_once("class-aria-create-master-forms.php");
+//require_once("aria-constants.php");
+//require_once("class-aria-teacher-upload.php");
 
 /**
  * The create competition class.
@@ -675,6 +675,7 @@ class ARIA_Create_Competition {
       array('text' => 'Contemporary', 'value' => '4', 'isSelected' => false),
    );
     $song_one_period_field->isRequired = false;
+    $song_one_period_field->placeholder = "Select Period...";
     $teacher_form->fields[] = $song_one_period_field;
     $ariaFieldIds['song_one_period'] = $song_one_period_field->id;
 
@@ -725,6 +726,7 @@ class ARIA_Create_Competition {
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
+    $song_two_period_field->placeholder = "Select Period...";
     $teacher_form->fields[] = $song_two_period_field;
     $ariaFieldIds['song_two_period'] = $song_two_period_field->id;
 

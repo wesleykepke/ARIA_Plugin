@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
 	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";
-
+	//var local_host = "http://192.168.245.140";
 	// aria
 	var host = "http://aria.cse.unr.edu";
 	var public_key = "1ff591984b";
@@ -14,11 +14,11 @@ jQuery(document).ready(function($) {
 	//local
 
 	var form_name = $('.gform_title').text();
-//	get_test();
-/*
+	//get_test();
+
 	if( form_name.indexOf( "Teacher Registration" ) != -1 ){
 
-
+//alert("running");
 	//alert( $('.gform_title').text() );
 	// get teacher  form id from current form
 	var teacher_form = $('.gform_fields').attr('id');
@@ -161,7 +161,7 @@ jQuery(document).ready(function($) {
 	else{
 		//alert ("not teacher form");
 	}
-*/
+
 
 	// Calculate sig
 	function CalculateSig(stringToSign, privateKey){
@@ -393,7 +393,7 @@ jQuery(document).ready(function($) {
 	            async: false,
 
 	            success: function(result) {
-					alert(JSON.stringify(result));
+					document.write(JSON.stringify(result));
 	            }
 	        }).then( function(){
 	        	returnedValue = test;
