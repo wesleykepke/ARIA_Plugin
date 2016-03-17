@@ -321,17 +321,6 @@ class ARIA_Create_Master_Forms {
     $volunteer_preference_field->label = "Volunteer Preference";
     $volunteer_preference_field->id = $field_id_array['volunteer_preference'];
     $volunteer_preference_field->isRequired = false;
-    /*!!! $volunteer_preference_field->choices = array(
-      array('text' => 'Section Proctor', 'value' => 'Section Proctor', 'isSelected' => false),
-      array('text' => 'Posting Results', 'value' => 'Posting Results', 'isSelected' => false),
-      array('text' => 'Information Table', 'value' => 'Information Table', 'isSelected' => false),
-      array('text' => 'Greeting and Assisting with Locating Rooms', 'value' => 'Greeting', 'isSelected' => false),
-      array('text' => 'Hospitality (managing food in judges rooms)', 'value' => 'Hospitality', 'isSelected' => false)
-    );
-    $volunteer_preference_field->description = "Please check 1 time slot if you"
-    ." have 1-3 students competing, 2 time slots if you have 4-6 students"
-    ." competing, and 3 time slots if you have more than 6 students competing.";
-    */
     $volunteer_preference_field->choices = array(
       array('text' => 'Proctor sessions', 'value' => 'Proctor sessions', 'isSelected' => false),
       array('text' => 'Monitor door during sessions', 'value' => 'Monitor door during sessions', 'isSelected' => false),

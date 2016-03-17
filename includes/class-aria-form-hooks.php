@@ -213,7 +213,12 @@ class ARIA_Form_Hooks {
     $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($related_forms, $teacher_hash);
     $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($related_forms, $student_hash);
 //wp_die(print_r($teacher_prepopulation_values) + print_r($student_prepopulation_values));
-    return $form;
+   
+    $prepopulated_form = ARIA_Registration_Handler::aria_prepopulate_form(
+                  $form, $teacher_prepopulation_values, $student_prepopulation_values);
+
+
+    return $prepopulated_form;
   }
 
   /**
@@ -248,9 +253,9 @@ class ARIA_Form_Hooks {
     $teacher_hash = get_query_var("teacher_hash", false);
 
     // Get field id arrays
-    $student_master_field_ids = ARIA_Create_Master_Forms::aria_master_student_field_id_array();
-    $teacher_master_field_ids = ARIA_Create_Master_Forms::aria_master_teacher_field_id_array();
-    $teacher_public_field_ids = ARIA_Create_Competition::aria_teacher_field_id_array();
+    $student_master_field_ids = ARIA_API::aria_master_student_field_id_array();
+    $teacher_master_field_ids = ARIA_API::aria_master_teacher_field_id_array();
+    $teacher_public_field_ids = ARIA_API::aria_teacher_field_id_array();
 
     // Locate the teacher entry in the teacher master.
     $teacher_master_entry =
@@ -271,12 +276,25 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['email'])];
     $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
       $entry[strval($teacher_public_field_ids['phone'])];
-    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] =
+    } 
+   /*
+    $volunteer_pref_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'], 
+        $teacher_public_field_ids['volunteer_preference']);
+    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] = null;
+    for($i=1; $i <= count($form['fields'][$volunteer_pref_field]['choices']); $i++){
+      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i])){
+        //wp_die("founds at {$i}");
+        //print_r($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i]));
+        $teacher_master_entry[strval($teacher_public_field_ids['volunteer_preference'])+$i] = 
+          $entry[strval($teacher_public_field_ids['volunteer_preference'])+$i];
+      }
+ $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] =
       $entry[strval($teacher_public_field_ids['volunteer_preference'])];
+
     $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time'])] =
       $entry[strval($teacher_public_field_ids['volunteer_time'])];
     $teacher_master_entry[strval($teacher_master_field_ids['is_judging'])] =
-	    $entry[strval($teacher_public_field_ids['is_judging'])];
+	    $entry[strval($teacher_public_field_ids['is_judging'])];*/
 
     // Update the teacher master form with the new information
     $result = GFAPI::update_entry($teacher_master_entry);
@@ -350,4 +368,6 @@ class ARIA_Form_Hooks {
     $vars[] = "student_hash";
     return $vars;
   }
+
+
 }

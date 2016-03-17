@@ -320,4 +320,91 @@ class ARIA_Registration_Handler {
 		);
 	}
 
+
+	  /**
+   * This function will prepopulate student and teacher values
+   * @param $form   
+   * @param $teacher_prepop_values
+   * @param $student_prepop_values
+   *
+   * @since 1.0.0
+   * @author KREW
+  */
+	public static function aria_prepopulate_form( $form, $teacher_prepop_vals, $student_prepop_vals){
+
+	  $teacher_public_fields = ARIA_API::aria_teacher_field_id_array();
+
+	  // Prepopulate teacher name
+	  $search_field = $teacher_public_fields['name'];
+	  $name_field = self::aria_find_field_by_id($form['fields'], $search_field);
+	  $search_field = $teacher_public_fields['first_name'];
+	  $first_name_field = self::aria_find_field_by_id($form['fields'][$name_field]['inputs'], $search_field);
+	  $search_field = $teacher_public_fields['last_name'];
+	  $last_name_field = self::aria_find_field_by_id($form['fields'][$name_field]['inputs'], $search_field);
+	  $name = $form['fields'][$name_field]['inputs'];
+	  if($first_name_field != null && ($teacher_prepop_vals['first_name'] != "") ){
+	    $name[$first_name_field]['defaultValue'] = $teacher_prepop_vals['first_name'];
+	  }
+	  if($last_name_field != null && ($teacher_prepop_vals['last_name'] != "")) {
+	    $name[$last_name_field]['defaultValue'] = $teacher_prepop_vals['last_name'];
+	  }
+	  $form['fields'][$name_field]['inputs'] = $name;
+
+    // Prepopulate teacher email
+
+    // Prepopulate teacher phone
+
+    // Prepopulate teacher judge
+
+    // Prepopulate teacher volunteer pref
+
+    // Prepopulate teacher volunteer times
+
+	  // Prepopulate student name
+	  $search_field = $teacher_public_fields['student_name'];
+	  $student_name_field = self::aria_find_field_by_id($form['fields'], $search_field);
+	  $search_field = $teacher_public_fields['student_first_name'];
+	  $first_name_field = self::aria_find_field_by_id($form['fields'][$student_name_field]['inputs'], $search_field);
+	  $search_field = $teacher_public_fields['student_last_name'];
+	  $last_name_field = self::aria_find_field_by_id($form['fields'][$student_name_field]['inputs'], $search_field);
+	  $name = $form['fields'][$student_name_field]['inputs'];
+	  if($first_name_field != null && ($student_prepop_vals['student_first_name'] != "")){
+	    $name[$first_name_field]['defaultValue'] = $student_prepop_vals['student_first_name'];
+	  }
+	  if($last_name_field != null && ($student_prepop_vals['student_last_name'] != "")) {
+	    $name[$last_name_field]['defaultValue'] = $student_prepop_vals['student_last_name'];
+	  }
+	  $form['fields'][$student_name_field]['inputs'] = $name;
+
+	  // Prepopulate student level
+	  $search_field = $teacher_public_fields['student_level'];
+	  $level_field = self::aria_find_field_by_id($form['fields'], $search_field);
+	  $level = $form['fields'][$level_field]['choices'];
+	  $level[$student_prepop_vals['student_level']-1]['isSelected'] = true;
+	  $form['fields'][$level_field]['choices'] = $level;
+	  //wp_die(print_r($student_prepopulation_values));
+	}
+
+	  /**
+   * This function will find the field number with the specified ID.
+   *
+   * The function will search through the given array of fields and
+   * locate the field with the given ID number. The ID of the field
+   * is then returned.
+   * @param $fields   Array   The array of fields to search through
+   * @param $id       Float     The id of the array to search for
+   *
+   * @since 1.0.0
+   * @author KREW
+  */
+  public static function aria_find_field_by_id( $fields, $id ){
+    $field_num = 0;
+    foreach($fields as $key){
+      if($fields[$field_num]['id'] == $id){
+        return $field_num;
+      }
+      $field_num++;
+    }
+    return null;
+  }
 }
