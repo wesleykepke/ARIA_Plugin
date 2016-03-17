@@ -213,7 +213,7 @@ class ARIA_Form_Hooks {
     $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($related_forms, $teacher_hash);
     $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($related_forms, $student_hash);
 //wp_die(print_r($teacher_prepopulation_values) + print_r($student_prepopulation_values));
-   
+
     $prepopulated_form = ARIA_Registration_Handler::aria_prepopulate_form(
                   $form, $teacher_prepopulation_values, $student_prepopulation_values);
 
@@ -276,16 +276,16 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['email'])];
     $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
       $entry[strval($teacher_public_field_ids['phone'])];
-    } 
+
    /*
-    $volunteer_pref_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'], 
+    $volunteer_pref_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
         $teacher_public_field_ids['volunteer_preference']);
     $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] = null;
     for($i=1; $i <= count($form['fields'][$volunteer_pref_field]['choices']); $i++){
       if(isset($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i])){
         //wp_die("founds at {$i}");
         //print_r($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i]));
-        $teacher_master_entry[strval($teacher_public_field_ids['volunteer_preference'])+$i] = 
+        $teacher_master_entry[strval($teacher_public_field_ids['volunteer_preference'])+$i] =
           $entry[strval($teacher_public_field_ids['volunteer_preference'])+$i];
       }
  $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] =
@@ -319,7 +319,7 @@ class ARIA_Form_Hooks {
     /* level not currently in student master ? */
     $student_master_entry[strval($student_master_field_ids['student_level'])] =
       $entry[strval($teacher_public_field_ids['student_level'])];
-    
+
 
     $student_master_entry[strval($student_master_field_ids['song_1_period'])] =
       $entry[strval($teacher_public_field_ids['song_1_period'])];
