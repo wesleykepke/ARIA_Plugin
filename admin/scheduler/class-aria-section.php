@@ -10,7 +10,8 @@
  * @subpackage ARIA/admin
  */
 
-require_once("../../includes/aria-constants.php");
+require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
+require_once(ARIA_ROOT . "/admin/scheduler/class-aria-section.php");
 
 /**
  * The section object used for scheduling.
