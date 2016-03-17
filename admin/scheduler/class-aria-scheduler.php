@@ -93,11 +93,17 @@ class Scheduler {
     $scheduled = false;
     $current_time_block = 0;
     while (!$scheduled && $current_time_block < $this->num_time_blocks_per_day) {
+      //wp_die(print_r($this->days[$student->get_day_preference()][$current_time_block])); 
+
+
       if ($this->days[$student->get_day_preference()][$current_time_block]->schedule_student($student)) {
         $scheduled = true;
       }
       $current_time_block++;
+      //echo 'current time block: ' . $current_time_block; 
     }
+
+    //wp_die('after loop'); 
 
     // Student was unable to be scheduled for their requested date
     if ($current_time_block > $this->num_time_blocks_per_day && !$scheduled) {
@@ -106,6 +112,34 @@ class Scheduler {
     }
 
     return true;
+  }
+
+  /**
+   * This function will print the schedule in a human-readable format.
+   */
+  public function print_schedule() {
+    echo "\n"; 
+    for ($i = 0; $i < $this->num_days; $i++) {
+      switch ($i) {
+        case SAT:
+          echo 'SATURDAY' . "<br>"; 
+        break;
+
+        case SUN:
+          echo 'SUNDAY' . "<br>"; 
+        break; 
+      }
+
+      for ($j = 0; $j < $this->num_time_blocks_per_day; $j++) {
+        echo 'Time Block # ' . $j . "<br>"; 
+        $this->days[$i][$j]->print_schedule(); 
+      }
+
+      echo "<br>"; 
+    }
+
+    echo "<br>"; 
+    wp_die('schedule complete'); 
   }
 
   /**

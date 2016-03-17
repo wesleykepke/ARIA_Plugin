@@ -141,6 +141,45 @@ class Student {
     return $total_time;
   }
 
+  public function get_student_info() {
+    $type = null; 
+    switch ($this->type) {
+      case SECTION_COMMAND_PERFORMANCE:
+        $type = "Command"; 
+      break;
+
+      case SECTION_TRADITIONAL:
+        $type = "Traditional"; 
+      break; 
+
+      case SECTION_NON_COMPETITIVE:
+        $type = "Non-competitive"; 
+      break;
+
+      case SECTION_MASTER:
+        $type = "Master"; 
+      break; 
+    }
+
+    $day = null; 
+    switch ($this->day_preference) {
+      case SAT:
+        $day = "Saturday"; 
+      break;
+
+      case SUN:
+        $day = "Sunday"; 
+      break; 
+    }
+    
+    return array(
+      $this->first_name . ' ' . $this->last_name,
+      $type,
+      $day,
+      $this->songs
+    );
+  }
+
   /**
    * The destructor used when a student object is destroyed.
    *
