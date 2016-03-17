@@ -375,6 +375,7 @@ jQuery(document).ready(function($) {
         unixtime = parseInt( d.getTime() / 1000 ),
 	    future_unixtime = expiration + unixtime,
         method = "GET",
+        // !!! FIX THIS
 	    route = "forms/442";
         stringToSign = public_key + ":" + method + ":" + route + ":" + future_unixtime;
 

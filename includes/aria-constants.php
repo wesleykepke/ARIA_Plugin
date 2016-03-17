@@ -30,6 +30,9 @@ define("STUDENT_MAS", "Student Master");
 define("TEACHER_REG", "Teacher Registration");
 define("TEACHER_MAS", "Teacher Master");
 
+// Default password
+define("CHAIRMAN_PASS", "collectrocks");
+
 // Enumerating constants for competitions
 const STUDENT_FORM = 1;
 const STUDENT_MASTER = 2;

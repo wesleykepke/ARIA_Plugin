@@ -48,7 +48,7 @@ class ARIA_Create_Competition {
     }
 
     // publish the new form
-    ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id);
+    ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS);
   }
 
   /**

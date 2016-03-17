@@ -479,13 +479,14 @@ class ARIA_API {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_publish_form($form_title, $form_id){
+  public static function aria_publish_form($form_title, $form_id, $password = null){
     // Set Parameters for the form
     $postarr = array(
       'post_title' => $form_title,
       'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
       'post_status' => 'publish',
-      'post_type' => 'page'
+      'post_type' => 'page',
+      'post_password' => $password
     );
 
     // Force a wp_error to be returned on failure
