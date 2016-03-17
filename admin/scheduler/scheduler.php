@@ -122,7 +122,7 @@ class Scheduling_Algorithm {
       wp_die($form_id->get_error_message());
     }
     else {
-      $scheduler_url = ARIA_API::aria_publish_form(SCHEDULER_FORM_NAME, $form_id);
+      $scheduler_url = ARIA_API::aria_publish_form(SCHEDULER_FORM_NAME, $form_id, CHAIRMAN_PASS);
     }
   }
 

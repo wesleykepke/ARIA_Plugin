@@ -130,7 +130,7 @@ class ARIA_Music {
       wp_die($new_form_id->get_error_message());
     }
     else {
-      ARIA_API::aria_publish_form(MUSIC_UPLOAD_FORM_NAME, $new_form_id);
+      ARIA_API::aria_publish_form(MUSIC_UPLOAD_FORM_NAME, $new_form_id, CHAIRMAN_PASS);
     }
   }
 
