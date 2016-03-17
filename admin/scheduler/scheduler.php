@@ -53,8 +53,9 @@ class Scheduling_Algorithm {
 
       $all_students_per_level = GFAPI::get_entries($student_master_form_id, $search_criteria);
 
-      /* this actually works
-      if ($i === 8) {
+      // this actually works
+      /*
+      if ($i === 7) {
         wp_die(print_r($all_students_per_level));
       }
       */
@@ -73,13 +74,21 @@ class Scheduling_Algorithm {
           $modified_student->add_song('wesley song', mt_rand(1, 15));
         }
 
+        //wp_die(print_r($modified_student)); 
+
         // schedule the student
-        $scheduler->schedule_student($modified_student);
+        if ($scheduler->schedule_student($modified_student)) {
+          //wp_die('student added!?'); 
+        }
+        else {
+          //wp_die('student not added'); 
+        }
       }
     }
 
-    echo('end of function');
-    wp_die(print_r($scheduler));
+    $scheduler->print_schedule(); 
+    //echo('end of function');
+    //wp_die(print_r($scheduler));
   }
 
   /**
