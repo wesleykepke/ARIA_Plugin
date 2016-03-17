@@ -61,69 +61,6 @@ class ARIA_Registration_Handler {
   }
 
 	/**
-	 * Function for returning related forms.
-	 *
-	 * This function will return an associative array that maps the titles of
-	 * the associated forms in a music competition (student, student master,
-	 * teacher, and teacher master) to their respective form IDs.
-	 *
-	 * @param $prepended_title	String	The prepended portion of the competition title.
-	 *
-	 * @author KREW
-	 * @since 1.0.0
-	 */
-	public static function aria_find_related_forms_ids($prepended_title) {
-		// make sure to get all forms! check this
-		$all_forms = GFAPI::get_forms();
-
-		$form_ids = array(
-			STUDENT_FORM => null,
-			STUDENT_MASTER => null,
-			TEACHER_FORM => null,
-			TEACHER_MASTER => null
-		);
-
-		$student_form = $prepended_title . " Student Registration";
-		$student_master_form = $prepended_title . " Student Master";
-		$teacher_form = $prepended_title . " Teacher Registration";
-		$teacher_master_form = $prepended_title . " Teacher Master";
-		$all_competition_forms = array($student_form, $student_master_form,
-      $teacher_form, $teacher_master_form);
-
-		foreach ($all_forms as $form) {
-			switch ($form["title"]) {
-				case $student_form:
-					$form_ids[self::STUDENT_FORM] = $form["id"];
-					break;
-
-				case $student_master_form:
-					$form_ids[self::STUDENT_MASTER] = $form["id"];
-					break;
-
-				case $teacher_form:
-						$form_ids[self::TEACHER_FORM] = $form["id"];
-					break;
-
-				case $teacher_master_form:
-					$form_ids[self::TEACHER_MASTER] = $form["id"];
-					break;
-
-				default:
-					break;
-			}
-		}
-
-		// make sure all forms exist
-		foreach ($form_ids as $key => $value) {
-			if (!isset($value)) {
-				wp_die('Error: The form titled ' . $all_competition_forms[$key] .
-				" does not exist.");
-			}
-		}
-		return $form_ids;
-	}
-
-	/**
 	 * Function for searching through student-master to find a student.
    *
    * This function will search through the student-master form and check to see
@@ -251,7 +188,7 @@ class ARIA_Registration_Handler {
  		}
 
 		$field_ids = ARIA_API::aria_master_teacher_field_id_array();
-		
+
 /*	!!!	foreach($field_ids as $field => $id){
 			wp_die(print_r((string)$field));
 		}*/
@@ -323,7 +260,7 @@ class ARIA_Registration_Handler {
 
 	  /**
    * This function will prepopulate student and teacher values
-   * @param $form   
+   * @param $form
    * @param $teacher_prepop_values
    * @param $student_prepop_values
    *
