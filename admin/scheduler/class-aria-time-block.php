@@ -99,13 +99,20 @@ class TimeBlock {
    */
   public function schedule_student($student) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+
       if ($this->student_can_be_added($student, $this->sections[$i])) {
         if ($this->sections[$i]->add_student($student)) {
           return true;
-        }
+        } 
       }
+
+      //echo 'scheduling in time block: ' . $this->num_concurrent_sections; 
+      //wp_die('checking out of range index'); 
+
     }
 
+
+    //wp_die('could not schedule in time block'); 
     return false;
   }
 
@@ -123,11 +130,26 @@ class TimeBlock {
     if ( !($section->is_full()) ) {
       if ($section->is_empty() || $section->get_type() === $student->get_type()) {
         return true;
+        //echo 'student can be added!';
+        //wp_die(); 
       }
     }
 
-    return $false;
+    //wp_die('student cannot be added'); 
+
+    return false;
   }
+
+  /**
+   * This function will print the sections in a given time block object. 
+   */
+  public function print_schedule() {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      echo 'Section # ' . $i . '<br>'; 
+      $this->sections[$i]->print_schedule();
+      echo '<br>';  
+    }
+  } 
 
   /**
    * The destructor used when a time block object is destroyed.

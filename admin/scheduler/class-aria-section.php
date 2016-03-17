@@ -12,6 +12,7 @@
 
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-section.php");
+require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
 
 /**
  * The section object used for scheduling.
@@ -129,20 +130,47 @@ class Section {
    * @return true if student was added, false otherwise
    */
   public function add_student($student) {
-    // Section is full or incoming student's type doesn't match section type
-    if ($this->is_full() || ($this->type !== $student->get_type())) {
-      return false;
-    }
-
+    //echo('trying to add student in section object');    
+ 
     // Section type not yet determined (section is empty)
     if (is_null($this->type)) {
       $this->type = $student->get_type();
+      //echo 'assigned type'; 
+    }
+
+   // Section is full or incoming student's type doesn't match section type
+    if ($this->is_full() || ($this->type !== $student->get_type())) {
+      //echo 'is full'; 
+      return false;
     }
 
     // Add student to this section
     $this->students[] = $student;
-    $this->current_time += $student->get_total_time_duration();
+    $this->current_time += $student->get_total_play_time();
+    
+    //wp_die(print_r($this->students)); 
+  
     return true;
+  }
+ 
+  /**
+   * This function will print all the students in given section. 
+   */
+  public function print_schedule() {
+    for ($i = 0; $i < count($this->students); $i++) {
+      $student_info = $this->students[$i]->get_student_info(); 
+      for ($j = 0; $j < count($student_info); $j++) {
+        if (is_array($student_info[$j])) {
+          for ($k = 0; $k < count($student_info[$j]); $k++) {
+            echo $student_info[$j][$k]->get_song_name() . "<br>";
+            echo $student_info[$j][$k]->get_song_duration() . "<br>";
+          }
+        }
+        else {
+          echo $student_info[$j] . "<br>"; 
+        }
+      }
+    }
   }
 
   /**
