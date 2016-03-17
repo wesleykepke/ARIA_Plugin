@@ -127,6 +127,7 @@ class ARIA {
 		require_once("class-aria-music.php");
 		require_once("class-aria-form-hooks.php");
     require_once("class-aria-teacher-upload.php");
+    require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
 
 		// Register all of the hooks needed by ARIA
 
@@ -143,6 +144,25 @@ class ARIA {
       'gform_confirmation',
       'ARIA_Create_Competition',
       'aria_create_teacher_and_student_forms', 10, 4);
+
+    /*
+    The action registered for this hook updates the list of competitions that
+    can be selected for scheduling on the scheduling page.
+    */
+    $this->loader->add_action(
+      'gform_enqueue_scripts',
+      'Scheduling_Algorithm',
+      'before_schedule_render', 10, 4
+    );
+
+    /*
+    The action registered for this hook is for adding scheduling functionality.
+    */
+    $this->loader->add_action(
+      'gform_confirmation',
+      'Scheduling_Algorithm',
+      'aria_scheduling_algorithm', 10, 4
+    );
 
     /*
     The action registered for this hook is to invoke processing after the
@@ -170,7 +190,9 @@ class ARIA {
 		/*
 		The filter that makes sure that the teacher pages have correct hashes.
 		*/
-		$this->loader->add_filter('gform_enqueue_scripts', 'ARIA_Form_Hooks', 'aria_before_teacher_render', 10, 2);
+		$this->loader->add_filter('gform_enqueue_scripts',
+      'ARIA_Form_Hooks',
+      'aria_before_teacher_render', 10, 2);
 
 		/*
     The action registered for this hook if for adding music upload/download

@@ -10,7 +10,8 @@
  * @subpackage ARIA/admin
  */
 
-require_once("../../includes/aria-constants.php");
+require_once(ARIA_ROOT . "/includes/class-aria-api.php");
+require_once(ARIA_ROOT . "/admin/scheduler/class-aria-section.php");
 
 /**
  * The time block object used for scheduling.
@@ -56,13 +57,15 @@ class TimeBlock {
    */
   function __construct($num_concurrent_sections) {
     $this->num_concurrent_sections = $num_concurrent_sections;
-    $this->sections = SplFixedArray($this->num_concurrent_sections);
+    $this->sections = new SplFixedArray($this->num_concurrent_sections);
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i] = new Section();
     }
 
+    /*
     echo "Just created new TimeBlock object..";
     wp_die(print_r($this->sections));
+    */
   }
 
   /**
@@ -96,8 +99,8 @@ class TimeBlock {
    */
   public function schedule_student($student) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      if ($this->student_can_be_added($student, $section[i])) {
-        if ($this->sections[i]->add_student($student)) {
+      if ($this->student_can_be_added($student, $this->sections[$i])) {
+        if ($this->sections[$i]->add_student($student)) {
           return true;
         }
       }

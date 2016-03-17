@@ -118,6 +118,29 @@ class ARIA_API {
 	}
 
   /**
+   * This function will find the ID of the form used to schedule competitions.
+   *
+   * This function will iterate through all of the active form objects and
+   * return the ID of the form that is used to schedule music competitions. If
+   * no such form exists, the function will return -1.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_scheduler_form_id() {
+    $form_id = -1;
+    $all_active_forms = GFAPI::get_forms();
+
+    foreach ($all_active_forms as $form) {
+      if ($form['title'] === SCHEDULER_FORM_NAME) {
+        $form_id = $form['id'];
+      }
+    }
+
+    return $form_id;
+  }
+
+  /**
    * This function will find the file path of the uploaded csv music file.
    *
    * This function will extract the name of the csv file containing the music
@@ -502,6 +525,69 @@ class ARIA_API {
 
     return $title;
   }
+
+	/**
+	 * Function for returning related forms.
+	 *
+	 * This function will return an associative array that maps the titles of
+	 * the associated forms in a music competition (student, student master,
+	 * teacher, and teacher master) to their respective form IDs.
+	 *
+	 * @param $prepended_title	String	The prepended portion of the competition title.
+	 *
+	 * @author KREW
+	 * @since 1.0.0
+	 */
+	public static function aria_find_related_forms_ids($prepended_title) {
+		// make sure to get all forms! check this
+		$all_forms = GFAPI::get_forms();
+
+		$form_ids = array(
+			'student_public_form_id' => null,
+			'teacher_public_form_id' => null,
+			'student_master_form_id' => null,
+			'teacher_master_form_id' => null
+		);
+
+		$student_form = $prepended_title . " Student Registration";
+		$student_master_form = $prepended_title . " Student Master";
+		$teacher_form = $prepended_title . " Teacher Registration";
+		$teacher_master_form = $prepended_title . " Teacher Master";
+		$all_competition_forms = array($student_form, $student_master_form,
+      $teacher_form, $teacher_master_form);
+
+		foreach ($all_forms as $form) {
+			switch ($form["title"]) {
+				case $student_form:
+					$form_ids['student_public_form_id'] = $form["id"];
+					break;
+
+				case $student_master_form:
+					$form_ids['student_master_form_id'] = $form["id"];
+					break;
+
+				case $teacher_form:
+						$form_ids['teacher_public_form_id'] = $form["id"];
+					break;
+
+				case $teacher_master_form:
+					$form_ids['teacher_master_form_id'] = $form["id"];
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		// make sure all forms exist
+		foreach ($form_ids as $key => $value) {
+			if (!isset($value)) {
+				wp_die('Error: The form titled ' . $all_competition_forms[$key] .
+				" does not exist.");
+			}
+		}
+		return $form_ids;
+	}
 
   /**
    * This function will parse a form name for the competition title.

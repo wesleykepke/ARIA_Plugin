@@ -10,7 +10,9 @@
  * @subpackage ARIA/admin
  */
 
-require_once("../../includes/aria-constants.php");
+require_once(ARIA_ROOT . "/includes/aria-constants.php");
+require_once(ARIA_ROOT . "/admin/scheduler/class-aria-time-block.php");
+require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
 
 /**
  * The scheduler object used for scheduling.
@@ -66,14 +68,16 @@ class Scheduler {
     $this->num_time_blocks_per_day = $num_time_blocks_per_day;
     $this->days = new SplFixedArray($this->num_days);
     for ($i = 0; $i < $this->num_days; $i++) {
-      $this->days[] = new SplFixedArray($this->num_time_blocks_per_day);
+      $this->days[$i] = new SplFixedArray($this->num_time_blocks_per_day);
       for ($j = 0; $j < $this->num_time_blocks_per_day; $j++) {
-        $this->days[i][j] = new TimeBlock();
+        $this->days[$i][$j] = new TimeBlock($num_concurrent_sections);
       }
     }
 
+    /*
     echo "Just created a scheduler object.";
     wp_die(print_r($this->days));
+    */
   }
 
   /**
