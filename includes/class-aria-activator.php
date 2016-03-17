@@ -39,8 +39,10 @@ class ARIA_Activator {
       // create various forms upon initialization
       require_once("class-aria-create-competition.php");
       require_once("class-aria-music.php");
+      require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
       ARIA_Create_Competition::aria_create_competition_activation();
       ARIA_Music::aria_create_music_upload_form();
+      Scheduling_Algorithm::aria_create_scheduling_page();
     }
     else {
       wp_die("Error: ARIA requires the Gravity Forms plugin to be installed
