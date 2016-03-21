@@ -14,7 +14,7 @@
  * @subpackage ARIA/includes
  */
 
-// ARIA plugin file location 
+// ARIA plugin file location
 define("ARIA_ROOT", "/var/www/html/wp-content/plugins/ARIA");
 
 // Competitions
@@ -25,6 +25,7 @@ define("TEACHER_UPLOAD_FORM_NAME", "ARIA: Upload Teacher(s)");
 define("SCHEDULER_FORM_NAME", "ARIA: Schedule a Competition");
 define("CSV_UPLOAD_FIELD_NAME", "CSV Music File");
 define("CSV_TEACHER_FIELD_NAME", "CSV Teacher File");
+define("CSV_JUDGE_FIELD_NAME", "CSV Judge File");
 define("STUDENT_REG", "Student Registration");
 define("STUDENT_MAS", "Student Master");
 define("TEACHER_REG", "Teacher Registration");

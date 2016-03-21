@@ -223,31 +223,41 @@ class ARIA_Create_Competition {
     $teacher_csv_file_upload_field->label = CSV_TEACHER_FIELD_NAME;
     $teacher_csv_file_upload_field->id = $field_mappings['competition_teacher_csv_upload'];
     $teacher_csv_file_upload_field->isRequired = false;
-    $teacher_csv_file_upload_field->description = 'Browse computer for a CSV';
+    $teacher_csv_file_upload_field->description = 'Browse your computer for a CSV';
     $teacher_csv_file_upload_field->description .= ' file of teachers that';
     $teacher_csv_file_upload_field->description .= ' will be participating in';
     $teacher_csv_file_upload_field->description .= ' this music competition.';
+    $teacher_csv_file_upload_field->description .= ' Don\'t worry, you will have';
+    $teacher_csv_file_upload_field->description .= ' the opportunity to add more';
+    $teacher_csv_file_upload_field->description .= ' teachers to this competition later.';
     $teacher_csv_file_upload_field->descriptionPlacement = 'above';
 
     // number of concurrent traditional sections
+    /*
     $num_traditional_sections_field = new GF_Field_Number();
     $num_traditional_sections_field->label = "Number of Concurrent Traditional Sections";
     $num_traditional_sections_field->id = $field_mappings['competition_num_traditional'];
     $num_traditional_sections_field->isRequired = false;
+    */
 
     // number of concurrent master class sections
+    /*
     $num_master_sections_field = new GF_Field_Number();
     $num_master_sections_field->label = "Number of Concurrent Master Sections";
     $num_master_sections_field->id = $field_mappings['competition_num_master'];
     $num_master_sections_field->isRequired = false;
+    */
 
     // length of sections
+    /*
     $section_length_field = new GF_Field_Number();
     $section_length_field->label = "Section Length (minutes)";
     $section_length_field->id = $field_mappings['competition_section_length'];
     $section_length_field->isRequired = false;
+    */
 
     // time buffer required at beginnning (welcome, go over rules, introduce judges, etc.)
+    /*
     $beginning_time_buffer_field = new GF_Field_Number();
     $beginning_time_buffer_field->label = "Competition Introduction Length (minutes)";
     $beginning_time_buffer_field->id = $field_mappings['competition_beg_time_buffer'];
@@ -257,8 +267,10 @@ class ARIA_Create_Competition {
     $beginning_time_buffer_field->description .= ' (welcome, go over rules, ';
     $beginning_time_buffer_field->description .= ' introduce judges, etc.).';
     $beginning_time_buffer_field->descriptionPlacement = 'above';
+    */
 
     // time buffer requred at end (award certificates)
+    /*
     $ending_time_buffer_field = new GF_Field_Number();
     $ending_time_buffer_field->label = "Competition Conclusion Length";
     $ending_time_buffer_field->id = $field_mappings['competition_end_time_buffer'];
@@ -268,12 +280,15 @@ class ARIA_Create_Competition {
     $ending_time_buffer_field->description .= ' (award certificates, closing, ';
     $ending_time_buffer_field->description .= ' remarks, etc.).';
     $ending_time_buffer_field->descriptionPlacement = 'above';
+    */
 
     // amount of time per lunch break
+    /*
     $lunch_break_field = new GF_Field_Number();
     $lunch_break_field->label = "Amount of Time for Lunch (minutes)";
     $lunch_break_field->id = $field_mappings['competition_lunch_break'];
     $lunch_break_field->isRequired = false;
+    */
 
     // number of judges per sections
     $num_judges_per_section_field = new GF_Field_Number();
@@ -281,15 +296,31 @@ class ARIA_Create_Competition {
     $num_judges_per_section_field->id = $field_mappings['competition_num_judges_per_section'];
     $num_judges_per_section_field->isRequired = false;
 
+    // judge upload form
+    $judge_csv_file_upload_field = new GF_Field_FileUpload();
+    $judge_csv_file_upload_field->label = CSV_JUDGE_FIELD_NAME;
+    $judge_csv_file_upload_field->id = $field_mappings['competition_judge_csv_upload'];
+    $judge_csv_file_upload_field->isRequired = false;
+    $judge_csv_file_upload_field->description = 'Browse your computer for a CSV';
+    $judge_csv_file_upload_field->description .= ' file of judges that';
+    $judge_csv_file_upload_field->description .= ' will be participating in';
+    $judge_csv_file_upload_field->description .= ' this music competition.';
+    $judge_csv_file_upload_field->description .= ' Don\'t worry, you will have';
+    $judge_csv_file_upload_field->description .= ' the opportunity to add more';
+    $judge_csv_file_upload_field->description .= ' judges to this competition later.';
+    $judge_csv_file_upload_field->descriptionPlacement = 'above';
+
     // number of students per section per level (needed for lower level where
     // times aren't provided during registration)
       // not sure how to handle this at the moment
 
     // number of command performances
+    /*
     $num_command_performance_field = new GF_Field_Number();
     $num_command_performance_field->label = "Number of Command Performance Performances";
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
+    */
 
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
@@ -306,8 +337,18 @@ class ARIA_Create_Competition {
     $command_performance_time_field->isRequired = false;
 
     // theory score required for special recognition
-    $theory_score_field = new GF_Field_Number();
+    $theory_score_field = new GF_Field_Select();
     $theory_score_field->label = "Theory Score for Recognition (0-100)";
+    $theory_choices = array();
+    for ($i = 0; $i <= 100; $i++) {
+      $single_theory_choice = array();
+      $single_theory_choice['text'] = strval($i);
+      $single_theory_choice['value'] = strval($i);
+      $single_theory_choice['isSelected'] = false;
+      $theory_choices[] = $single_theory_choice;
+      unset($single_theory_choice);
+    }
+    $theory_score_field->choices = $theory_choices;
     $theory_score_field->id = $field_mappings['competition_theory_score'];
     $theory_score_field->isRequired = false;
 
@@ -322,13 +363,16 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end_date_field;
     $form->fields[] = $teacher_volunteer_times_field;
     $form->fields[] = $teacher_csv_file_upload_field;
+    /*
     $form->fields[] = $num_traditional_sections_field;
     $form->fields[] = $num_master_sections_field;
     $form->fields[] = $beginning_time_buffer_field;
     $form->fields[] = $ending_time_buffer_field;
     $form->fields[] = $lunch_break_field;
+    */
     $form->fields[] = $num_judges_per_section_field;
-    $form->fields[] = $num_command_performance_field;
+    $form->fields[] = $judge_csv_file_upload_field;
+    //$form->fields[] = $num_command_performance_field;
     $form->fields[] = $command_perf_date_field;
     $form->fields[] = $command_performance_time_field;
     $form->fields[] = $theory_score_field;
