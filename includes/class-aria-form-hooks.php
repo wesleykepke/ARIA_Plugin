@@ -277,19 +277,38 @@ class ARIA_Form_Hooks {
     $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
       $entry[strval($teacher_public_field_ids['phone'])];
 
-   /*
     $volunteer_pref_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
         $teacher_public_field_ids['volunteer_preference']);
-    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] = null;
     for($i=1; $i <= count($form['fields'][$volunteer_pref_field]['choices']); $i++){
-      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i])){
-        //wp_die("founds at {$i}");
+        //wp_die((string)$teacher_public_field_ids['volunteer_preference']. $i);
+      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)])){
+        //wp_die((string)$teacher_public_field_ids['volunteer_preference']. $i);
         //print_r($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i]));
-        $teacher_master_entry[strval($teacher_public_field_ids['volunteer_preference'])+$i] =
-          $entry[strval($teacher_public_field_ids['volunteer_preference'])+$i];
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
+          $entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)];
       }
- $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] =
-      $entry[strval($teacher_public_field_ids['volunteer_preference'])];
+      else{
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
+          null;
+      }
+    }
+
+   /*
+    $volunteer_time_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
+        $teacher_public_field_ids['volunteer_time']);
+    for($i=1; $i <= count($form['fields'][$volunteer_pref_field]['choices']); $i++){
+        //wp_die((string)$teacher_public_field_ids['volunteer_preference']. $i);
+      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)])){
+        //wp_die((string)$teacher_public_field_ids['volunteer_preference']. $i);
+        //print_r($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i]));
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
+          $entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)];
+      }
+      else{
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
+          null;
+      }
+    }
 
     $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time'])] =
       $entry[strval($teacher_public_field_ids['volunteer_time'])];
