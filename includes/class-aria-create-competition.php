@@ -77,7 +77,7 @@ class ARIA_Create_Competition {
 
     // create the student and teacher (master) forms
     $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name);
-    $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name);
+    $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
 
     // upload content of the teacher csv file into the teacher master form
     $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
@@ -583,6 +583,7 @@ class ARIA_Create_Competition {
         'Clean up',
         'Help with food for judges and volunteers'
       );
+    $volunteer_preference_field->inputs = array();
     $volunteer_preference_field = self::aria_add_checkbox_input( $volunteer_preference_field, $volunteer_inputs );
     $volunteer_preference_field->description = "Please check at least two volunteer job"
     ." preferences for this year's Festival. You will be notified by email of your"
@@ -608,6 +609,7 @@ class ARIA_Create_Competition {
     ." available to volunteer during Festival weekend.";
     $volunteer_time_field->descriptionPlacement = 'above';
     $volunteer_time_field->choices = array();
+    $volunteer_time_field->inputs = array();
     if (is_array($volunteer_time_options_array)) {
       $index = 1;
       foreach( $volunteer_time_options_array as $volunteer_time ) {
@@ -867,6 +869,7 @@ class ARIA_Create_Competition {
       'value' => 'Alternate theory exam completed',
       'isSelected' => false)
     );
+    $alternate_theory_field->inputs = array();
     $alternate_theory_field = self::aria_add_checkbox_input( $alternate_theory_field, 'Alternate theory exam completed' );
     $teacher_form->fields[] = $alternate_theory_field;
     $ariaFieldIds['alternate_theory'] = $alternate_theory_field->id;

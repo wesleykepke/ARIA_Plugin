@@ -253,7 +253,7 @@ class ARIA_Create_Master_Forms {
 	 * @since 1.0.0
 	 * @author KREW
 	 */
-  public static function aria_create_teacher_master_form($competition_name) {
+  public static function aria_create_teacher_master_form($competition_name, $volunteer_time_options_array) {
     $teacher_master_form = new GF_Form($competition_name . " Teacher Master", "");
     $field_id_array = ARIA_API::aria_master_teacher_field_id_array();
 
@@ -361,6 +361,17 @@ class ARIA_Create_Master_Forms {
     $volunteer_time_field->isRequired = false;
     $volunteer_time_field->description = "Please check at least two times you are"
     ."available to volunteer during Festival weekend.";
+    $volunteer_time_field->choices = array();
+
+    $volunteer_time_field->input = null;
+    if (is_array($volunteer_time_options_array)) {
+      $index = 1;
+      foreach( $volunteer_time_options_array as $volunteer_time ) {
+        $volunteer_time_field->choices[]
+          = array('text' => $volunteer_time, 'value' => $volunteer_time, 'isSelected' => false);
+        $volunteer_time_field = ARIA_Create_Competition::aria_add_checkbox_input( $volunteer_time_field, $volunteer_time );
+      }
+    }
     $volunteer_time_field->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
