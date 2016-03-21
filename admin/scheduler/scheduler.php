@@ -66,27 +66,28 @@ class Scheduling_Algorithm {
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
         $last_name = $student[strval($student_master_field_mapping['student_last_name'])];
         $type = mt_rand(0, 3);
-        $day_preference = mt_rand(0, 2);
-        $modified_student = new Student($first_name, $last_name, $type, $day_preference);
+        $day_preference = mt_rand(0, 1);
+        $skill_level = $student[strval($student_master_field_mapping['student_level'])];
+        $modified_student = new Student($first_name, $last_name, $type, $day_preference, $skill_level);
 
         // add student's songs
         for ($j = 0; $j < 2; $j++) {
           $modified_student->add_song('wesley song', mt_rand(1, 15));
         }
 
-        //wp_die(print_r($modified_student)); 
+        //wp_die(print_r($modified_student));
 
         // schedule the student
         if ($scheduler->schedule_student($modified_student)) {
-          //wp_die('student added!?'); 
+          //wp_die('student added!?');
         }
         else {
-          //wp_die('student not added'); 
+          //wp_die('student not added');
         }
       }
     }
 
-    $scheduler->print_schedule(); 
+    $scheduler->print_schedule();
     //echo('end of function');
     //wp_die(print_r($scheduler));
   }
