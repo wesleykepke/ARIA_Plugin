@@ -277,24 +277,34 @@ class ARIA_Form_Hooks {
     $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
       $entry[strval($teacher_public_field_ids['phone'])];
 
-   /*
     $volunteer_pref_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
         $teacher_public_field_ids['volunteer_preference']);
-    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] = null;
     for($i=1; $i <= count($form['fields'][$volunteer_pref_field]['choices']); $i++){
-      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i])){
-        //wp_die("founds at {$i}");
-        //print_r($entry[strval($teacher_public_field_ids['volunteer_preference'])+$i]));
-        $teacher_master_entry[strval($teacher_public_field_ids['volunteer_preference'])+$i] =
-          $entry[strval($teacher_public_field_ids['volunteer_preference'])+$i];
+      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)])){
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
+          $entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)];
       }
- $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference'])] =
-      $entry[strval($teacher_public_field_ids['volunteer_preference'])];
+      else{
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
+          null;
+      }
+    }
 
-    $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time'])] =
-      $entry[strval($teacher_public_field_ids['volunteer_time'])];
+    $volunteer_time_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
+        $teacher_public_field_ids['volunteer_time']);
+    for($i=1; $i <= count($form['fields'][$volunteer_time_field]['choices']); $i++){
+      if(isset($entry[strval($teacher_public_field_ids['volunteer_time']) . '.' . strval($i)])){
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time']) . '.' . strval($i)] =
+          $entry[strval($teacher_public_field_ids['volunteer_time']) . '.' . strval($i)];
+      }
+      else{
+        $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time']) . '.' . strval($i)] =
+          null;
+      }
+    }
+
     $teacher_master_entry[strval($teacher_master_field_ids['is_judging'])] =
-	    $entry[strval($teacher_public_field_ids['is_judging'])];*/
+      $entry[strval($teacher_public_field_ids['is_judging'])];
 
     // Update the teacher master form with the new information
     $result = GFAPI::update_entry($teacher_master_entry);
@@ -335,8 +345,20 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['song_2_selection'])];
     $student_master_entry[strval($student_master_field_ids['theory_score'])] =
       $entry[strval($teacher_public_field_ids['theory_score'])];
-    $student_master_entry[strval($student_master_field_ids['alternate_theory'])] =
-      $entry[strval($teacher_public_field_ids['alternate_theory'])];
+
+    $alt_theory_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
+        $teacher_public_field_ids['alternate_theory']);
+    for($i=1; $i <= count($form['fields'][$alt_theory_field]['choices']); $i++){
+      if(isset($entry[strval($teacher_public_field_ids['alternate_theory']) . '.' . strval($i)])){
+        $student_master_entry[strval($student_master_field_ids['alternate_theory']) . '.' . strval($i)] =
+          $entry[strval($teacher_public_field_ids['alternate_theory']) . '.' . strval($i)];
+      }
+      else{
+        $student_master_entry[strval($student_master_field_ids['alternate_theory']) . '.' . strval($i)] =
+          null;
+      }
+    }
+
     $student_master_entry[strval($student_master_field_ids['competition_format'])] =
       $entry[strval($teacher_public_field_ids['competition_format'])];
     $student_master_entry[strval($student_master_field_ids['timing_of_pieces'])] =
