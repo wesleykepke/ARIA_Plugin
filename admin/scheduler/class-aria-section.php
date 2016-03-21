@@ -73,6 +73,17 @@ class Section {
   private $current_time;
 
   /**
+   * The skill level of the students in this section.
+   *
+   * This will be an integer value in the range of 0-11.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$skill_level 	The skill level of students in this section.
+   */
+  private $skill_level;
+
+  /**
    * The constructor used to instantiate a new section object.
    *
    * @since 1.0.0
@@ -81,6 +92,7 @@ class Section {
     $this->type = null;
     $this->students = array();
     $this->current_time = 0;
+    $this->skill_level = null;
   }
 
   /**
@@ -117,6 +129,15 @@ class Section {
   }
 
   /**
+   * The function used to find the skill level of the current section.
+   *
+   * @return integer Represents the skill level of students in the section.
+   */
+  public function get_skill_level() {
+    return $this->skill_level;
+  }
+
+  /**
    * The function used to add a student to the current section.
    *
    * If the current section matches the type of student competing (traditional,
@@ -130,35 +151,51 @@ class Section {
    * @return true if student was added, false otherwise
    */
   public function add_student($student) {
-    //echo('trying to add student in section object');    
- 
     // Section type not yet determined (section is empty)
     if (is_null($this->type)) {
       $this->type = $student->get_type();
-      //echo 'assigned type'; 
     }
 
-   // Section is full or incoming student's type doesn't match section type
-    if ($this->is_full() || ($this->type !== $student->get_type())) {
-      //echo 'is full'; 
+    // Section skill level not yet determined (section is empty)
+    if (is_null($this->skill_level)) {
+      $this->skill_level = $student->get_skill_level();
+    }
+
+    if ($this->is_full()) {
+      return false;
+    }
+
+    // Incoming student doesn't meet criteria of section
+    if (($this->type !== $student->get_type()) || ($this->skill_level !== $student->get_skill_level())) {
       return false;
     }
 
     // Add student to this section
     $this->students[] = $student;
     $this->current_time += $student->get_total_play_time();
-    
-    //wp_die(print_r($this->students)); 
-  
     return true;
   }
- 
+
   /**
-   * This function will print all the students in given section. 
+   * This function will print all the students in given section.
    */
   public function print_schedule() {
     for ($i = 0; $i < count($this->students); $i++) {
-      $student_info = $this->students[$i]->get_student_info(); 
+      $student_info = $this->students[$i]->get_student_info();
+      foreach ($student_info as $key => $value) {
+        echo $key . "<br>";
+        if (is_array($value)) {
+          for ($j = 0; $j < count($value); $j++) {
+            echo $value[$j]->get_song_name() . "<br>";
+            echo $value[$j]->get_song_duration() . "<br>";
+          }
+        }
+        else {
+          echo $value . "<br>";
+        }
+      }
+
+/*
       for ($j = 0; $j < count($student_info); $j++) {
         if (is_array($student_info[$j])) {
           for ($k = 0; $k < count($student_info[$j]); $k++) {
@@ -167,9 +204,10 @@ class Section {
           }
         }
         else {
-          echo $student_info[$j] . "<br>"; 
+          echo $student_info[$j] . "<br>";
         }
       }
+*/
     }
   }
 

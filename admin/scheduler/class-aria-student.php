@@ -74,19 +74,31 @@ class Student {
   private $day_preference;
 
   /**
+   * The skill level of thr student (0-11).
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$skill_level 	The skill level that the student identifies as.
+   */
+  private $skill_level;
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
    * @param	string	$first_name 	The first name of the student.
    * @param	string 	$last_name 	The last name of the student.
    * @param	int 	$type 	The type of section the student registered as.
+   * @param	int 	$day_preference 	The day that the student would like to compete.
+   * @param	int 	$skill_level 	The skill level that the student identifies as.
    */
-  function __construct($first_name, $last_name, $type, $day_preference) {
+  function __construct($first_name, $last_name, $type, $day_preference, $skill_level) {
     $this->first_name = $first_name;
     $this->last_name = $last_name;
     $this->type = $type;
     $this->songs = array();
     $this->day_preference = $day_preference;
+    $this->skill_level = $skill_level;
   }
 
   /**
@@ -127,6 +139,16 @@ class Student {
   }
 
   /**
+   * The function will skill level of the student.
+   *
+   * @since 1.0.0
+   * @return integer Represents the student's skill level (0-11)
+   */
+  public function get_skill_level() {
+    return $this->skill_level;
+  }
+
+  /**
    * The function will return the  total amount of time for the student to play
    * his/her songs.
    *
@@ -142,41 +164,42 @@ class Student {
   }
 
   public function get_student_info() {
-    $type = null; 
+    $type = null;
     switch ($this->type) {
       case SECTION_COMMAND_PERFORMANCE:
-        $type = "Command"; 
+        $type = "Command";
       break;
 
       case SECTION_TRADITIONAL:
-        $type = "Traditional"; 
-      break; 
+        $type = "Traditional";
+      break;
 
       case SECTION_NON_COMPETITIVE:
-        $type = "Non-competitive"; 
+        $type = "Non-competitive";
       break;
 
       case SECTION_MASTER:
-        $type = "Master"; 
-      break; 
+        $type = "Master";
+      break;
     }
 
-    $day = null; 
+    $day = null;
     switch ($this->day_preference) {
       case SAT:
-        $day = "Saturday"; 
+        $day = "Saturday";
       break;
 
       case SUN:
-        $day = "Sunday"; 
-      break; 
+        $day = "Sunday";
+      break;
     }
-    
+
     return array(
-      $this->first_name . ' ' . $this->last_name,
-      $type,
-      $day,
-      $this->songs
+      'Student Name' => $this->first_name . ' ' . $this->last_name,
+      'Student Type' => $type,
+      'Student Day Preference' => $day,
+      'Student Songs' => $this->songs,
+      'Student Skill Level' => $this->skill_level
     );
   }
 

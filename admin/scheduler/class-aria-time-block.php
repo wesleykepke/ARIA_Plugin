@@ -103,16 +103,16 @@ class TimeBlock {
       if ($this->student_can_be_added($student, $this->sections[$i])) {
         if ($this->sections[$i]->add_student($student)) {
           return true;
-        } 
+        }
       }
 
-      //echo 'scheduling in time block: ' . $this->num_concurrent_sections; 
-      //wp_die('checking out of range index'); 
+      //echo 'scheduling in time block: ' . $this->num_concurrent_sections;
+      //wp_die('checking out of range index');
 
     }
 
 
-    //wp_die('could not schedule in time block'); 
+    //wp_die('could not schedule in time block');
     return false;
   }
 
@@ -127,29 +127,35 @@ class TimeBlock {
    * @param	Section	$section	The section that the student is trying to be added to.
    */
   private function student_can_be_added($student, $section) {
-    if ( !($section->is_full()) ) {
-      if ($section->is_empty() || $section->get_type() === $student->get_type()) {
-        return true;
-        //echo 'student can be added!';
-        //wp_die(); 
-      }
+    // student should match type of section (traditional, master-class, etc.)
+    // the skill level
+    $type_and_skill_match = ($section->get_type() === $student->get_type()) &&
+      ($section->get_skill_level() === $student->get_skill_level());
+
+    // if section is empty, no skill level or type have been assigned to it yet
+    if ($section->is_empty()) {
+      $type_and_skill_match = true;
     }
 
-    //wp_die('student cannot be added'); 
+    if ( !($section->is_full()) ) {
+      if ($type_and_skill_match) {
+        return true;
+      }
+    }
 
     return false;
   }
 
   /**
-   * This function will print the sections in a given time block object. 
+   * This function will print the sections in a given time block object.
    */
   public function print_schedule() {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      echo 'Section # ' . $i . '<br>'; 
+      echo 'Section # ' . $i . '<br>';
       $this->sections[$i]->print_schedule();
-      echo '<br>';  
+      echo '<br>';
     }
-  } 
+  }
 
   /**
    * The destructor used when a time block object is destroyed.
