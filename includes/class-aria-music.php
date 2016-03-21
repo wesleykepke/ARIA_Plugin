@@ -110,6 +110,11 @@ class ARIA_Music {
    * @since 1.0.0
    */
   public static function aria_create_music_upload_form() {
+    // don't create form if it already exists
+    if (ARIA_API::aria_get_song_upload_form_id() !== -1) {
+      return; 
+    }
+
     $form_name = MUSIC_UPLOAD_FORM_NAME;
     $form = new GF_FORM($form_name, "");
 

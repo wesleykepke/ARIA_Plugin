@@ -45,10 +45,8 @@ class ARIA_Create_Competition {
     $form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
+      ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS);
     }
-
-    // publish the new form
-    ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS);
   }
 
   /**
