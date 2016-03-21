@@ -267,7 +267,8 @@ class ARIA_API {
       'competition_num_command_performances' => 18,
       'competition_command_performance_date' => 19,
       'competition_command_performance_time' => 20,
-      'competition_theory_score' => 21
+      'competition_theory_score' => 21,
+      'competition_judge_csv_upload' => 22
     );
   }
 
