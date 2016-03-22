@@ -146,7 +146,18 @@ class Scheduling_Algorithm {
   }
 
   /**
-   * Prepopulates the schedule form with all active competitions.
+   * This function will pre-populate the drop-down menu on the teacher upload
+   * page with all of the active competitions.
+   *
+   * Whenever the festival chairman visits the page that is used for adding a
+   * teacher, that page needs to have the drop-down menu of active competitions
+   * pre-populated. This function is responsible for accomplishing that goal.
+   *
+   * @param $form 	Form Object 	The current form object.
+   * @param $is_ajax 	Bool 	Specifies if the form is submitted via AJAX
+   *
+   * @since 1.0.0
+   * @author KREW
    */
   public static function before_schedule_render($form, $is_ajax) {
     // Only perform prepopulation if it's the scheduler form
