@@ -54,16 +54,8 @@ class Scheduling_Algorithm {
         )
       );
 
-      $all_students_per_level = GFAPI::get_entries($student_master_form_id, $search_criteria);
-
-      // this actually works
-      /*
-      if ($i === 7) {
-        wp_die(print_r($all_students_per_level));
-      }
-      */
-
       // modifying student (using &) for testing purposes only
+      $all_students_per_level = GFAPI::get_entries($student_master_form_id, $search_criteria);
       foreach ($all_students_per_level as &$student ) {
         // obtain student attributes
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
@@ -171,7 +163,39 @@ class Scheduling_Algorithm {
     $competition_field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_form_id = ARIA_API::aria_get_create_competition_form_id();
     $entries = GFAPI::get_entries($competition_form_id);
-    $competition_names = array();file
+    $competition_names = array();
+    foreach ($entries as $entry) {
+      $single_competition = array(
+        'text' => $entry[$competition_field_mapping['competition_name']],
+        'value' => $entry[$competition_field_mapping['competition_name']],
+        'isSelected' => false
+      );
+      $competition_names[] = $single_competition;
+      unset($single_competition);
+    }
+
+    $scheduling_field_mapping = self::scheduling_page_field_id_array();
+    $search_field = $scheduling_field_mapping['active_competitions'];
+    $name_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    $form['fields'][$name_field]->choices = $competition_names;
+  }
+
+  /**
+   * This function will find the field number with the specified ID.
+   *
+   * The function will search through the given array of fields and
+   * locate the field with the given ID number. The ID of the field
+   * is then returned.
+   * @param $fields   Array   The array of fields to search through
+   * @param $id       Float     The id of the array to search for
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_find_field_by_id( $fields, $id ){
+    $field_num = 0;
+    foreach($fields as $key){
+      if($fields[$field_num]['id'] == $id){
         return $field_num;
       }
       $field_num++;
