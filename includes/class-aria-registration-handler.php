@@ -288,11 +288,37 @@ class ARIA_Registration_Handler {
 	  $form['fields'][$name_field]['inputs'] = $name;
 
     // Prepopulate teacher email
+    //wp_die(print_r($form['fields']));
+    $search_field = $teacher_public_fields['email'];
+    $email_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    if($email_field != null && ($teacher_prepop_vals['email'] != "") ){
+      $form['fields'][$email_field]['defaultValue'] = $teacher_prepop_vals['email'];
+    }
 
     // Prepopulate teacher phone
+    $search_field = $teacher_public_fields['phone'];
+    $phone_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    if($phone_field != null && ($teacher_prepop_vals['phone'] != "") ){
+      $form['fields'][$phone_field]['defaultValue'] = $teacher_prepop_vals['phone'];
+    }
 
-    // Prepopulate teacher judge
-
+    // !!! not finished Prepopulate teacher judge
+    $search_field = $teacher_public_fields['is_judging'];
+    $judging_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    if($judging_field != null && ($teacher_prepop_vals['is_judging'] != "") ){
+      //$form['fields'][$judging_field]= $teacher_prepop_vals['is_judging'];
+      // loop through each choice
+      foreach($form['fields'][$judging_field]['choices'] as $choice){
+        // if choice value == prepop
+        if($choice['text'] == $teacher_prepop_vals['is_judging']){
+          // set is selected
+          $choice['isSelected'] = true;
+        }
+      }
+      $form['fields'][$judging_field]['choices'] = $choices;
+    }
+//wp_die(print_r($form['fields'][$judging_field]));
+//wp_die(print_r($teacher_prepop_vals));
     // Prepopulate teacher volunteer pref
 
     // Prepopulate teacher volunteer times

@@ -117,7 +117,7 @@ class ARIA_Create_Master_Forms {
     $available_times->isRequired = false;
     $available_times->description = "There is no guarantee that scheduling ".
     "requests will be honored.";
-    $available_times->inputs = null;
+    $available_times->inputs = array();
     $available_times->choices = array(
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
       array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
@@ -136,7 +136,7 @@ class ARIA_Create_Master_Forms {
       array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
       array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
     );
-    $command_times->inputs = null;
+    $command_times->inputs = array();
     $command_times = ARIA_Create_Competition::aria_add_checkbox_input($command_times, array('Thursday 5:30', 'Thursday 7:30'));
 
     $student_master_form->fields[] = $command_times;
@@ -203,6 +203,7 @@ class ARIA_Create_Master_Forms {
       'value' => 'Alternate theory exam completed',
       'isSelected' => false)
     );
+    $alternate_theory_field->inputs = array();
     $alternate_theory_field = ARIA_Create_Competition::aria_add_checkbox_input($alternate_theory_field, 'Alternate theory exam completed');
     $student_master_form->fields[] = $alternate_theory_field;
 
@@ -331,7 +332,7 @@ class ARIA_Create_Master_Forms {
       array('text' => 'Clean up', 'value' => 'Clean up', 'isSelected' => false),
       array('text' => 'Help with food for judges and volunteers', 'value' => 'Help with food for judges and volunteers', 'isSelected' => false)
     );
-    $volunteer_preference_field->input = null;
+    $volunteer_preference_field->inputs = array();
     $volunteer_preference_field
       = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_preference_field,
         array(
@@ -363,7 +364,7 @@ class ARIA_Create_Master_Forms {
     ."available to volunteer during Festival weekend.";
     $volunteer_time_field->choices = array();
 
-    $volunteer_time_field->input = null;
+    $volunteer_time_field->inputs = array();
     if (is_array($volunteer_time_options_array)) {
       $index = 1;
       foreach( $volunteer_time_options_array as $volunteer_time ) {
