@@ -21,7 +21,7 @@ define("ARIA_ROOT", "/var/www/html/wp-content/plugins/ARIA");
 define("CREATE_COMPETITION_FORM_NAME", "ARIA: Create a Competition");
 define("MUSIC_UPLOAD_FORM_NAME", "ARIA: Upload Music");
 define("NNMTA_MUSIC_DATABASE_NAME", "NNMTA: Music Database");
-define("TEACHER_UPLOAD_FORM_NAME", "ARIA: Upload Teacher(s)");
+define("TEACHER_UPLOAD_FORM_NAME", "ARIA: Upload Teacher");
 define("SCHEDULER_FORM_NAME", "ARIA: Schedule a Competition");
 define("CSV_UPLOAD_FIELD_NAME", "CSV Music File");
 define("CSV_TEACHER_FIELD_NAME", "CSV Teacher File");
