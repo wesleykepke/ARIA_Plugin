@@ -112,7 +112,7 @@ class Student {
    * @param	string	$song_name 	The name of the song.
    * @param	string 	$song_duration 	The duration of the song.
    */
-  public function add_song($song_name, $song_duration) {
+  public function add_song($song_name, $song_duration = 0) {
     $song = new Song($song_name, $song_duration);
     $this->songs[] = $song;
   }
@@ -135,7 +135,15 @@ class Student {
    * @return integer Represents the student's requested competition day.
    */
   public function get_day_preference() {
-    return $this->day_preference;
+    if (strcmp($this->day_preference, "Saturday") == 0) {
+      return SAT;
+    }
+    else if (strcmp($this->day_preference, "Sunday") == 0) {
+      return SUN;
+    }
+    else {
+      return COMMAND;
+    }
   }
 
   /**
@@ -183,23 +191,12 @@ class Student {
       break;
     }
 
-    $day = null;
-    switch ($this->day_preference) {
-      case SAT:
-        $day = "Saturday";
-      break;
-
-      case SUN:
-        $day = "Sunday";
-      break;
-    }
-
     return array(
-      'Student Name' => $this->first_name . ' ' . $this->last_name,
-      'Student Type' => $type,
-      'Student Day Preference' => $day,
-      'Student Songs' => $this->songs,
-      'Student Skill Level' => $this->skill_level
+      '<b>Student Name</b>' => $this->first_name . ' ' . $this->last_name,
+      '<b>Student Type</b>' => $type,
+      '<b>Student Day Preference</b>' => $this->day_preference,
+      '<b>Student Songs</b>' => $this->songs,
+      '<b>Student Skill Level</b>' => $this->skill_level
     );
   }
 

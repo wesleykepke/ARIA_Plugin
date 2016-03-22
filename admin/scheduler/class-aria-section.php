@@ -104,7 +104,7 @@ class Section {
    * @return true if section is full, false otherwise
    */
   public function is_full() {
-    return ($this->current_time > self::SECTION_TIME_LIMIT);
+    return ($this->current_time > SECTION_TIME_LEN);
   }
 
   /**
@@ -165,6 +165,11 @@ class Section {
       return false;
     }
 
+    // Check if adding student will cause time section to overflow
+    if (($student->get_total_play_time() + $this->current_time) > SECTION_TIME_LEN + SECTION_TIME_BUFFER) {
+      return false;
+    }
+
     // Incoming student doesn't meet criteria of section
     if (($this->type !== $student->get_type()) || ($this->skill_level !== $student->get_skill_level())) {
       return false;
@@ -194,20 +199,6 @@ class Section {
           echo $value . "<br>";
         }
       }
-
-/*
-      for ($j = 0; $j < count($student_info); $j++) {
-        if (is_array($student_info[$j])) {
-          for ($k = 0; $k < count($student_info[$j]); $k++) {
-            echo $student_info[$j][$k]->get_song_name() . "<br>";
-            echo $student_info[$j][$k]->get_song_duration() . "<br>";
-          }
-        }
-        else {
-          echo $student_info[$j] . "<br>";
-        }
-      }
-*/
     }
   }
 
