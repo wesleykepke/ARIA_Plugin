@@ -39,6 +39,9 @@ class Scheduling_Algorithm {
     $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
     $student_master_form_id = $related_form_ids['student_master_form_id'];
 
+    // create scheduler object based on number of participants
+    //$scheduler = self::aria_create_scheduler_object($student_master_form_id);
+
     $scheduler = new Scheduler(2, 6, 2);
     for ($i = 1; $i <= 11; $i++) {
       $search_criteria = array(
@@ -88,8 +91,6 @@ class Scheduling_Algorithm {
     }
 
     $scheduler->print_schedule();
-    //echo('end of function');
-    //wp_die(print_r($scheduler));
   }
 
   /**
@@ -170,43 +171,60 @@ class Scheduling_Algorithm {
     $competition_field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_form_id = ARIA_API::aria_get_create_competition_form_id();
     $entries = GFAPI::get_entries($competition_form_id);
-    $competition_names = array();
-    foreach ($entries as $entry) {
-      $single_competition = array(
-        'text' => $entry[$competition_field_mapping['competition_name']],
-        'value' => $entry[$competition_field_mapping['competition_name']],
-        'isSelected' => false
-      );
-      $competition_names[] = $single_competition;
-      unset($single_competition);
-    }
-
-    $scheduling_field_mapping = self::scheduling_page_field_id_array();
-    $search_field = $scheduling_field_mapping['active_competitions'];
-    $name_field = self::aria_find_field_by_id($form['fields'], $search_field);
-    $form['fields'][$name_field]->choices = $competition_names;
-  }
-
-  /**
-   * This function will find the field number with the specified ID.
-   *
-   * The function will search through the given array of fields and
-   * locate the field with the given ID number. The ID of the field
-   * is then returned.
-   * @param $fields   Array   The array of fields to search through
-   * @param $id       Float     The id of the array to search for
-   *
-   * @since 1.0.0
-   * @author KREW
-   */
-  public static function aria_find_field_by_id( $fields, $id ){
-    $field_num = 0;
-    foreach($fields as $key){
-      if($fields[$field_num]['id'] == $id){
+    $competition_names = array();file
         return $field_num;
       }
       $field_num++;
     }
     return null;
+  }
+
+  /**
+   * This function will create the scheduler object used for scheduling.
+   *
+   * This function will calculate the number of concurrent sections that are
+   * required to schedule all students that have registered for a music
+   * competition. Using this calculating, a custom scheduler object will be
+   * created and returned to the callee.
+   *
+   * @param $student_master_form_id 	Integer 	The form ID of the student master
+   *
+   * @return $scheduler 	Scheduler Object	The newly created scheduler object.
+   *
+   * @since 1.0.0
+   * @KREW
+   */
+  private static function aria_create_scheduler_object($student_master_form_id) {
+    $field_mapping = ARIA_API::aria_master_student_field_id_array();
+    $total_play_time = 0;
+    $total_play_time_per_level = 0;
+
+    // iterate through all registered students and calulate the total playing duration
+    for ($i = 1; $i <= 11; $i++) {
+      $search_criteria = array(
+        'field_filters' => array(
+          'mode' => 'any',
+          array(
+            'key' => $student_master_field_mapping['student_level'],
+            'value' => $i
+          )
+        )
+      );
+
+      $all_students_per_level = GFAPI::get_entries($student_master_form_id, $search_criteria);
+      foreach ($all_students_per_level as $student ) {
+        $total_play_time_per_level += $student[strval($field_mapping['timing_of_pieces'])];
+      }
+
+      $total_play_time += $total_play_time_per_level;
+    }
+
+    // Calculate the number of sections required
+    $num_sections = ceil(float($total_play_time / SECTION_TIME_LEN));
+    $num_sections_per_timeblock = float($num_sections / NUM_SECTIONS_PER_DAY);
+    $num_concurrent_sections = ceil($num_sections_per_timeblock);
+
+    $scheduler = new Scheduler(NUM_FESTIVAL_DAYS, NUM_SECTIONS_PER_DAY, $num_concurrent_sections);
+    return $scheduler;
   }
 }
