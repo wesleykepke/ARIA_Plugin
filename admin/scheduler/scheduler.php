@@ -41,8 +41,11 @@ class Scheduling_Algorithm {
 
     // create scheduler object based on number of participants
     //$scheduler = self::aria_create_scheduler_object($student_master_form_id);
+    //wp_die(print_r($scheduler));
 
     $scheduler = new Scheduler(2, 6, 2);
+
+    // iterate through all levels (1-11)
     for ($i = 1; $i <= 11; $i++) {
       $search_criteria = array(
         'field_filters' => array(
@@ -54,21 +57,54 @@ class Scheduling_Algorithm {
         )
       );
 
-      // modifying student (using &) for testing purposes only
-      $all_students_per_level = GFAPI::get_entries($student_master_form_id, $search_criteria);
-      foreach ($all_students_per_level as &$student ) {
-        // obtain student attributes
+      // schedule all students in a given level
+$sorting         = array();
+$paging          = array( 'offset' => 0, 'page_size' => 200 );
+$total_count     = 0;
+      $all_students_per_level = GFAPI::get_entries($student_master_form_id, $search_criteria, $sorting, $paging, $total_count);
+
+/*
+if ($i === 11) {
+  wp_die(count($all_students_per_level));
+}
+*/
+
+      foreach ($all_students_per_level as $student) {
+
+        //print_r($student);
+
+        // obtain student's first and last names
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
         $last_name = $student[strval($student_master_field_mapping['student_last_name'])];
-        $type = mt_rand(0, 3);
-        $day_preference = mt_rand(0, 1);
+
+        // determine type of student
+        $type = $student[strval($student_master_field_mapping['competition_format'])];
+
+        // determine the student's day preference
+        $day_preference = $student[strval($student_master_field_mapping['available_festival_days_saturday'])];
+        if (empty($student[strval($student_master_field_mapping['available_festival_days_saturday'])])) {
+          $day_preference = $student[strval($student_master_field_mapping['available_festival_days_sunday'])];
+        }
+
+        //$day_preference = mt_rand(0, 1);
+
+        // determine the student's skill level
         $skill_level = $student[strval($student_master_field_mapping['student_level'])];
+
+        // create a student object based on previously obtained information
         $modified_student = new Student($first_name, $last_name, $type, $day_preference, $skill_level);
 
-        // add student's songs
-        for ($j = 0; $j < 2; $j++) {
-          $modified_student->add_song('wesley song', mt_rand(1, 15));
-        }
+        // add student's first song
+/*
+        $modified_student->add_song($student[strval($student_master_field_mapping['song_1_selection'])],
+          $student[strval($student_master_field_mapping['timing_of_pieces'])]);
+*/
+
+        $modified_student->add_song('Wesley Song One', mt_rand(6, 15));
+        $modified_student->add_song('Wesley Song Two', 0);
+
+        // add student's second song
+        //$modified_student->add_song($student[strval($student_master_field_mapping['song_1_selection'])], 0);
 
         //wp_die(print_r($modified_student));
 
@@ -82,6 +118,7 @@ class Scheduling_Algorithm {
       }
     }
 
+    //wp_die();
     $scheduler->print_schedule();
   }
 
@@ -229,7 +266,7 @@ class Scheduling_Algorithm {
         'field_filters' => array(
           'mode' => 'any',
           array(
-            'key' => $student_master_field_mapping['student_level'],
+            'key' => $field_mapping['student_level'],
             'value' => $i
           )
         )
@@ -243,9 +280,14 @@ class Scheduling_Algorithm {
       $total_play_time += $total_play_time_per_level;
     }
 
+/*
+    echo "Total play time: " . $total_play_time . "<br>";
+    wp_die();
+*/
+
     // Calculate the number of sections required
-    $num_sections = ceil(float($total_play_time / SECTION_TIME_LEN));
-    $num_sections_per_timeblock = float($num_sections / NUM_SECTIONS_PER_DAY);
+    $num_sections = ceil(floatval($total_play_time / SECTION_TIME_LEN));
+    $num_sections_per_timeblock = floatval($num_sections / NUM_SECTIONS_PER_DAY);
     $num_concurrent_sections = ceil($num_sections_per_timeblock);
 
     $scheduler = new Scheduler(NUM_FESTIVAL_DAYS, NUM_SECTIONS_PER_DAY, $num_concurrent_sections);
