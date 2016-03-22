@@ -156,6 +156,16 @@ class ARIA {
     );
 
     /*
+    The action registered for this hook updates the list of teachers that
+    can be selected by students upon competition registration.
+    */
+    $this->loader->add_action(
+      'gform_enqueue_scripts',
+      'ARIA_Form_Hooks',
+      'aria_before_student_submission', 10, 2
+    );
+
+    /*
     The action registered for this hook is for adding scheduling functionality.
     */
     $this->loader->add_action(
@@ -163,6 +173,27 @@ class ARIA {
       'Scheduling_Algorithm',
       'aria_scheduling_algorithm', 10, 4
     );
+
+    /*
+    The action registered for this hook updates the list of competitions that
+    can be selected for adding a teacher to.
+    */
+    $this->loader->add_action(
+      'gform_enqueue_scripts',
+      'ARIA_Teacher',
+      'aria_before_teacher_upload', 10, 4
+    );
+
+    /*
+    The action registered for this hook is for adding a new teacher to a
+    specified music competition.
+    */
+    $this->loader->add_action(
+      'gform_confirmation',
+      'ARIA_Teacher',
+      'aria_after_teacher_upload', 10, 4
+    );
+
 
     /*
     The action registered for this hook is to invoke processing after the

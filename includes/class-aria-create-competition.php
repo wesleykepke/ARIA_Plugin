@@ -147,6 +147,16 @@ class ARIA_Create_Competition {
     $form->description .= ' fields in the form below in order to create a new';
     $form->description .= '  NNMTA music competition.';
 
+    // festival chairmans Email
+    $fc_email_field = new GF_Field_Email();
+    $fc_email_field->label = "Festival Chairman's Email";
+    $fc_email_field->id = $field_mappings['competition_festival_chairman_email'];
+    $fc_email_field->description = "Please enter your email address. This address";
+    $fc_email_field->description .= " will be used in the event you need to be";
+    $fc_email_field->description .= " contacted.";
+    $fc_email_field->descriptionPlacement = "above";
+    $fc_email_field->isRequired = true;
+
     // name
     $name_field = new GF_Field_Text();
     // !!! maybe this should be admin label and label should be like
@@ -353,6 +363,7 @@ class ARIA_Create_Competition {
     $theory_score_field->isRequired = false;
 
     // assign all of the previous attributes to our newly created form
+    $form->fields[] = $fc_email_field;
     $form->fields[] = $name_field;
     $form->fields[] = $start_date_field;
     $form->fields[] = $end_date_field;
@@ -1055,13 +1066,22 @@ class ARIA_Create_Competition {
     $ariaFieldIds['teacher_name'] = $piano_teachers_field->id;
 
     // student's piano teacher does not exist
-    $teacher_missing_field = new GF_Field_Text();
-    $teacher_missing_field->label = "If your teacher's name is not listed, ".
-    "enter name below.";
-    $teacher_missing_field->id = $field_id_array['not_listed_teacher_name'];
-    $teacher_missing_field->isRequired = false;
-    $student_form->fields[] = $teacher_missing_field;
-    $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field->id;
+    $teacher_missing_field_name = new GF_Field_Text();
+    $teacher_missing_field_name->label = "If your teacher's name is not listed, " .
+    "please enter your teacher's name below.";
+    $teacher_missing_field_name->id = $field_id_array['not_listed_teacher_name'];
+    $teacher_missing_field_name->isRequired = false;
+    $student_form->fields[] = $teacher_missing_field_name;
+    $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_name->id;
+
+    // student's piano teacher does not exist
+    $teacher_missing_field_email = new GF_Field_Email();
+    $teacher_missing_field_email->label = "If your teacher's name is not listed, " .
+    "please enter your teacher's email below.";
+    $teacher_missing_field_email->id = $field_id_array['not_listed_teacher_email'];
+    $teacher_missing_field_email->isRequired = false;
+    $student_form->fields[] = $teacher_missing_field_email;
+    $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_email->id;
 
     // student's available times to compete
     $available_times = new GF_Field_Checkbox();
