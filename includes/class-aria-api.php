@@ -268,7 +268,8 @@ class ARIA_API {
       'competition_command_performance_date' => 19,
       'competition_command_performance_time' => 20,
       'competition_theory_score' => 21,
-      'competition_judge_csv_upload' => 22
+      'competition_judge_csv_upload' => 22,
+      'competition_festival_chairman_email' => 23
     );
   }
 
@@ -361,15 +362,16 @@ class ARIA_API {
       'student_birthday' => 4,
       'teacher_name' => 5,
       'not_listed_teacher_name' => 6,
-      'available_festival_days' => 7,
-      'available_festival_days_saturday' => 7.1,
-      'available_festival_days_sunday' => 7.2,
-      'preferred_command_performance' => 8,
-      'preferred_command_performance_earlier' => 8.1,
-      'preferred_command_performance_later' => 8.2,
-      'student_level' => 9,
-      'compliance_statement' => 10,
-      'compliance_statement_agreement' => 10.1
+      'not_listed_teacher_email' => 7,
+      'available_festival_days' => 8,
+      'available_festival_days_saturday' => 8.1,
+      'available_festival_days_sunday' => 8.2,
+      'preferred_command_performance' => 9,
+      'preferred_command_performance_earlier' => 9.1,
+      'preferred_command_performance_later' => 9.2,
+      'student_level' => 10,
+      'compliance_statement' => 11,
+      'compliance_statement_agreement' => 12
     );
   }
 
@@ -526,6 +528,29 @@ class ARIA_API {
     }
 
     return $title;
+  }
+
+  /**
+   * This function will find the field number with the specified ID.
+   *
+   * The function will search through the given array of fields and
+   * locate the field with the given ID number. The ID of the field
+   * is then returned.
+   * @param $fields   Array   The array of fields to search through
+   * @param $id       Float     The id of the array to search for
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_find_field_by_id( $fields, $id ){
+    $field_num = 0;
+    foreach($fields as $key){
+      if($fields[$field_num]['id'] == $id){
+        return $field_num;
+      }
+      $field_num++;
+    }
+    return null;
   }
 
 	/**
