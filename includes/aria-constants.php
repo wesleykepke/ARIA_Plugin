@@ -52,9 +52,10 @@ const SECTION_COMMAND_PERFORMANCE = 3;
 // Constants used to help schedule the student on a particular day
 const SAT = 0;
 const SUN = 1;
-const COMMAND = 2;
+const COMMAND = 0;
 
 // Constants used to create scheduler object
 const NUM_FESTIVAL_DAYS = 2;
 const NUM_SECTIONS_PER_DAY = 6;
-const SECTION_TIME_LEN = 35;  
+const SECTION_TIME_LEN = 35;
+const SECTION_TIME_BUFFER = 5;
