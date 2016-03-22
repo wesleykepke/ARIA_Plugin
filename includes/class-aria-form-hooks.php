@@ -26,15 +26,46 @@ require_once("class-aria-create-competition.php");
  */
 class ARIA_Form_Hooks {
 
-  /*
-  The following two functions are intended only for testing purposes.
-  */
-  public static function after_student_master_submission($entry, $form) {
-    wp_die(json_encode($entry));
-  }
+  /**
+   * This function will prepopulate the teacher drop down menu.
+   *
+   * This function is responsible for taking all of the entries that exist
+   * in the associated competition's teacher master form and use those entries
+   * to pre-populate the drop-down menu.
+   *
+   * @param $form 	Form Object 	The current form object.
+   * @param $is_ajax 	Bool 	Specifies if the form is submitted via AJAX
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_before_student_submission($form, $is_ajax) {
+    // Only perform processing if it's a student form
+    if (!array_key_exists('isStudentPublicForm', $form)
+        || !$form['isStudentPublicForm']) {
+          return;
+    }
 
-  public static function aria_teacher_master_submission($entry, $form) {
-    wp_die(json_encode($entry));
+    // get all of the teacher entries in the form's teacher master form
+    $teacher_master_field_mapping = ARIA_API::aria_master_teacher_field_id_array();
+    $related_forms = $form['aria_relations'];
+    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id']);
+    $formatted_teacher_names = array();
+    foreach ($teacher_entries as $entry) {
+      $single_teacher = array(
+        'text' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
+        'value' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
+        'isSelected' => false
+      );
+      $formatted_teacher_names[] = $single_teacher;
+      unset($single_teacher);
+    }
+
+    // update the current form with the previously obtained teachers
+    $student_field_mapping = ARIA_API::aria_student_field_id_array();
+    $search_field = $student_field_mapping['teacher_name'];
+    $name_field = ARIA_API::aria_find_field_by_id($form['fields'], $search_field);
+    $form['fields'][$name_field]->choices = $formatted_teacher_names;
   }
 
   /**
