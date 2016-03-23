@@ -18,11 +18,12 @@ require_once(ARIA_ROOT . "/admin/scheduler/class-aria-section.php");
  *
  * This class defines a time block object, which will be used throughout the
  * scheduling process. This object will represent a given time block in a
- * competition, which can be considered to be a block of time (9:00 - 9:45)
- * that students will be scheduled in. For each time block, there will be a
- * an arbitrary number of concurrent sections that will be occuring
+ * competition, which can be considered to be a block of time (9:00 - 9:45, for
+ * example) that students will be scheduled in. For each time block, there will
+ * be an arbitrary number of concurrent sections that will be occuring
  * simultaneously (the number of concurrent sections is determined by the
- * festival chairman).
+ * festival chairman). These concurrent sections may be of different types
+ * (master, traditional, etc.) and even of different skill levels (1-11).
  *
  * @package    ARIA
  * @subpackage ARIA/admin
@@ -54,36 +55,14 @@ class TimeBlock {
    *
    * @since 1.0.0
    * @param	int 	$num_concurrent_sections 	The number of concurrent sections.
+   * @param	int 	$time_block_duration 	The length of the concurrent sections.
    */
-  function __construct($num_concurrent_sections) {
+  function __construct($num_concurrent_sections, $time_block_duration) {
     $this->num_concurrent_sections = $num_concurrent_sections;
-    $this->sections = new SplFixedArray($this->num_concurrent_sections);
-    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $this->sections[$i] = new Section();
+    $this->sections = new SplFixedArray($num_concurrent_sections);
+    for ($i = 0; $i < $num_concurrent_sections; $i++) {
+      $this->sections[$i] = new Section($time_block_duration);
     }
-
-    /*
-    echo "Just created new TimeBlock object..";
-    wp_die(print_r($this->sections));
-    */
-  }
-
-  /**
-   * The function used to check if a given time block is full.
-   *
-   * This function will iterate over all of the section objects in the current
-   * time block and will return true if all of the sections are full.
-   *
-   * @since 1.0.0
-   */
-  public function is_full() {
-    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      if ( !($this->sections[$i]->is_full()) ) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   /**
@@ -96,49 +75,28 @@ class TimeBlock {
    *
    * @since 1.0.0
    * @param	Student	$student	The student that needs to be scheduled.
+   *
+   * @return true if the student was added, false otherwise
    */
   public function schedule_student($student) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-
-      if ($this->student_can_be_added($student, $this->sections[$i])) {
-        if ($this->sections[$i]->add_student($student)) {
-          return true;
-        }
+      if ($this->sections[$i]->add_student($student)) {
+        return true;
       }
-
-      //echo 'scheduling in time block: ' . $this->num_concurrent_sections;
-      //wp_die('checking out of range index');
-
     }
 
-
-    //wp_die('could not schedule in time block');
     return false;
   }
 
   /**
-   * This function is used to check if a student can be added to a section.
+   * This function will assign a section within the current time block to be a
+   * master-class section.
    *
-   * This function is solely meant to simplify the condition that checks to see
-   * if a student can be added to a section in the function schedule_student.
-   *
-   * @since 1.0.0
-   * @param	Student	$student	The student that needs to be scheduled.
-   * @param	Section	$section	The section that the student is trying to be added to.
+   * @return true if section was designated as a master-class section, false otherwise
    */
-  private function student_can_be_added($student, $section) {
-    // student should match type of section (traditional, master-class, etc.)
-    // the skill level
-    $type_and_skill_match = ($section->get_type() === $student->get_type()) &&
-      ($section->get_skill_level() === $student->get_skill_level());
-
-    // if section is empty, no skill level or type have been assigned to it yet
-    if ($section->is_empty()) {
-      $type_and_skill_match = true;
-    }
-
-    if ( !($section->is_full()) ) {
-      if ($type_and_skill_match) {
+  public function assign_section_to_master() {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      if ($this->sections[$i]->assign_section_to_master()) {
         return true;
       }
     }
@@ -151,7 +109,7 @@ class TimeBlock {
    */
   public function print_schedule() {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      echo 'Section # ' . $i . '<br>';
+      echo '<b>Section # ' . $i . '</b><br>';
       $this->sections[$i]->print_schedule();
       echo '<br>';
     }
