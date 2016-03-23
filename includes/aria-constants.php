@@ -45,17 +45,20 @@ const TEACHER_MASTER = 4;
  * master-class, non-competitive, or command performance).
  */
 const SECTION_MASTER = 0;
-const SECTION_TRADITIONAL = 1;
-const SECTION_NON_COMPETITIVE = 2;
-const SECTION_COMMAND_PERFORMANCE = 3;
+const SECTION_OTHER = 1;
 
-// Constants used to help schedule the student on a particular day
+// Constants used to help offset into the scheduler object
 const SAT = 0;
 const SUN = 1;
 const COMMAND = 0;
+const EITHER = 2;
+
+// Constants used for student level
+const LOW_LEVEL = 1;
+const HIGH_LEVEL = 11;
 
 // Constants used to create scheduler object
-const NUM_FESTIVAL_DAYS = 2;
-const NUM_SECTIONS_PER_DAY = 6;
-const SECTION_TIME_LEN = 35;
-const SECTION_TIME_BUFFER = 5;
+const REGULAR_COMP = 0;
+const REGULAR_COMP_NUM_DAYS = 2;
+const COMMAND_COMP = 1;
+const COMMAND_COMP_NUM_DAYS = 1;
