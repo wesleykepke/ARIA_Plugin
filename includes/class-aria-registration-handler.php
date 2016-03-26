@@ -308,14 +308,17 @@ class ARIA_Registration_Handler {
     if($judging_field != null && ($teacher_prepop_vals['is_judging'] != "") ){
       //$form['fields'][$judging_field]= $teacher_prepop_vals['is_judging'];
       // loop through each choice
-      foreach($form['fields'][$judging_field]['choices'] as $choice){
+      for( $i = 0; $i < count($form['fields'][$judging_field]['choices']); $i++){
         // if choice value == prepop
-        if($choice['text'] == $teacher_prepop_vals['is_judging']){
+        if($form['fields'][$judging_field]['choices'][$i]['text'] == $teacher_prepop_vals['is_judging']){
           // set is selected
-          $choice['isSelected'] = true;
+          //$choice['isSelected'] = true;
+          $choices = $form['fields'][$judging_field]['choices'];
+          $choices[$i]['isSelected'] = true;
+          $form['fields'][$judging_field]['choices'] = $choices;
         }
       }
-      $form['fields'][$judging_field]['choices'] = $choices;
+      //$form['fields'][$judging_field]['choices'] = $choices;
     }
 //wp_die(print_r($form['fields'][$judging_field]));
 //wp_die(print_r($teacher_prepop_vals));
