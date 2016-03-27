@@ -10,8 +10,6 @@
  * @subpackage ARIA/admin
  */
 
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-song.php");
-
 /**
  * The student object used for scheduling.
  *
@@ -41,7 +39,7 @@ class Student {
    *
    * @since 1.0.0
    * @access private
-   * @var 	string 	$last_name 	The first name of the student.
+   * @var 	string 	$last_name 	The last name of the student.
    */
   private $last_name;
 
@@ -74,7 +72,7 @@ class Student {
   private $day_preference;
 
   /**
-   * The skill level of thr student (0-11).
+   * The skill level of the student (0-11).
    *
    * @since 1.0.0
    * @access private
@@ -83,38 +81,51 @@ class Student {
   private $skill_level;
 
   /**
+   * The play time duration of the student.
+   *
+   * This will represent the total amount of time (in minutes) that the student
+   * needs to play his/her songs in the competition.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$play_time 	The total amount of playing time.
+   */
+  private $play_time;
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
    * @param	string	$first_name 	The first name of the student.
-   * @param	string 	$last_name 	The last name of the student.
-   * @param	int 	$type 	The type of section the student registered as.
-   * @param	int 	$day_preference 	The day that the student would like to compete.
-   * @param	int 	$skill_level 	The skill level that the student identifies as.
+   * @param	string	$last_name 	The last name of the student.
+   * @param	int $type 	The type of section the student registered as.
+   * @param	int $day_preference 	The day that the student would like to compete.
+   * @param	int $skill_level 	The skill level that the student identifies as.
+   * @param int	$play_time	The total play time that the student requires.
    */
-  function __construct($first_name, $last_name, $type, $day_preference, $skill_level) {
+  function __construct($first_name, $last_name, $type, $day_preference,
+                       $skill_level, $play_time) {
     $this->first_name = $first_name;
     $this->last_name = $last_name;
     $this->type = $type;
     $this->songs = array();
     $this->day_preference = $day_preference;
     $this->skill_level = $skill_level;
+    $this->play_time = $play_time;
   }
 
   /**
    * The function used to add a song to the student's list of songs.
    *
-   * This function will create a new song object according to the paramaters
-   * passed to this function and add this new song object to the list of songs
-   * that the student will be performing during the competition.
+   * This function will simply append the song that is passed as a parameter
+   * to the students list of songs that he/she is playing in the competition.
    *
    * @since 1.0.0
    * @param	string	$song_name 	The name of the song.
    * @param	string 	$song_duration 	The duration of the song.
    */
-  public function add_song($song_name, $song_duration) {
-    $song = new Song($song_name, $song_duration);
-    $this->songs[] = $song;
+  public function add_song($song_name) {
+    $this->songs[] = $song_name;
   }
 
   /**
@@ -122,7 +133,7 @@ class Student {
    * registered for.
    *
    * @since 1.0.0
-   * @return integer Represents type of section that the student registered for.
+   * @return int Represents type of section that the student registered for.
    */
   public function get_type() {
     return $this->type;
@@ -136,10 +147,21 @@ class Student {
    */
   public function get_day_preference() {
     return $this->day_preference;
+/*
+    if (strcmp($this->day_preference, "Saturday") == 0) {
+      return SAT;
+    }
+    else if (strcmp($this->day_preference, "Sunday") == 0) {
+      return SUN;
+    }
+    else {
+      return COMMAND;
+    }
+*/
   }
 
   /**
-   * The function will skill level of the student.
+   * The function will return the skill level of the student.
    *
    * @since 1.0.0
    * @return integer Represents the student's skill level (0-11)
@@ -149,21 +171,29 @@ class Student {
   }
 
   /**
-   * The function will return the  total amount of time for the student to play
+   * The function will return the total amount of time for the student to play
    * his/her songs.
    *
    * @since 1.0.0
    * @return integer Represents the student's total song time.
    */
   public function get_total_play_time() {
-    $total_time = 0;
-    for ($i = 0; $i < count($this->songs); $i++) {
-      $total_time += $this->songs[$i]->get_song_duration();
-    }
-    return $total_time;
+    return $this->play_time;
   }
 
+  /**
+   * The function will return an associative array that contains all of the
+   * information associated with a student.
+   *
+   * The associative array can be iterated over in a print function and will
+   * return a formatted output that displays all information that is stored
+   * about a particular student.
+   *
+   * @since 1.0.0
+   * @return array Represents all information stored about a student.
+   */
   public function get_student_info() {
+    // student type will be returned as a string
     $type = null;
     switch ($this->type) {
       case SECTION_COMMAND_PERFORMANCE:
@@ -183,23 +213,29 @@ class Student {
       break;
     }
 
-    $day = null;
+    // student day preference will be returned as a string
+    $day_preference = null;
     switch ($this->day_preference) {
       case SAT:
-        $day = "Saturday";
+        $day_preference = "Saturday";
       break;
 
       case SUN:
-        $day = "Sunday";
+        $day_preference = "Sunday";
+      break;
+
+      case COMMAND:
+        $day_preference = "Command";
       break;
     }
 
     return array(
-      'Student Name' => $this->first_name . ' ' . $this->last_name,
-      'Student Type' => $type,
-      'Student Day Preference' => $day,
-      'Student Songs' => $this->songs,
-      'Student Skill Level' => $this->skill_level
+      '<b>Student Name</b>' => $this->first_name . ' ' . $this->last_name,
+      '<b>Student Type</b>' => $type,
+      '<b>Student Day Preference</b>' => $day_preference,
+      '<b>Student Songs</b>' => $this->songs,
+      '<b>Student Skill Level</b>' => $this->skill_level,
+      '<b>Student Playing Duration</b>' => $this->play_time
     );
   }
 
@@ -213,5 +249,7 @@ class Student {
     unset($this->last_name);
     unset($this->type);
     unset($this->songs);
+    unset($this->skill_level);
+    unset($this->play_time);
   }
 }

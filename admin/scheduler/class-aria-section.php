@@ -11,7 +11,6 @@
  */
 
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-section.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
 
 /**
@@ -24,7 +23,7 @@ require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
  * given section, the type of section that it is (traditional, master-class,
  * non-competitive, or command performance), the current time that it would
  * take to allow all students to play their pieces in a given section, and
- * finally, functionality with determining whether the given section is full
+ * finally, functionality for determining whether the given section is full
  * or can accomodate more students.
  *
  * @package    ARIA
@@ -34,17 +33,12 @@ require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
 class Section {
 
   /**
-   * The time limit per section.
-   */
-  const SECTION_TIME_LIMIT = 35;
-
-  /**
    * The type of section (either traditional, master-class, non-competitive, or
    * command performance).
    *
    * @since 1.0.0
    * @access private
-   * @var 	string 	$type 	The type of section for the given section.
+   * @var 	int 	$type 	The type of the current section.
    */
   private $type;
 
@@ -60,11 +54,26 @@ class Section {
   private $students;
 
   /**
+   * The time limit for each section.
+   *
+   * This represents how long each section will last. Typically, these sections
+   * are 45 minutes in length, but the festival chairman has the ability to
+   * assign sections to a different time length if he/she would like to.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$section_time_limit 	The total duration of each section.
+   */
+  private $section_time_limit;
+
+  /**
    * The total time that it would take for all students currently registered
    * for the given section to play the musical pieces they have signed up for.
    *
-   * Since the sections are 45 minutes and judges need time to score students
-   * after they compete, this value should not exceed 35.
+   * Since judges need time to score students in a section, this value should
+   * not exceed ($section_time_limit * 0.8). In other words, 20% of the given
+   * time for a section will be allocated to judging. This value will be given
+   * it's own class variable (see $music_time_limit below).
    *
    * @since 1.0.0
    * @access private
@@ -73,9 +82,24 @@ class Section {
   private $current_time;
 
   /**
+   * The music time limit for each section.
+   *
+   * This represents how much time in a given section can be allocated to the
+   * students performing music. As mentioned in the documentation for
+   * $current_time, this value will be 80% of the $section_time_limit, which is
+   * the total amount of time that is allocated for a given section.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$music_time_limit 	The total play duration of each section.
+   */
+  private $music_time_limit;
+
+  /**
    * The skill level of the students in this section.
    *
-   * This will be an integer value in the range of 0-11.
+   * This will be an integer value in the range of 0-11. Typically, each section
+   * will only consist of students from a single level.
    *
    * @since 1.0.0
    * @access private
@@ -84,27 +108,18 @@ class Section {
   private $skill_level;
 
   /**
-   * The constructor used to instantiate a new section object.
+   * The constructor used to instantiate a new section object. The default
+   * play time for a section will be 45 minutes unless otherwise specified.
    *
    * @since 1.0.0
    */
-  function __construct() {
+  function __construct($section_time_limit = 45) {
     $this->type = null;
     $this->students = array();
+    $this->section_time_limit = $section_time_limit;
     $this->current_time = 0;
+    $this->music_time_limit = ceil($section_time_limit * 0.8);
     $this->skill_level = null;
-  }
-
-  /**
-   * The function used to determine if a section is full.
-   *
-   * This function will compare the current playing time with the section time
-   * limit and determine if there is still enough time to add another student.
-   *
-   * @return true if section is full, false otherwise
-   */
-  public function is_full() {
-    return ($this->current_time > self::SECTION_TIME_LIMIT);
   }
 
   /**
@@ -116,7 +131,7 @@ class Section {
    * @return true if section is empty, false otherwise
    */
   public function is_empty() {
-    return (empty($this->students));
+    return (empty($this->students) && ($this->current_time === 0));
   }
 
   /**
@@ -138,6 +153,21 @@ class Section {
   }
 
   /**
+   * The function used to predefine the type of a current section as master.
+   *
+   * @return void
+   */
+  public function assign_section_to_master() {
+    $assigned_to_master = false;
+    if (is_null($this->type)) {
+      $this->type = SECTION_MASTER;
+      $assigned_to_master = true;
+    }
+
+    return $assigned_to_master;
+  }
+
+  /**
    * The function used to add a student to the current section.
    *
    * If the current section matches the type of student competing (traditional,
@@ -151,26 +181,26 @@ class Section {
    * @return true if student was added, false otherwise
    */
   public function add_student($student) {
-    // Section type not yet determined (section is empty)
-    if (is_null($this->type)) {
-      $this->type = $student->get_type();
-    }
-
-    // Section skill level not yet determined (section is empty)
-    if (is_null($this->skill_level)) {
-      $this->skill_level = $student->get_skill_level();
-    }
-
-    if ($this->is_full()) {
+    // check if adding student will cause time section to overflow
+    if (($student->get_total_play_time() + $this->current_time) > $this->music_time_limit) {
       return false;
     }
 
-    // Incoming student doesn't meet criteria of section
+    // check if the incoming student doesn't meet criteria of section
+    /*
+    come back to this.. may relax the restriction of one skill level per section
+    */
     if (($this->type !== $student->get_type()) || ($this->skill_level !== $student->get_skill_level())) {
       return false;
     }
 
-    // Add student to this section
+    // check if the section is empty
+    if ($this->is_empty()) {
+      $this->type = $student->get_type();
+      $this->skill_level = $student->get_skill_level();
+    }
+
+    // add student to this section
     $this->students[] = $student;
     $this->current_time += $student->get_total_play_time();
     return true;
@@ -178,6 +208,12 @@ class Section {
 
   /**
    * This function will print all the students in given section.
+   *
+   * This function will iterate through all of the students that are registered
+   * for the given section, obtain their information, and print out all of this
+   * information.
+   *
+   * @return void
    */
   public function print_schedule() {
     for ($i = 0; $i < count($this->students); $i++) {
@@ -187,27 +223,13 @@ class Section {
         if (is_array($value)) {
           for ($j = 0; $j < count($value); $j++) {
             echo $value[$j]->get_song_name() . "<br>";
-            echo $value[$j]->get_song_duration() . "<br>";
           }
         }
         else {
           echo $value . "<br>";
         }
       }
-
-/*
-      for ($j = 0; $j < count($student_info); $j++) {
-        if (is_array($student_info[$j])) {
-          for ($k = 0; $k < count($student_info[$j]); $k++) {
-            echo $student_info[$j][$k]->get_song_name() . "<br>";
-            echo $student_info[$j][$k]->get_song_duration() . "<br>";
-          }
-        }
-        else {
-          echo $student_info[$j] . "<br>";
-        }
-      }
-*/
+      unset($student_info);
     }
   }
 
@@ -219,6 +241,9 @@ class Section {
   function __destruct() {
     unset($this->type);
     unset($this->students);
+    unset($this->section_time_limit);
     unset($this->current_time);
+    unset($this->music_time_limit);
+    unset($this->skill_level);
   }
 }
