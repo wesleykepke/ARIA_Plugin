@@ -114,8 +114,6 @@ class ARIA_Registration_Handler {
 	 */
   public static function aria_find_teacher_entry($teacher_master_form_id, $teacher_hash) {
 
-//wp_die('teacher hash inside find: ' . $teacher_hash);
-
     $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
 
     // check to see if any of the entries in the teacher master have $teacher_hash
@@ -131,7 +129,6 @@ class ARIA_Registration_Handler {
 
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
 
-//wp_die(print_r($entries));
 
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
       // it's reaching this wp_die()

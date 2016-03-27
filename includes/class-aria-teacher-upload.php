@@ -192,7 +192,7 @@ class ARIA_Teacher {
     // only perform processing is the teacher upload form was used
     if (!array_key_exists('isSingleTeacherUploadForm', $form)
         || !$form['isSingleTeacherUploadForm']) {
-      return;
+      return $confirmation;
     }
 
     //wp_die(print_r($entry));

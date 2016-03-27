@@ -30,7 +30,7 @@ class Scheduling_Algorithm {
     // Only perform processing if it's the scheduler form
     if (!array_key_exists('isScheduleForm', $form)
         || !$form['isScheduleForm']) {
-          return;
+          return $confirmation;
     }
 
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
@@ -83,6 +83,7 @@ class Scheduling_Algorithm {
     }
 
     $scheduler->print_schedule();
+    return $confirmation;
   }
 
   /**
