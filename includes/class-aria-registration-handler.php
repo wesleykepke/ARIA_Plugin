@@ -114,8 +114,6 @@ class ARIA_Registration_Handler {
 	 */
   public static function aria_find_teacher_entry($teacher_master_form_id, $teacher_hash) {
 
-//wp_die('teacher hash inside find: ' . $teacher_hash);
-
     $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
 
     // check to see if any of the entries in the teacher master have $teacher_hash
@@ -131,7 +129,6 @@ class ARIA_Registration_Handler {
 
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
 
-//wp_die(print_r($entries));
 
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
       // it's reaching this wp_die()
@@ -308,14 +305,17 @@ class ARIA_Registration_Handler {
     if($judging_field != null && ($teacher_prepop_vals['is_judging'] != "") ){
       //$form['fields'][$judging_field]= $teacher_prepop_vals['is_judging'];
       // loop through each choice
-      foreach($form['fields'][$judging_field]['choices'] as $choice){
+      for( $i = 0; $i < count($form['fields'][$judging_field]['choices']); $i++){
         // if choice value == prepop
-        if($choice['text'] == $teacher_prepop_vals['is_judging']){
+        if($form['fields'][$judging_field]['choices'][$i]['text'] == $teacher_prepop_vals['is_judging']){
           // set is selected
-          $choice['isSelected'] = true;
+          //$choice['isSelected'] = true;
+          $choices = $form['fields'][$judging_field]['choices'];
+          $choices[$i]['isSelected'] = true;
+          $form['fields'][$judging_field]['choices'] = $choices;
         }
       }
-      $form['fields'][$judging_field]['choices'] = $choices;
+      //$form['fields'][$judging_field]['choices'] = $choices;
     }
 //wp_die(print_r($form['fields'][$judging_field]));
 //wp_die(print_r($teacher_prepop_vals));

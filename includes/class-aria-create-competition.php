@@ -67,7 +67,7 @@ class ARIA_Create_Competition {
     // Only perform processing if it's the create competition form
     if (!array_key_exists('isCompetitionCreationForm', $form)
         || !$form['isCompetitionCreationForm']) {
-          return;
+          return $confirmation;
     }
 
     $field_mapping = ARIA_API::aria_competition_field_id_array();
@@ -387,6 +387,9 @@ class ARIA_Create_Competition {
     $form->fields[] = $command_perf_date_field;
     $form->fields[] = $command_performance_time_field;
     $form->fields[] = $theory_score_field;
+
+    $form->confirmation['type'] = 'message';
+    $form->confirmation['message'] = 'Successful';
 
     // identify form as necessary
     $form_array = $form->createFormArray();
@@ -951,11 +954,11 @@ class ARIA_Create_Competition {
 
     // custom submission message to let the festival chairman know the creation was
     // a success
-    $successful_submission_message = 'Congratulations! You have just successfully registered';
+  /*  $successful_submission_message = 'Congratulations! You have just successfully registered';
     $successful_submission_message .= ' one your students.';
     $competition_creation_form->confirmation['type'] = 'message';
     $competition_creation_form->confirmation['message'] = $successful_submission_message;
-
+*/
     $successful_submission_message = 'Congratulations! You have just';
     $successful_submission_message .= ' successfully registered your student.';
     $teacher_form->confirmation['type'] = 'message';
@@ -1181,6 +1184,7 @@ class ARIA_Create_Competition {
 
     // custom submission message to let the festival chairman know the creation was
     // a success
+    
     $successful_submission_message = 'Congratulations! You have just';
     $successful_submission_message .= ' successfully registered your child.';
     $student_form->confirmation['type'] = 'message';

@@ -30,7 +30,7 @@ class Scheduling_Algorithm {
     // only perform processing if it's the scheduler form
     if (!array_key_exists('isScheduleForm', $form)
         || !$form['isScheduleForm']) {
-          return;
+          return $confirmation;
     }
 
     /*
@@ -164,7 +164,8 @@ class Scheduling_Algorithm {
 
     // print the schedule
     $scheduler->print_schedule();
-    wp_die(); 
+    return $confirmation;
+
   }
 
   /**
