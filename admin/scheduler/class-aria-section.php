@@ -72,8 +72,8 @@ class Section {
    *
    * Since judges need time to score students in a section, this value should
    * not exceed ($section_time_limit * 0.8). In other words, 20% of the given
-   * time for a section will be allocated to judging. This value will be given
-   * it's own class variable (see $music_time_limit below).
+   * time for a section will be allocated to judging. This value can be found
+   * in the ARIA constants file and is called PLAY_TIME_FACTOR.
    *
    * @since 1.0.0
    * @access private
@@ -118,7 +118,7 @@ class Section {
     $this->students = array();
     $this->section_time_limit = $section_time_limit;
     $this->current_time = 0;
-    $this->music_time_limit = ceil($section_time_limit * 0.8);
+    $this->music_time_limit = ceil($section_time_limit * PLAY_TIME_FACTOR);
     $this->skill_level = null;
   }
 
@@ -186,18 +186,18 @@ class Section {
       return false;
     }
 
+    // check if the section is empty
+    if ($this->is_empty()) {
+      $this->type = $student->get_type();
+      $this->skill_level = $student->get_skill_level();
+    }
+
     // check if the incoming student doesn't meet criteria of section
     /*
     come back to this.. may relax the restriction of one skill level per section
     */
     if (($this->type !== $student->get_type()) || ($this->skill_level !== $student->get_skill_level())) {
       return false;
-    }
-
-    // check if the section is empty
-    if ($this->is_empty()) {
-      $this->type = $student->get_type();
-      $this->skill_level = $student->get_skill_level();
     }
 
     // add student to this section
