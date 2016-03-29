@@ -160,7 +160,7 @@ class Scheduler {
 
     // create the time blocks with their concurrent sections (one) for command performance
     $this->days[COMMAND] = new SplFixedArray($num_time_blocks);
-    for ($i = 0; $i < $num_time_blocks_sat; $i++) {
+    for ($i = 0; $i < $num_time_blocks; $i++) {
       $this->days[COMMAND][$i] = new TimeBlock(1, $time_block_duration);
     }
   }
@@ -177,8 +177,27 @@ class Scheduler {
   public function schedule_student($student) {
     $scheduled = false;
     $current_time_block = 0;
-    while (!$scheduled && $current_time_block < $this->num_time_blocks_per_day) {
-      if ($this->days[$student->get_day_preference()][$current_time_block]->schedule_student($student)) {
+
+    // get the student's day preference
+    $day_preference = $student->get_day_preference();
+    $preferred_day_num_time_blocks = 0;
+    switch ($day_preference) {
+      case SAT:
+        $preferred_day_num_time_blocks = $this->days[SAT]->getSize();
+      break;
+
+      case SUN:
+        $preferred_day_num_time_blocks = $this->days[SUN]->getSize();
+      break;
+
+      case COMMAND:
+        $preferred_day_num_time_blocks = $this->days[COMMAND]->getSize();
+      break;
+    }
+
+    // continue to try and schedule student until he/she is successfully registered
+    while (!$scheduled && $current_time_block < $preferred_day_num_time_blocks) {
+      if ($this->days[$day_preference][$current_time_block]->schedule_student($student)) {
         $scheduled = true;
       }
       $current_time_block++;
@@ -187,6 +206,7 @@ class Scheduler {
     // Student was unable to be scheduled for their requested date
     if ($current_time_block > $this->num_time_blocks_per_day && !$scheduled) {
       // might want to try adding them on another competition day?
+      wp_die('Errored to line 209 -- student did not get scheduled in their day preference.');
       return false;
     }
 
