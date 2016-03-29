@@ -186,18 +186,29 @@ class ARIA_Registration_Handler {
 
 		$field_ids = ARIA_API::aria_master_teacher_field_id_array();
 
-/*	!!!	foreach($field_ids as $field => $id){
-			wp_die(print_r((string)$field));
-		}*/
-		//wp_die(print_r($field_ids));
+    $volunteer_pref_array = array();
+    foreach($entries[0] as $key => $value){
+      //wp_die(intval($key));
+      if( intval($key) == (int) $field_ids['volunteer_preference'] ){
+        $volunteer_pref_array[$key] = $value;
+      }
+    }
+
+    $volunteer_time_array = array();
+    foreach($entries[0] as $key => $value){
+      //wp_die(intval($key));
+      if( intval($key) == (int) $field_ids['volunteer_time'] ){
+        $volunteer_time_array[$key] = $value;
+      }
+    }
 
 		return array(
 			'first_name' => rgar( $entries[0], (string) $field_ids['first_name'] ),
 			'last_name' => rgar( $entries[0], (string) $field_ids['last_name'] ),
 			'email' => rgar( $entries[0], (string) $field_ids['email'] ),
 			'phone' => rgar( $entries[0], (string) $field_ids['phone'] ),
-			'volunteer_preference' => rgar( $entries[0], (string) $field_ids['volunteer_preference'] ),
-			'volunteer_time' => rgar( $entries[0], (string) $field_ids['volunteer_time'] ),
+			'volunteer_preference' => $volunteer_pref_array,
+			'volunteer_time' => $volunteer_time_array,
 			'students' => rgar( $entries[0], (string) $field_ids['students'] ),
 			'is_judging' => rgar( $entries[0], (string) $field_ids['is_judging'] ),
 			'teacher_hash' => rgar( $entries[0], (string) $field_ids['teacher_hash'])
@@ -299,29 +310,44 @@ class ARIA_Registration_Handler {
       $form['fields'][$phone_field]['defaultValue'] = $teacher_prepop_vals['phone'];
     }
 
-    // !!! not finished Prepopulate teacher judge
+    // Prepopulate teacher judging
     $search_field = $teacher_public_fields['is_judging'];
     $judging_field = self::aria_find_field_by_id($form['fields'], $search_field);
     if($judging_field != null && ($teacher_prepop_vals['is_judging'] != "") ){
-      //$form['fields'][$judging_field]= $teacher_prepop_vals['is_judging'];
       // loop through each choice
+          $choices = $form['fields'][$judging_field]['choices'];
       for( $i = 0; $i < count($form['fields'][$judging_field]['choices']); $i++){
-        // if choice value == prepop
         if($form['fields'][$judging_field]['choices'][$i]['text'] == $teacher_prepop_vals['is_judging']){
           // set is selected
-          //$choice['isSelected'] = true;
-          $choices = $form['fields'][$judging_field]['choices'];
           $choices[$i]['isSelected'] = true;
-          $form['fields'][$judging_field]['choices'] = $choices;
         }
       }
-      //$form['fields'][$judging_field]['choices'] = $choices;
+          $form['fields'][$judging_field]['choices'] = $choices;
     }
-//wp_die(print_r($form['fields'][$judging_field]));
-//wp_die(print_r($teacher_prepop_vals));
+
     // Prepopulate teacher volunteer pref
+    $search_field = $teacher_public_fields['volunteer_preference'];
+    $preference_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    $choices = $form['fields'][$preference_field]['choices'];
+    foreach($teacher_prepop_vals['volunteer_preference'] as $pref){
+      if($pref != null){
+        $choice = self::aria_find_choice_by_val($choices, $pref);
+        $choices[$choice]['isSelected'] = true;
+      }
+    }
+    $form['fields'][$preference_field]['choices'] = $choices;
 
     // Prepopulate teacher volunteer times
+    $search_field = $teacher_public_fields['volunteer_time'];
+    $preference_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    $choices = $form['fields'][$preference_field]['choices'];
+    foreach($teacher_prepop_vals['volunteer_time'] as $pref){
+      if($pref != null){
+        $choice = self::aria_find_choice_by_val($choices, $pref);
+        $choices[$choice]['isSelected'] = true;
+      }
+    }
+    $form['fields'][$preference_field]['choices'] = $choices;
 
 	  // Prepopulate student name
 	  $search_field = $teacher_public_fields['student_name'];
@@ -345,7 +371,6 @@ class ARIA_Registration_Handler {
 	  $level = $form['fields'][$level_field]['choices'];
 	  $level[$student_prepop_vals['student_level']-1]['isSelected'] = true;
 	  $form['fields'][$level_field]['choices'] = $level;
-	  //wp_die(print_r($student_prepopulation_values));
 	}
 
 	  /**
@@ -367,6 +392,16 @@ class ARIA_Registration_Handler {
         return $field_num;
       }
       $field_num++;
+    }
+    return null;
+  }
+
+  public static function aria_find_choice_by_val( $choices, $val ){
+    for($i = 0; $i < count($choices); $i++){
+      //wp_die(print_r($choices));
+      if($choices[$i]['value'] == $val){
+        return $i;
+      }
     }
     return null;
   }
