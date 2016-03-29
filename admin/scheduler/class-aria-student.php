@@ -147,17 +147,6 @@ class Student {
    */
   public function get_day_preference() {
     return $this->day_preference;
-/*
-    if (strcmp($this->day_preference, "Saturday") == 0) {
-      return SAT;
-    }
-    else if (strcmp($this->day_preference, "Sunday") == 0) {
-      return SUN;
-    }
-    else {
-      return COMMAND;
-    }
-*/
   }
 
   /**
@@ -196,16 +185,8 @@ class Student {
     // student type will be returned as a string
     $type = null;
     switch ($this->type) {
-      case SECTION_COMMAND_PERFORMANCE:
-        $type = "Command";
-      break;
-
-      case SECTION_TRADITIONAL:
-        $type = "Traditional";
-      break;
-
-      case SECTION_NON_COMPETITIVE:
-        $type = "Non-competitive";
+      case SECTION_OTHER:
+        $type = "Traditional/Non-Competitive/Command";
       break;
 
       case SECTION_MASTER:
