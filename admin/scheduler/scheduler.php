@@ -81,7 +81,7 @@ class Scheduling_Algorithm {
     }
 
     // create scheduler object using input parameters from festival chairman
-    $scheduler = new Scheduler(REGULAR_COMP, REGULAR_COMP_NUM_DAYS);
+    $scheduler = new Scheduler(REGULAR_COMP);
     $scheduler->create_normal_competition($num_time_blocks_sat,
 	                                        $num_time_blocks_sun,
 	                                        $time_block_duration,
@@ -384,7 +384,7 @@ class Scheduling_Algorithm {
     }
 
     // calculate total time for competition based on festival chairman input
-    $music_time_limit = ceil($time_block_duration * 0.8); // judging requires 20% of section time
+    $music_time_limit = ceil($time_block_duration * PLAY_TIME_FACTOR); // judging requires 20% of section time
     $total_time_saturday = $num_time_blocks_sat * $num_concurrent_sections_sat * $music_time_limit;
     $total_time_sunday = $num_time_blocks_sun * $num_concurrent_sections_sun * $music_time_limit;
 
@@ -472,7 +472,7 @@ class Scheduling_Algorithm {
         if ($day_preference == "Saturday") {
           $all_students_per_level[SAT] += $total_play_time;
         }
-        else if ($day_preference == "Saturday") {
+        else if ($day_preference == "Sunday") {
           $all_students_per_level[SUN] += $total_play_time;
         }
         else {
