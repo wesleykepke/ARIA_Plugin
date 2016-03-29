@@ -53,7 +53,6 @@ class ARIA_Registration_Handler {
     $message .= " registering your student: " . $teacher_url;
 
     $subject = "NNMTA Music Competition - Registration";
-
     if (!wp_mail((string)$teacher_email, $subject, $message)) {
       wp_die('Teacher registration email failed to send.');
     }
