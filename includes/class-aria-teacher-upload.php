@@ -128,7 +128,7 @@ class ARIA_Teacher {
       wp_die($new_form_id->get_error_message());
     }
     else {
-      ARIA_API::aria_publish_form(TEACHER_UPLOAD_FORM_NAME, $new_form_id);
+      ARIA_API::aria_publish_form(TEACHER_UPLOAD_FORM_NAME, $new_form_id, CHAIRMAN_PASS);
     }
   }
 
