@@ -12,7 +12,7 @@
  */
 
 //require_once("class-aria-api.php");
-
+require_once("class-gf-form.php");
 /**
  * The create master forms class.
  *
