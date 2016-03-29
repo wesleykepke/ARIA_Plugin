@@ -37,6 +37,7 @@ class ARIA_Activator {
     // make sure that the Gravity Forms plugin is enabled
     if (is_plugin_active('gravityforms/gravityforms.php')) {
       // create various forms upon initialization
+      require_once( 'class-gf-form.php' );
       require_once("class-aria-create-competition.php");
       require_once("class-aria-music.php");
       require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
