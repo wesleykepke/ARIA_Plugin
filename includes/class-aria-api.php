@@ -269,7 +269,8 @@ class ARIA_API {
       'competition_command_performance_time' => 20,
       'competition_theory_score' => 21,
       'competition_judge_csv_upload' => 22,
-      'competition_festival_chairman_email' => 23
+      'competition_festival_chairman_email' => 23,
+      'competition_command_performance_opt' => 24
     );
   }
 
@@ -364,11 +365,7 @@ class ARIA_API {
       'not_listed_teacher_name' => 6,
       'not_listed_teacher_email' => 7,
       'available_festival_days' => 8,
-      'available_festival_days_saturday' => 8.1,
-      'available_festival_days_sunday' => 8.2,
       'preferred_command_performance' => 9,
-      'preferred_command_performance_earlier' => 9.1,
-      'preferred_command_performance_later' => 9.2,
       'student_level' => 10,
       'compliance_statement' => 11,
       'compliance_statement_agreement' => 12
@@ -410,11 +407,7 @@ class ARIA_API {
       'teacher_name' => 5,
       'not_listed_teacher_name' => 6,
       'available_festival_days' => 7,
-      'available_festival_days_saturday' => 7.1,
-      'available_festival_days_sunday' => 7.2,
       'preferred_command_performance' => 8,
-      'preferred_command_performance_earlier' => 8.1,
-      'preferred_command_performance_later' => 8.2,
 	    'song_1_period' => 9,
 	    'song_1_composer' => 10,
 	    'song_1_selection' => 11,
@@ -462,10 +455,10 @@ class ARIA_API {
       'email' => 3,
       'phone' => 4,
       'teacher_hash' => 5,
-      'student_hash' => 6, // needs checking!
-      'volunteer_preference' => 7, // needs checking!
-      'volunteer_time' => 8, // needs checking!
-      'is_judging' => 9 // needs checking!
+      'student_hash' => 6,
+      'volunteer_preference' => 7, 
+      'volunteer_time' => 8, 
+      'is_judging' => 9
     );
   }
 
