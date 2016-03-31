@@ -321,12 +321,15 @@ class ARIA_API {
       'is_judging' => 17, // !!!DO WE WANT TO CHANGE THIS NUMBER
       'student_level' => 18,
       'alt_song_2_composer' => 19,
-      'alt_song_2_selection' => 20,
+      'alt_song_2_selection' => 20
+    );
+    /*
+    ,
       'alt_song_2_key' => 21,
       'alt_song_2_movement_number' => 22,
       'alt_song_2_movement_description' => 23,
       'alt_song_2_identifying_number' => 24
-    );
+      */
   }
 
   /**

@@ -843,6 +843,12 @@ class ARIA_Create_Competition {
     $alt_song_two_selection_field->label = "Song 2 Piece Title";
     $alt_song_two_selection_field->id = $field_id_arr['alt_song_2_selection'];
     $alt_song_two_selection_field->isRequired = true;
+    $alt_song_two_selection_field->description = "Please be as descriptive as possible.";
+    $alt_song_two_selection_field->description .= "If applicable, include key (D Major, F Minor, etc.), ";
+    $alt_song_two_selection_field->description .= "movement number (1st, 2nd, etc.), ";
+    $alt_song_two_selection_field->description .= "movement description (Adante, Rondo Allegro Comodo, etc.), ";
+    $alt_song_two_selection_field->description .= "identifying number (BWV, Opus, etc.).";
+    $alt_song_two_selection_field->descriptionPlacement = 'above';
     $alt_song_two_selection_field->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
@@ -851,7 +857,7 @@ class ARIA_Create_Competition {
     $teacher_form->fields[] = $alt_song_two_selection_field;
     $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection_field->id;
 
-
+/*
     // Key (e.g. D Major, F Minor)
     $alt_song_two_key_field = new GF_Field_Text();
     $alt_song_two_key_field->label = "Song 2 Key";
@@ -911,7 +917,7 @@ class ARIA_Create_Competition {
     $alt_song_two_identifying_num_field->descriptionPlacement = 'above';
     $teacher_form->fields[] = $alt_song_two_identifying_num_field;
     $ariaFieldIds['alt_song_two_identifying_num'] = $alt_song_two_identifying_num_field->id;
-
+*/
     // student's theory score
     $student_theory_score = new GF_Field_Number();
     $student_theory_score->label = "Theory Score (percentage)";
