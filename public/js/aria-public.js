@@ -4,8 +4,8 @@ jQuery(document).ready(function($) {
 
 	// Page load functions
 	//local
-	//var local_host = "http://aria.cse.unr.edu";
-	var local_host = "http://192.168.245.140";
+	var local_host = "http://aria.cse.unr.edu";
+	//var local_host = "http://192.168.245.140";
 	// aria
 	var host = "http://aria.cse.unr.edu";
 	var public_key = "1ff591984b";
