@@ -302,7 +302,7 @@ jQuery(document).ready(function($) {
 
 		//NOTE: paging requires &
 		//NOTE: max page size?
-		url += '&paging[page_size]=300' + '&search=' + searchJSON;
+		url += '&paging[page_size]=700' + '&search=' + searchJSON;
 		url += '&sorting[key]=3&sorting[direction]=ASC';
 
 		var returnedValue;
