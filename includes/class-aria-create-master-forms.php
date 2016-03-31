@@ -37,7 +37,7 @@ class ARIA_Create_Master_Forms {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_create_student_master_form($competition_name) {
+  public static function aria_create_student_master_form($competition_name, $command_options_array) {
     $student_master_form
         = new GF_Form($competition_name . " Student Master", "");
     $field_id_array = ARIA_API::aria_master_student_field_id_array();
@@ -111,34 +111,36 @@ class ARIA_Create_Master_Forms {
     $student_master_form->fields[] = $student_level_field;
 
     // student's available times to compete
-    $available_times = new GF_Field_Checkbox();
-    $available_times->label = "Available Festival Days (check all available times)";
+    $available_times = new GF_Field_Radio();
+    $available_times->label = "Available Festival Days";
     $available_times->id = $field_id_array['available_festival_days'];
     $available_times->isRequired = false;
     $available_times->description = "There is no guarantee that scheduling ".
     "requests will be honored.";
-    $available_times->inputs = array();
+    $available_times->descriptionPlacement = 'above';
     $available_times->choices = array(
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
-      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
+      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false),
+      array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false)
     );
-    $available_times = ARIA_Create_Competition::aria_add_checkbox_input($available_times, array('Saturday', 'Sunday'));
     $student_master_form->fields[] = $available_times;
 
     // student's available times to compete for command performance
-    $command_times = new GF_Field_Checkbox();
+    $command_times = new GF_Field_Radio();
     $command_times->label = "Preferred Command Performance Time (check all available times)";
     $command_times->id = $field_id_array['preferred_command_performance'];
     $command_times->isRequired = false;
-    $command_times->description = "Please check the Command Performance time ".
+    $command_times->description = "Please select the Command Performance time ".
     "that you prefer in the event that your child receives a superior rating.";
-    $command_times->choices = array(
-      array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
-      array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
-    );
-    $command_times->inputs = array();
-    $command_times = ARIA_Create_Competition::aria_add_checkbox_input($command_times, array('Thursday 5:30', 'Thursday 7:30'));
-
+    $command_times->descriptionPlacement = 'above';
+    $command_times->choices = array();
+    if (is_array($command_options_array)) {
+      $index = 1;
+      foreach( $command_options_array as $command_time ) {
+        $command_times->choices[]
+          = array('text' => $command_time, 'value' => $command_time, 'isSelected' => false);
+      }
+    }
     $student_master_form->fields[] = $command_times;
 
     // student's first song period

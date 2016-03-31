@@ -101,14 +101,12 @@ class ARIA_Form_Hooks {
     if (!empty($entry[$student_fields['not_listed_teacher_name']])) {
       // student entered a name that didn't appear in the drop-down menu
       $teacher_name = $entry[$student_fields['not_listed_teacher_name']];
-//wp_die('not listed: ' . $teacher_name);
+
     }
     else {
       $teacher_name = $entry[(string)$student_fields["teacher_name"]];
     }
     $teacher_hash = hash("md5", $teacher_name);
-
-//wp_die('$teacher_hash: ' . $teacher_hash);
 
     // Hash for student (student name and entry date)
     $student_name_and_entry =
@@ -116,9 +114,9 @@ class ARIA_Form_Hooks {
     $student_name_and_entry .= ' ' .
         $entry[(string)$student_fields["student_last_name"]];
     $student_name_and_entry .= ' ' . $entry["date_created"];
-//wp_die('student name: ' . $student_name_and_entry);
+
     $student_hash = hash("md5", $student_name_and_entry);
-//wp_die('student hash: ' . $student_hash);
+
 
     // Search through the teacher master form to see if the teacher has an entry made
     $teacher_entry =
@@ -139,8 +137,6 @@ class ARIA_Form_Hooks {
       // Add the newly registered student to the teacher's list of student hashes
       $students[] = $student_hash;
       $teacher_entry[strval($teacher_master_fields["students"])] = serialize($students);
-
-//wp_die('teacher entry: ' . print_r($teacher_entry));
 
       // Update the teacher entry with the new student edition
       $result = GFAPI::update_entry($teacher_entry);
@@ -184,12 +180,8 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
       strval($student_master_fields["not_listed_teacher_name"]) => $entry[strval($student_fields["not_listed_teacher_name"])],
-      strval($student_master_fields["available_festival_days"]) => null,
-      strval($student_master_fields["available_festival_days_saturday"]) => $entry[strval($student_fields["available_festival_days_saturday"])],
-      strval($student_master_fields["available_festival_days_sunday"]) => $entry[strval($student_fields["available_festival_days_sunday"])],
-      strval($student_master_fields["preferred_command_performance"]) => null,
-      strval($student_master_fields["preferred_command_performance_earlier"]) => $entry[strval($student_fields["preferred_command_performance_earlier"])],
-      strval($student_master_fields["preferred_command_performance_later"]) => $entry[strval($student_fields["preferred_command_performance_later"])],
+      strval($student_master_fields["available_festival_days"]) => $entry[strval($student_fields["available_festival_days"])],
+      strval($student_master_fields["preferred_command_performance"]) => $entry[strval($student_fields["preferred_command_performance"])],
       strval($student_master_fields["song_1_period"]) => null,
       strval($student_master_fields["song_1_composer"]) => null,
       strval($student_master_fields["song_1_selection"]) => null,
@@ -243,7 +235,6 @@ class ARIA_Form_Hooks {
     // Do form prepopulation
     $teacher_prepopulation_values = ARIA_Registration_Handler::aria_get_teacher_pre_populate($related_forms, $teacher_hash);
     $student_prepopulation_values = ARIA_Registration_Handler::aria_get_student_pre_populate($related_forms, $student_hash);
-//wp_die(print_r($teacher_prepopulation_values) + print_r($student_prepopulation_values));
 
     $prepopulated_form = ARIA_Registration_Handler::aria_prepopulate_form(
                   $form, $teacher_prepopulation_values, $student_prepopulation_values);
@@ -356,11 +347,8 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['student_first_name'])];
     $student_master_entry[strval($student_master_field_ids['student_last_name'])] =
       $entry[strval($teacher_public_field_ids['student_last_name'])];
-
-    /* level not currently in student master ? */
     $student_master_entry[strval($student_master_field_ids['student_level'])] =
       $entry[strval($teacher_public_field_ids['student_level'])];
-
 
     $student_master_entry[strval($student_master_field_ids['song_1_period'])] =
       $entry[strval($teacher_public_field_ids['song_1_period'])];
@@ -368,12 +356,28 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['song_1_composer'])];
     $student_master_entry[strval($student_master_field_ids['song_1_selection'])] =
       $entry[strval($teacher_public_field_ids['song_1_selection'])];
-    $student_master_entry[strval($student_master_field_ids['song_2_period'])] =
-      $entry[strval($teacher_public_field_ids['song_2_period'])];
-    $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
-      $entry[strval($teacher_public_field_ids['song_2_composer'])];
-    $student_master_entry[strval($student_master_field_ids['song_2_selection'])] =
-      $entry[strval($teacher_public_field_ids['song_2_selection'])];
+
+    // if student level != 11
+    if($student_master_entry[strval($student_master_field_ids['student_level'])] != 11)
+    {
+      $student_master_entry[strval($student_master_field_ids['song_2_period'])] =
+        $entry[strval($teacher_public_field_ids['song_2_period'])];
+      $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
+        $entry[strval($teacher_public_field_ids['song_2_composer'])];
+      $student_master_entry[strval($student_master_field_ids['song_2_selection'])] =
+        $entry[strval($teacher_public_field_ids['song_2_selection'])];
+    }
+    else
+    {
+      // if student level == 11 
+      $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
+        $entry[strval($teacher_public_field_ids['alt_song_2_composer'])];
+      $student_master_entry[strval($student_master_field_ids['song_2_selection'])] =
+        $entry[strval($teacher_public_field_ids['alt_song_2_selection'])];
+    }
+
+
+
     $student_master_entry[strval($student_master_field_ids['theory_score'])] =
       $entry[strval($teacher_public_field_ids['theory_score'])];
 

@@ -4,8 +4,8 @@ jQuery(document).ready(function($) {
 
 	// Page load functions
 	//local
-	//var local_host = "http://aria.cse.unr.edu";
-	var local_host = "http://192.168.245.140";
+	var local_host = "http://aria.cse.unr.edu";
+	//var local_host = "http://192.168.245.140";
 	// aria
 	var host = "http://aria.cse.unr.edu";
 	var public_key = "1ff591984b";
@@ -59,6 +59,11 @@ jQuery(document).ready(function($) {
 		st_level = $(input_id_arr['student_level']).val();
 		music = get_songs(st_level, levelField);
 	});
+
+	// Disable student fields
+	$(input_id_arr['student_level']).prop("disabled", true);
+	$(input_id_arr['student_name']+'_3').prop("disabled", true);
+	$(input_id_arr['student_name']+'_6').prop("disabled", true);
 
 	var period_html = store_periods();
 

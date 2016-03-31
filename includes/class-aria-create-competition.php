@@ -74,7 +74,7 @@ class ARIA_Create_Competition {
     $competition_name = $entry[$field_mapping['competition_name']];
 
     // create the student and teacher (master) forms
-    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name);
+    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
     $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
 
     // upload content of the teacher csv file into the teacher master form
@@ -82,7 +82,7 @@ class ARIA_Create_Competition {
     $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry, $teacher_names);
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
     $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
@@ -225,7 +225,7 @@ class ARIA_Create_Competition {
     $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
     $teacher_volunteer_times_field->id = $field_mappings['competition_volunteer_times'];
     $teacher_volunteer_times_field->isRequired = false;
-    $teacher_volunteer_times_field->description = "e.g. Saturday (10am-4pm), Either Saturday or Sunday, etc.";
+    $teacher_volunteer_times_field->description = "e.g. Saturday (10am-4pm), Sunday night, etc.";
     $teacher_volunteer_times_field->descriptionPlacement = 'above';
 
     // teacher csv file upload
@@ -346,6 +346,15 @@ class ARIA_Create_Competition {
     $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
     $command_performance_time_field->isRequired = false;
 
+    // command performance options
+    $command_performance_option_field = new GF_Field_List();
+    $command_performance_option_field->label = "Command Performance Time Options For Students";
+    $command_performance_option_field->id = $field_mappings['competition_command_performance_opt'];
+    $command_performance_option_field->isRequired = false;
+    $command_performance_option_field->description = "These are the options given to the students when registering. ";
+    $command_performance_option_field->description .= "e.g. Thursday at 5:30pm, 7PM on Jan 1, Either 5:30 or 7pm, etc.";
+    $command_performance_option_field->descriptionPlacement = 'above';
+
     // theory score required for special recognition
     $theory_score_field = new GF_Field_Select();
     $theory_score_field->label = "Theory Score for Recognition (0-100)";
@@ -383,11 +392,10 @@ class ARIA_Create_Competition {
     */
     $form->fields[] = $num_judges_per_section_field;
     $form->fields[] = $judge_csv_file_upload_field;
-    //$form->fields[] = $num_command_performance_field;
     $form->fields[] = $command_perf_date_field;
     $form->fields[] = $command_performance_time_field;
+    $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
-
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = 'Successful';
 
@@ -835,6 +843,12 @@ class ARIA_Create_Competition {
     $alt_song_two_selection_field->label = "Song 2 Piece Title";
     $alt_song_two_selection_field->id = $field_id_arr['alt_song_2_selection'];
     $alt_song_two_selection_field->isRequired = true;
+    $alt_song_two_selection_field->description = "Please be as descriptive as possible.";
+    $alt_song_two_selection_field->description .= "If applicable, include key (D Major, F Minor, etc.), ";
+    $alt_song_two_selection_field->description .= "movement number (1st, 2nd, etc.), ";
+    $alt_song_two_selection_field->description .= "movement description (Adante, Rondo Allegro Comodo, etc.), ";
+    $alt_song_two_selection_field->description .= "identifying number (BWV, Opus, etc.).";
+    $alt_song_two_selection_field->descriptionPlacement = 'above';
     $alt_song_two_selection_field->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
@@ -843,7 +857,7 @@ class ARIA_Create_Competition {
     $teacher_form->fields[] = $alt_song_two_selection_field;
     $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection_field->id;
 
-
+/*
     // Key (e.g. D Major, F Minor)
     $alt_song_two_key_field = new GF_Field_Text();
     $alt_song_two_key_field->label = "Song 2 Key";
@@ -903,7 +917,7 @@ class ARIA_Create_Competition {
     $alt_song_two_identifying_num_field->descriptionPlacement = 'above';
     $teacher_form->fields[] = $alt_song_two_identifying_num_field;
     $ariaFieldIds['alt_song_two_identifying_num'] = $alt_song_two_identifying_num_field->id;
-
+*/
     // student's theory score
     $student_theory_score = new GF_Field_Number();
     $student_theory_score->label = "Theory Score (percentage)";
@@ -991,7 +1005,7 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_create_student_form($competition_entry, $teacher_names) {
+  private static function aria_create_student_form($competition_entry, $teacher_names, $command_options_array) {
     $create_comp_field_mapping = ARIA_API::aria_competition_field_id_array();
     $field_id_array = ARIA_API::aria_student_field_id_array();
     $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
@@ -1087,8 +1101,8 @@ class ARIA_Create_Competition {
     $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_email->id;
 
     // student's available times to compete
-    $available_times = new GF_Field_Checkbox();
-    $available_times->label = "Available Festival Days (check all available times)";
+    $available_times = new GF_Field_Radio();
+    $available_times->label = "Available Festival Days";
     $available_times->id = $field_id_array['available_festival_days'];
     $available_times->isRequired = false;
     $available_times->description = "There is no guarantee that scheduling ".
@@ -1096,42 +1110,42 @@ class ARIA_Create_Competition {
     $available_times->descriptionPlacement = 'above';
     $available_times->choices = array(
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
-      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
+      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false),
+      array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false)
     );
-    $available_times->inputs = array();
-    $available_times = self::aria_add_checkbox_input( $available_times, array( 'Saturday', 'Sunday' ));
     $student_form->fields[] = $available_times;
     $ariaFieldIds['available_festival_days'] = $available_times->id;
     for ($i=1; $i <= count($available_times->inputs); $i++) {
       $ariaFieldIds["available_festival_days_option_{$i}"] = "{$available_times->id}.{$i}";
     }
+
     // student's available times to compete for command performance
-    $command_times = new GF_Field_Checkbox();
+    $command_times = new GF_Field_Radio();
     $command_times->label = "Preferred Command Performance Time (check all available times)";
     $command_times->id = $field_id_array['preferred_command_performance'];
     $command_times->isRequired = false;
-    $command_times->description = "Please check the Command Performance time ".
+    $command_times->description = "Please select the Command Performance time ".
     "that you prefer in the event that your child receives a superior rating.";
     $command_times->descriptionPlacement = 'above';
-    $command_times->choices = array(
-      array('text' => 'Thursday 5:30', 'value' => 'Thursday 5:30', 'isSelected' => false),
-      array('text' => 'Thursday 7:30', 'value' => 'Thursday 7:30', 'isSelected' => false)
-    );
-    $command_times->inputs = array();
-    $command_times = self::aria_add_checkbox_input( $command_times, array('Thursday 5:30', 'Thursday 7:30') );
+    $command_times->choices = array();
+    if (is_array($command_options_array)) {
+      $index = 1;
+      foreach( $command_options_array as $command_time ) {
+        $command_times->choices[]
+          = array('text' => $command_time, 'value' => $command_time, 'isSelected' => false);
+      }
+    }
     $student_form->fields[] = $command_times;
     $ariaFieldIds['preferred_command_performance'] = $command_times->id;
     for ($i=1; $i <= count($command_times->inputs); $i++) {
       $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$command_times->id}.{$i}";
     }
-
+    
     // student's festival level
-        // !!!student level
     $student_level_field = new GF_Field_Select();
     $student_level_field->label = "Student Level";
     $student_level_field->id = $field_id_array['student_level'];
     $student_level_field->isRequired = false;
-    // !!! replace
     $student_level_field->choices = array(
 
       array('text' => '1', 'value' => '1', 'isSelected' => false),
