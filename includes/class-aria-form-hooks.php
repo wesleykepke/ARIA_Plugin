@@ -343,12 +343,6 @@ class ARIA_Form_Hooks {
     }
 
     // If the student does exist, update the student master with the new information
-    $student_master_entry[strval($student_master_field_ids['student_first_name'])] =
-      $entry[strval($teacher_public_field_ids['student_first_name'])];
-    $student_master_entry[strval($student_master_field_ids['student_last_name'])] =
-      $entry[strval($teacher_public_field_ids['student_last_name'])];
-    $student_master_entry[strval($student_master_field_ids['student_level'])] =
-      $entry[strval($teacher_public_field_ids['student_level'])];
 
     $student_master_entry[strval($student_master_field_ids['song_1_period'])] =
       $entry[strval($teacher_public_field_ids['song_1_period'])];
