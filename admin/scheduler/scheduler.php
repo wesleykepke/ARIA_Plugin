@@ -55,6 +55,9 @@ class Scheduling_Algorithm {
     $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
     $student_master_form_id = $related_form_ids['student_master_form_id'];
 
+    //echo $student_master_form_id; 
+    //wp_die('student master form id'); 
+
     /*
     // successfully takes input from form
     echo 'time_block_duration: ' . $time_block_duration . "<br>";
@@ -69,15 +72,15 @@ class Scheduling_Algorithm {
 
     // check to see if a scheduler can be created that can accomodate all students
     // that have registered for the current competition
-    if (!can_scheduler_be_created($student_master_form_id,
-	                                $num_time_blocks_sat,
-																	$num_time_blocks_sun,
-																	$time_block_duration,
-																	$num_concurrent_sections_sat,
-																	$num_concurrent_sections_sun)) {
-      wp_die('ERROR: The input parameters entered on the previous page are unable
+    if (!self::can_scheduler_be_created($student_master_form_id,
+                                        $num_time_blocks_sat,
+                                        $num_time_blocks_sun,
+                                        $time_block_duration,
+                                        $num_concurrent_sections_sat,
+                                        $num_concurrent_sections_sun)) {
+      wp_die('<h1>ERROR: The input parameters entered on the previous page are unable
               to support all students that have registered for this competition.
-              Please readjust your input parameters for scheduling and try again.');
+              Please readjust your input parameters for scheduling and try again.</h1>');
     }
 
     // create scheduler object using input parameters from festival chairman
@@ -91,14 +94,15 @@ class Scheduling_Algorithm {
 	                                        $num_master_sections_sun);
 
     // schedule students by age/level
-    $playing_times = calculate_playing_times($student_master_form_id);
+    $playing_times = self::calculate_playing_times($student_master_form_id);
+    //wp_die(print_r($playing_times)); 
     $current_either_saturday_total = 0;
     $current_either_sunday_total = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
       foreach ($all_students_per_level as $student) {
-        print_r($student);
-        wp_die('<h4>^^^displaying format of student master entry^^^</h4>');
+        //print_r($student);
+        //wp_die('<h4>^^^displaying format of student master entry^^^</h4>');
 
         // obtain student's first and last names
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
@@ -117,7 +121,7 @@ class Scheduling_Algorithm {
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
 
         // determine student's day preference
-        $day_preference = $student[strval($student_master_field_mapping['day_preference'])];
+        $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
         if ($day_preference == "Saturday") {
           $day_preference = SAT;
         }
@@ -130,13 +134,13 @@ class Scheduling_Algorithm {
 
         // if the student registered as either, determine which day to add them to
         if ($day_preference === EITHER) {
-          if (($playing_times[SAT] + $current_saturday_either_total) < $playing_times[SUN]) {
+          if (($playing_times[SAT] + $current_either_saturday_total) < $playing_times[SUN]) {
             $day_preference = SAT;
-            $current_either_saturday_total += $total_play_time;
+            $current_either_saturday_total += intval($total_play_time);
           }
           else {
             $day_preference = SUN;
-            $current_either_sunday_total += $total_play_time;
+            $current_either_sunday_total += intval($total_play_time);
           }
         }
 
@@ -152,7 +156,7 @@ class Scheduling_Algorithm {
         // add student's second song
         $modified_student->add_song($student[strval($student_master_field_mapping['song_2_selection'])]);
 
-        wp_die(print_r($modified_student));
+        //wp_die(print_r($modified_student));
 
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
@@ -164,19 +168,21 @@ class Scheduling_Algorithm {
 
     // print the schedule
     $scheduler->print_schedule();
+    $confirmation = "Congratulations! A schedule has been successfully" .
+    " created for " . $title;
     return $confirmation;
 
   }
 
   /**
-	 * This function defines and creates the scheduling page (front-end).
-	 *
-	 * @link       http://wesleykepke.github.io/ARIA/
-	 * @since      1.0.0
-	 *
-	 * @package    ARIA
-	 * @subpackage ARIA/includes
-	 */
+   * This function defines and creates the scheduling page (front-end).
+   *
+   * @link       http://wesleykepke.github.io/ARIA/
+   * @since      1.0.0
+   *
+   * @package    ARIA
+   * @subpackage ARIA/includes
+   */
   public static function aria_create_scheduling_page() {
     // prevent form from being created/published twice
     if (ARIA_API::aria_get_scheduler_form_id() !== -1) {
@@ -369,10 +375,10 @@ class Scheduling_Algorithm {
    */
   private static function can_scheduler_be_created($student_master_form_id,
                                                    $num_time_blocks_sat,
-																								   $num_time_blocks_sun,
-																								   $time_block_duration,
-																								   $num_concurrent_sections_sat,
-																								   $num_concurrent_sections_sun) {
+                                                   $num_time_blocks_sun,
+                                                   $time_block_duration,
+                                                   $num_concurrent_sections_sat,
+                                                   $num_concurrent_sections_sun) {
     // determine the total amount of play time for all students in the current competition
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
     $total_play_time_students = 0;
@@ -414,12 +420,17 @@ class Scheduling_Algorithm {
   private static function get_all_students_per_level($student_master_form_id, $level_num) {
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
 
+
+    //echo 'Level: ' . $level_num . "<br>";
+
+
     // define the search criteria
     $sorting = array(
       'key' => $student_master_field_mapping['student_birthday'],
       'direction' => 'ASC',
       'is_numeric' => true
-    );
+    ); 
+    $sorting = array(); 
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
@@ -435,6 +446,11 @@ class Scheduling_Algorithm {
     $all_students_per_level = GFAPI::get_entries($student_master_form_id,
                                                  $search_criteria, $sorting,
                                                  $paging, $total_count);
+
+    /*
+    echo '<b>all students per level in get_all_students_per_level: ' . $level_num . '</b>';
+    echo count($all_students_per_level); 
+    */
 
     if (is_wp_error($all_students_per_level)) {
       wp_die($all_students_per_level->get_error_message());
@@ -466,21 +482,41 @@ class Scheduling_Algorithm {
     // iterate through all levels of the competition and calculate playing time based on day
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
+      //echo '<h1>all students per level:</h1>';
+      //echo print_r($all_students_per_level); 
       foreach ($all_students_per_level as $student) {
-        $day_preference = $student[strval($student_master_field_mapping['day_preference'])];
+        $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
+        //echo print_r($student); 
+        //echo var_dump($total_play_time);
+        //wp_die('Total play time');
+
+        //if (empty($total_play_time)) {
+          //wp_die('empty');
+          //$total_play_time = 7;
+          //wp_die(intval($total_play_time));
+          //echo $playing_times[SAT];
+          //wp_die('saturday playing times^'); 
+        //}
+
         if ($day_preference == "Saturday") {
-          $all_students_per_level[SAT] += $total_play_time;
+          $playing_times[SAT] += intval($total_play_time);
+          //echo 'sat: ' . $student[strval($student_master_field_mapping['student_first_name'])] . ' ' . $student[strval($student_master_field_mapping['student_last_name'])] . ' with play time: ' . $total_play_time . '<br>';
         }
         else if ($day_preference == "Sunday") {
-          $all_students_per_level[SUN] += $total_play_time;
+          $playing_times[SUN] += intval($total_play_time);
+          //echo 'sun: ' . $student[strval($student_master_field_mapping['student_first_name'])] . ' ' . $student[strval($student_master_field_mapping['student_last_name'])] . ' with play time: ' . $total_play_time . '<br>';
         }
         else {
-          $all_students_per_level[EITHER] += $total_play_time;
+          $playing_times[EITHER] += intval($total_play_time);
+          //echo 'either: ' . $student[strval($student_master_field_mapping['student_first_name'])] . ' ' . $student[strval($student_master_field_mapping['student_last_name'])] . ' with play time: ' . $total_play_time . '<br>';
         }
       }
     }
 
+    //wp_die('end of function'); 
+    //echo "<h1>Displaying playing times</h1>";
+    //wp_die(print_r($playing_times)); 
     return $playing_times;
   }
 }
