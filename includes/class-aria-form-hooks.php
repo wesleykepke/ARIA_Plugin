@@ -352,7 +352,7 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['song_1_selection'])];
 
     // if student level != 11
-    if($student_master_entry[strval($student_master_field_ids['student_level'])] != 11)
+    if($student_master_entry[strval($student_master_field_ids['student_level'])] != '11')
     {
       $student_master_entry[strval($student_master_field_ids['song_2_period'])] =
         $entry[strval($teacher_public_field_ids['song_2_period'])];
