@@ -59,6 +59,9 @@ class ARIA_Music {
     if ($music_db_form_id === -1) {
       self::aria_create_nnmta_music_form();
     }
+    else {
+      self::aria_remove_all_music_from_nnmta_database($music_db_form_id);
+    }
 
     // locate the full path of the csv file
     $csv_music_file = ARIA_API::aria_get_music_csv_file_path($entry, $form);
@@ -118,6 +121,12 @@ class ARIA_Music {
     $form_name = MUSIC_UPLOAD_FORM_NAME;
     $form = new GF_FORM($form_name, "");
 
+    // add a description for the upload music form
+    $form->description = "Welcome! Please browse your computer for a CSV file" .
+    " containing the music that you would like to upload. The contents of the" .
+    " CSV file that you upload will <b>REPLACE</b> all music in the NNTMA music" .
+    " database, so please be careful"; 
+
     // CSV file upload
     $csv_file_upload = new GF_Field_FileUpload();
     $csv_file_upload->label = CSV_UPLOAD_FIELD_NAME;
@@ -142,7 +151,7 @@ class ARIA_Music {
   /**
    * This function is responsible for creating the NNMTA music form if it does
    * not previously exist.
-   *
+   *Polonaise C-sharp minor
    * This function is intended to be used in the event where the festival
    * chairman tries to upload music to the NNMTA database but no such form
    * exists for adding music.
@@ -214,8 +223,20 @@ class ARIA_Music {
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_remove_all_music_from_nnmta_database() {
-    // to be implemented
+  private static function aria_remove_all_music_from_nnmta_database($music_db_form_id) {
+    // define criteria to obtain all music
+    $sorting = array(); 
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $search_criteria = array(); 
+    
+    // get all of the music in the nnmta music database
+    $all_songs = GFAPI::get_entries($music_db_form_id, $search_criteria,
+                                    $sorting, $paging, $total_count);
+
+    foreach ($all_songs as $song) {
+      wp_die('going to delete all songs and reupload.. could take a while.');
+    }
   }
 
   /**

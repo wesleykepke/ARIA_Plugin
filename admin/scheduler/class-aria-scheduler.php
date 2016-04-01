@@ -204,7 +204,7 @@ class Scheduler {
     }
 
     // Student was unable to be scheduled for their requested date
-    if ($current_time_block > $this->num_time_blocks_per_day && !$scheduled) {
+    if ($current_time_block > $preferred_day_num_time_blocks && !$scheduled) {
       // might want to try adding them on another competition day?
       wp_die('Errored to line 209 -- student did not get scheduled in their day preference.');
       return false;
@@ -218,7 +218,7 @@ class Scheduler {
    */
   public function print_schedule() {
     echo "<br>";
-    for ($i = 0; $i < $this->num_days; $i++) {
+    for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
           echo 'SATURDAY' . "<br>";
@@ -229,7 +229,7 @@ class Scheduler {
         break;
       }
 
-      for ($j = 0; $j < $this->num_time_blocks_per_day; $j++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         echo 'Time Block # ' . $j . "<br>";
         $this->days[$i][$j]->print_schedule();
       }

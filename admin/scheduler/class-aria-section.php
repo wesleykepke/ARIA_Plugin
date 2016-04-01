@@ -218,12 +218,12 @@ class Section {
   public function print_schedule() {
     for ($i = 0; $i < count($this->students); $i++) {
       $student_info = $this->students[$i]->get_student_info();
-      echo 'Total play time for section #' . $i . ': ' . $this->current_time . "minutes.<br>"; 
+      echo 'Total play time for section #' . $i . ': ' . $this->current_time . " minutes.<br>"; 
       foreach ($student_info as $key => $value) {
         echo $key . "<br>";
         if (is_array($value)) {
           for ($j = 0; $j < count($value); $j++) {
-            echo $value[$j]->get_song_name() . "<br>";
+            echo $value[$j] . "<br>";
           }
         }
         else {
