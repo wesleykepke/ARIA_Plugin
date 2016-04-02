@@ -1140,7 +1140,7 @@ class ARIA_Create_Competition {
     for ($i=1; $i <= count($command_times->inputs); $i++) {
       $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$command_times->id}.{$i}";
     }
-    
+
     // student's festival level
     $student_level_field = new GF_Field_Select();
     $student_level_field->label = "Student Level";
@@ -1198,7 +1198,7 @@ class ARIA_Create_Competition {
 
     // custom submission message to let the festival chairman know the creation was
     // a success
-    
+
     $successful_submission_message = 'Congratulations! You have just';
     $successful_submission_message .= ' successfully registered your child.';
     $student_form->confirmation['type'] = 'message';

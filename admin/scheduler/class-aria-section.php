@@ -108,18 +108,47 @@ class Section {
   private $skill_level;
 
   /**
+   * The song threshold for this section.
+   *
+   * This will be an integer value that indicates how many times a song can be
+   * played in a particular section.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$song_threshold 	The amount of times a song can be played in this section.
+   */
+  private $song_threshold;
+
+  /**
+   * The indicator for seperating based on student level.
+   *
+   * This will be an boolean value. If set to true, then sections will only
+   * contain a single level of students. However, if set to false, then sections
+   * will not be limited to a single level of students.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	boolean 	$group_by_level 	True if single level only, false otherwise
+   */
+  private $group_by_level;
+
+  /**
    * The constructor used to instantiate a new section object. The default
    * play time for a section will be 45 minutes unless otherwise specified.
    *
    * @since 1.0.0
    */
-  function __construct($section_time_limit = 45) {
+  function __construct($section_time_limit = DEFAULT_SECTION_TIME,
+                       $song_threshold = NO_SONG_THRESHOLD,
+                       $group_by_level = false) {
     $this->type = null;
     $this->students = array();
     $this->section_time_limit = $section_time_limit;
     $this->current_time = 0;
     $this->music_time_limit = ceil($section_time_limit * PLAY_TIME_FACTOR);
     $this->skill_level = null;
+    $this->song_threshold = $song_threshold;
+    $this->group_by_level = $group_by_level;
   }
 
   /**
@@ -186,24 +215,64 @@ class Section {
       return false;
     }
 
+    // check if the song threshold would be broken by adding the new student
+    $songs = $student->get_songs();
+    foreach ($songs as $song) {
+      $play_count = get_num_times_song_played($song);
+      if ($play_count > $song_threshold) {
+        return false;
+      }
+    }
+
     // check if the section is empty
     if ($this->is_empty()) {
       $this->type = $student->get_type();
       $this->skill_level = $student->get_skill_level();
     }
 
-    // check if the incoming student doesn't meet criteria of section
-    /*
-    come back to this.. may relax the restriction of one skill level per section
-    */
-    if (($this->type !== $student->get_type()) || ($this->skill_level !== $student->get_skill_level())) {
+    // check if the incoming student is not of the same type of the section
+    if ($this->type !== $student->get_type()) {
       return false;
+    }
+
+    // if each section can only have students of a single level, make sure
+    // the incoming student matches with the section level
+    if ($this->group_by_level) {
+      if ($this->skill_level !== $student->get_skill_level()) {
+        return false;
+      }
     }
 
     // add student to this section
     $this->students[] = $student;
     $this->current_time += $student->get_total_play_time();
     return true;
+  }
+
+  /**
+   * The function used check how many times a particular song is being played in a section.
+   *
+   * When the festival chairman specifies the amount of times a song can be
+   * played in a given section, the scheduler needs to be able to check how many
+   * occurances of that song are being played in a given section. This function
+   * will assist in that check.
+   *
+   * @param string	$song_title 	The song to check
+   *
+   * @return	int 	The amount of times the given song is being played.
+   */
+  private function get_num_times_song_played($song_title) {
+    $song_count = 0;
+    foreach ($this->students as $student) {
+      $songs = $student->get_songs();
+      foreach ($songs as $song) {
+        if (strcmp($song, $song_title) === 0) {
+          $song_count++;
+        }
+      }
+    }
+
+    return $song_count;
   }
 
   /**
@@ -218,7 +287,7 @@ class Section {
   public function print_schedule() {
     for ($i = 0; $i < count($this->students); $i++) {
       $student_info = $this->students[$i]->get_student_info();
-      echo 'Total play time for section #' . $i . ': ' . $this->current_time . " minutes.<br>"; 
+      echo 'Total play time for section #' . $i . ': ' . $this->current_time . " minutes.<br>";
       foreach ($student_info as $key => $value) {
         echo $key . "<br>";
         if (is_array($value)) {

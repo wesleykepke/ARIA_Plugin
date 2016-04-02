@@ -33,12 +33,6 @@ class Scheduling_Algorithm {
           return $confirmation;
     }
 
-    /*
-    // successfully reaches this point
-    print_r($form);
-    wp_die('<h4>Made it to Scheduling Algorithm!</h4>');
-    */
-
     // obtain the attributes from the submitted form
     $scheduling_field_mapping = self::scheduling_page_field_id_array();
     $title = $entry[$scheduling_field_mapping['active_competitions']];
@@ -49,14 +43,16 @@ class Scheduling_Algorithm {
     $num_concurrent_sections_sun = $entry[$scheduling_field_mapping['num_concurrent_sections_sun']];
     $num_master_sections_sat = $entry[$scheduling_field_mapping['num_master_sections_sat']];
     $num_master_sections_sun = $entry[$scheduling_field_mapping['num_master_sections_sun']];
+    $song_threshold = $entry[$scheduling_field_mapping['song_threshold']];
+    $group_by_level = $entry[$scheduling_field_mapping['group_by_level']];
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
     $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
     $student_master_form_id = $related_form_ids['student_master_form_id'];
 
-    //echo $student_master_form_id; 
-    //wp_die('student master form id'); 
+    //echo $student_master_form_id;
+    //wp_die('student master form id');
 
     /*
     // successfully takes input from form
@@ -67,6 +63,8 @@ class Scheduling_Algorithm {
     echo 'num_concurrent_sections_sun: ' . $num_concurrent_sections_sun . "<br>";
     echo 'num_master_sections_sat: ' . $num_master_sections_sat . "<br>";
     echo 'num_master_sections_sun: ' . $num_master_sections_sun . "<br>";
+    echo 'song_threshold: ' . $song_threshold . "<br>";
+    echo 'group_by_level: ' . $group_by_level . "<br>";
     wp_die();
     */
 
@@ -91,11 +89,13 @@ class Scheduling_Algorithm {
 	                                        $num_concurrent_sections_sat,
 	                                        $num_concurrent_sections_sun,
 	                                        $num_master_sections_sat,
-	                                        $num_master_sections_sun);
+	                                        $num_master_sections_sun,
+                                          $song_threshold,
+                                          $group_by_level);
 
     // schedule students by age/level
     $playing_times = self::calculate_playing_times($student_master_form_id);
-    //wp_die(print_r($playing_times)); 
+    //wp_die(print_r($playing_times));
     $current_either_saturday_total = 0;
     $current_either_sunday_total = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
@@ -209,10 +209,13 @@ class Scheduling_Algorithm {
     $time_block_duration->label = "Length of Timeblocks (minutes)";
     $time_block_duration->id = $field_mapping['time_block_duration'];
     $time_block_duration->isRequired = true;
-    $time_block_duration->description = "NOTE: This should include time for students";
-    $time_block_duration->description .= " to perform, for judges to take notes after";
-    $time_block_duration->description .= " each student performs, for proctors to introduce the judge(s),";
-    $time_block_duration->description .= " and for any other section-related events to take place.";
+    $time_block_duration->description = "NOTE: This should include time for students"
+    . " to perform, for judges to take notes after each student performs, for proctors"
+    . " to introduce the judge(s), and for any other section-related events to take place."
+    . "<b> 80% of the time that you enter will be reserved for students to perform.</b>"
+    . " For example, if you enter 60 minutes, then there will be 48 minutes reserved"
+    . " for students to perform per section. The remaining 12 minutes will be for"
+    . " judging, having the proctor switch students, etc.";
     $time_block_duration->descriptionPlacement = "above";
     $form->fields[] = $time_block_duration;
 
@@ -245,6 +248,9 @@ class Scheduling_Algorithm {
     $num_concurrent_sections_sat->label = "Number of Concurrent Sections on Saturday";
     $num_concurrent_sections_sat->id = $field_mapping['num_concurrent_sections_sat'];
     $num_concurrent_sections_sat->isRequired = true;
+    $num_concurrent_sections_sat->description = "NOTE: This value will correspond"
+    . " to the number of concurrent sections per timeblock on Saturday.";
+    $num_concurrent_sections_sat->descriptionPlacement = "above";
     $form->fields[] = $num_concurrent_sections_sat;
 
     // number of concurrent sections on sunday
@@ -252,21 +258,54 @@ class Scheduling_Algorithm {
     $num_concurrent_sections_sun->label = "Number of Concurrent Sections on Sunday";
     $num_concurrent_sections_sun->id = $field_mapping['num_concurrent_sections_sun'];
     $num_concurrent_sections_sun->isRequired = true;
+    $num_concurrent_sections_sun->description = "NOTE: This value will correspond"
+    . " to the number of concurrent sections per timeblock on Sunday.";
+    $num_concurrent_sections_sun->descriptionPlacement = "above";
     $form->fields[] = $num_concurrent_sections_sun;
 
     // number of master-class sections on saturday
     $num_master_sections_sat = new GF_Field_Number();
-    $num_master_sections_sat->label = "Number of Masterclass Sections on Saturday";
+    $num_master_sections_sat->label = "Total Number of Masterclass Sections on Saturday";
     $num_master_sections_sat->id = $field_mapping['num_master_sections_sat'];
     $num_master_sections_sat->isRequired = true;
     $form->fields[] = $num_master_sections_sat;
 
     // number of master-class sections on sunday
     $num_master_sections_sun = new GF_Field_Number();
-    $num_master_sections_sun->label = "Number of Masterclass Sections on Sunday";
+    $num_master_sections_sun->label = "Total Number of Masterclass Sections on Sunday";
     $num_master_sections_sun->id = $field_mapping['num_master_sections_sun'];
     $num_master_sections_sun->isRequired = true;
     $form->fields[] = $num_master_sections_sun;
+
+    // threshold for number of times a song appears per section
+    $song_threshold = new GF_Field_Number();
+    $song_threshold->label = "How many times would you like a song to appear per section?";
+    $song_threshold->id = $field_mapping['song_threshold'];
+    $song_threshold->isRequired = true;
+    $song_threshold->description = "Often times, repeatedly hearing the same song"
+    . " in a single section can be overwhelming. The value entered here will be"
+    . " the maximum number of times a song is allowed to be played in a single section."
+    . " If you don't mind repeated songs per section, please enter 0.";
+    $song_threshold->descriptionPlacement = "above";
+    $form->fields[] = $song_threshold;
+
+    // seperate by level option
+    $group_by_level = new GF_Field_Radio();
+    $group_by_level->label = "Would you like to group students by level within a section?";
+    $group_by_level->id = $field_mapping['group_by_level'];
+    $group_by_level->description = "If you select yes, then sections will only"
+    . " contain students from a single level. This may mean that some sections will"
+    . " only have a small number of students playing in them and therefore"
+    . " will not be filled to capacity. However, if you select"
+    . " no, then sections will have students from multiple levels (usually will only"
+    . " vary by one level; so, for example, a section with level 6 students could"
+    . " have a few level 7 students and most likely no level 8 students).";
+    $group_by_level->descriptionPlacement = "above";
+    $group_by_level->choices = array(
+      array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+      array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+    $form->fields[] = $group_by_level;
 
     // number of judges per section
       // not done yet
@@ -305,7 +344,9 @@ class Scheduling_Algorithm {
       'num_concurrent_sections_sat' => 5,
       'num_concurrent_sections_sun' => 6,
       'num_master_sections_sat' => 7,
-      'num_master_sections_sun' => 8
+      'num_master_sections_sun' => 8,
+      'song_threshold' => 9,
+      'group_by_level' => 10
     );
   }
 
@@ -429,8 +470,8 @@ class Scheduling_Algorithm {
       'key' => $student_master_field_mapping['student_birthday'],
       'direction' => 'ASC',
       'is_numeric' => true
-    ); 
-    $sorting = array(); 
+    );
+    $sorting = array();
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
@@ -449,7 +490,7 @@ class Scheduling_Algorithm {
 
     /*
     echo '<b>all students per level in get_all_students_per_level: ' . $level_num . '</b>';
-    echo count($all_students_per_level); 
+    echo count($all_students_per_level);
     */
 
     if (is_wp_error($all_students_per_level)) {
@@ -483,11 +524,11 @@ class Scheduling_Algorithm {
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
       //echo '<h1>all students per level:</h1>';
-      //echo print_r($all_students_per_level); 
+      //echo print_r($all_students_per_level);
       foreach ($all_students_per_level as $student) {
         $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
-        //echo print_r($student); 
+        //echo print_r($student);
         //echo var_dump($total_play_time);
         //wp_die('Total play time');
 
@@ -496,7 +537,7 @@ class Scheduling_Algorithm {
           //$total_play_time = 7;
           //wp_die(intval($total_play_time));
           //echo $playing_times[SAT];
-          //wp_die('saturday playing times^'); 
+          //wp_die('saturday playing times^');
         //}
 
         if ($day_preference == "Saturday") {
@@ -514,9 +555,9 @@ class Scheduling_Algorithm {
       }
     }
 
-    //wp_die('end of function'); 
+    //wp_die('end of function');
     //echo "<h1>Displaying playing times</h1>";
-    //wp_die(print_r($playing_times)); 
+    //wp_die(print_r($playing_times));
     return $playing_times;
   }
 }

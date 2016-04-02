@@ -56,12 +56,15 @@ class TimeBlock {
    * @since 1.0.0
    * @param	int 	$num_concurrent_sections 	The number of concurrent sections.
    * @param	int 	$time_block_duration 	The length of the concurrent sections.
+   * @param int 	$song_threshold 	The amount of times a song can be played in this section.
+   * @param boolean 	$group_by_level 	True if single level only, false otherwise
    */
-  function __construct($num_concurrent_sections, $time_block_duration) {
+  function __construct($num_concurrent_sections, $time_block_duration,
+                       $song_threshold, $group_by_level) {
     $this->num_concurrent_sections = $num_concurrent_sections;
     $this->sections = new SplFixedArray($num_concurrent_sections);
     for ($i = 0; $i < $num_concurrent_sections; $i++) {
-      $this->sections[$i] = new Section($time_block_duration);
+      $this->sections[$i] = new Section($time_block_duration, $song_threshold, $group_by_level);
     }
   }
 
