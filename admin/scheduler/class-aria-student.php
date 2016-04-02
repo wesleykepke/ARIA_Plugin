@@ -160,6 +160,16 @@ class Student {
   }
 
   /**
+   * The function will return an array of songs (strings).
+   *
+   * @since 1.0.0
+   * @return	array 	The array of songs that the student is performing
+   */
+  public function get_songs() {
+    return $this->songs;
+  }
+
+  /**
    * The function will return the total amount of time for the student to play
    * his/her songs.
    *
