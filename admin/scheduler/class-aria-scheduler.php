@@ -93,6 +93,8 @@ class Scheduler {
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
    * @param	int	$num_master_sections_sat	The number of master-class sections on saturday.
    * @param	int	$num_master_sections_sun	The number of master-class sections on sunday.
+   * @param int $song_threshold 	The amount of times a song can be played in this section.
+   * @param boolean 	$group_by_level 	True if single level only, false otherwise
    *
    * @since 1.0.0
    * @author KREW
@@ -103,7 +105,9 @@ class Scheduler {
                                             $num_concurrent_sections_sat,
                                             $num_concurrent_sections_sun,
                                             $num_master_sections_sat,
-                                            $num_master_sections_sun) {
+                                            $num_master_sections_sun,
+                                            $song_threshold,
+                                            $group_by_level) {
     // ensure the current scheduler object is for a regular competition
     if ($this->competition_type !== REGULAR_COMP) {
       return;
@@ -112,7 +116,8 @@ class Scheduler {
     // create the time blocks with their concurrent sections for saturday
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
-      $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration);
+      $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration,
+                                           $song_threshold, $group_by_level);
     }
 
     // designate some of the sections on saturday for master-class students
@@ -127,7 +132,8 @@ class Scheduler {
     // create the time blocks with their concurrent sections for sunday
     $this->days[SUN] = new SplFixedArray($num_time_blocks_sun);
     for ($i = 0; $i < $num_time_blocks_sun; $i++) {
-      $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration);
+      $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration,
+                                           $song_threshold, $group_by_level);
     }
 
     // designate some of the sections on sunday for master-class students
