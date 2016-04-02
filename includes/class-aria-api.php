@@ -459,8 +459,8 @@ class ARIA_API {
       'phone' => 4,
       'teacher_hash' => 5,
       'student_hash' => 6,
-      'volunteer_preference' => 7, 
-      'volunteer_time' => 8, 
+      'volunteer_preference' => 7,
+      'volunteer_time' => 8,
       'is_judging' => 9
     );
   }
