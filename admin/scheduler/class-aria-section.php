@@ -218,8 +218,8 @@ class Section {
     // check if the song threshold would be broken by adding the new student
     $songs = $student->get_songs();
     foreach ($songs as $song) {
-      $play_count = get_num_times_song_played($song);
-      if ($play_count > $song_threshold) {
+      $play_count = $this->get_num_times_song_played($song);
+      if ($play_count > $this->song_threshold) {
         return false;
       }
     }
