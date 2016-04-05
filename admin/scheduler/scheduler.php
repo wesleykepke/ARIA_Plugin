@@ -83,13 +83,20 @@ class Scheduling_Algorithm {
 
     // create scheduler object using input parameters from festival chairman
     $scheduler = new Scheduler(REGULAR_COMP);
+    if (strcmp($group_by_level, 'Yes') == 0) {
+      $group_by_level = true; 
+    }
+    else {
+      $group_by_level = false; 
+    }
+    //wp_die(var_dump($group_by_level));
     $scheduler->create_normal_competition($num_time_blocks_sat,
-	                                        $num_time_blocks_sun,
-	                                        $time_block_duration,
-	                                        $num_concurrent_sections_sat,
-	                                        $num_concurrent_sections_sun,
-	                                        $num_master_sections_sat,
-	                                        $num_master_sections_sun,
+	                                  $num_time_blocks_sun,
+	                                  $time_block_duration,
+	                                  $num_concurrent_sections_sat,
+	                                  $num_concurrent_sections_sun,
+	                                  $num_master_sections_sat,
+	                                  $num_master_sections_sun,
                                           $song_threshold,
                                           $group_by_level);
 
