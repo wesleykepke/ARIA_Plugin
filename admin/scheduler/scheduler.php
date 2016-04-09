@@ -45,6 +45,7 @@ class Scheduling_Algorithm {
     $num_master_sections_sun = $entry[$scheduling_field_mapping['num_master_sections_sun']];
     $song_threshold = $entry[$scheduling_field_mapping['song_threshold']];
     $group_by_level = $entry[$scheduling_field_mapping['group_by_level']];
+    $master_class_instructor_duration = $entry[$scheduling_field_mapping['master_class_instructor_duration']];
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
@@ -65,40 +66,40 @@ class Scheduling_Algorithm {
     echo 'num_master_sections_sun: ' . $num_master_sections_sun . "<br>";
     echo 'song_threshold: ' . $song_threshold . "<br>";
     echo 'group_by_level: ' . $group_by_level . "<br>";
+    echo 'master_class_instructor_duration: ' . $master_class_instructor_duration . "<br>";
     wp_die();
     */
 
     // check to see if a scheduler can be created that can accomodate all students
     // that have registered for the current competition
-    if (!self::can_scheduler_be_created($student_master_form_id,
-                                        $num_time_blocks_sat,
-                                        $num_time_blocks_sun,
-                                        $time_block_duration,
-                                        $num_concurrent_sections_sat,
-                                        $num_concurrent_sections_sun)) {
-      wp_die('<h1>ERROR: The input parameters entered on the previous page are unable
-              to support all students that have registered for this competition.
-              Please readjust your input parameters for scheduling and try again.</h1>');
-    }
+    self::can_scheduler_be_created($student_master_form_id,
+                                   $num_time_blocks_sat,
+                                   $num_time_blocks_sun,
+                                   $time_block_duration,
+                                   $num_concurrent_sections_sat,
+                                   $num_concurrent_sections_sun,
+                                   $num_master_sections_sat,
+                                   $num_master_sections_sun,
+                                   $master_class_instructor_duration);
 
     // create scheduler object using input parameters from festival chairman
     $scheduler = new Scheduler(REGULAR_COMP);
     if (strcmp($group_by_level, 'Yes') == 0) {
-      $group_by_level = true; 
+      $group_by_level = true;
     }
     else {
-      $group_by_level = false; 
+      $group_by_level = false;
     }
-    //wp_die(var_dump($group_by_level));
     $scheduler->create_normal_competition($num_time_blocks_sat,
-	                                  $num_time_blocks_sun,
-	                                  $time_block_duration,
-	                                  $num_concurrent_sections_sat,
-	                                  $num_concurrent_sections_sun,
-	                                  $num_master_sections_sat,
-	                                  $num_master_sections_sun,
+	                                        $num_time_blocks_sun,
+	                                        $time_block_duration,
+	                                        $num_concurrent_sections_sat,
+	                                        $num_concurrent_sections_sun,
+	                                        $num_master_sections_sat,
+	                                        $num_master_sections_sun,
                                           $song_threshold,
-                                          $group_by_level);
+                                          $group_by_level,
+                                          $master_class_instructor_duration);
 
     // schedule students by age/level
     $playing_times = self::calculate_playing_times($student_master_form_id);
@@ -314,6 +315,15 @@ class Scheduling_Algorithm {
     );
     $form->fields[] = $group_by_level;
 
+    // master class section - determine how much time judge works with student
+    $master_class_instructor_duration = new GF_Field_Number();
+    $master_class_instructor_duration->label = "Masterclass Adjudicator Instruction Time";
+    $master_class_instructor_duration->id = $field_mapping['master_class_instructor_duration'];
+    $master_class_instructor_duration->description = "How much time will the adjudicator work"
+    . " with students during the master class sections?";
+    $master_class_instructor_duration->descriptionPlacement = "above";
+    $form->fields[] = $master_class_instructor_duration;
+
     // number of judges per section
       // not done yet
 
@@ -353,7 +363,8 @@ class Scheduling_Algorithm {
       'num_master_sections_sat' => 7,
       'num_master_sections_sun' => 8,
       'song_threshold' => 9,
-      'group_by_level' => 10
+      'group_by_level' => 10,
+      'master_class_instructor_duration' => 11
     );
   }
 
@@ -415,8 +426,11 @@ class Scheduling_Algorithm {
    * @param	int	$time_block_duration	The amount of time allocated to each timeblock.
    * @param	int	$num_concurrent_sections_sat	The number of sections/timeblock on saturday.
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
+   * @param	int	$num_master_sections_sat	The number of master-class sections on saturday.
+   * @param	int	$num_master_sections_sun	The number of master-class sections on sunday.
+   * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
    *
-   * @return	bool 	true if the scheduler object can be created, false otherwise
+   * @return	void 	Will emit a wp_die error message if competition is unable to be created
    *
    * @since 1.0.0
    * @author KREW
@@ -426,14 +440,25 @@ class Scheduling_Algorithm {
                                                    $num_time_blocks_sun,
                                                    $time_block_duration,
                                                    $num_concurrent_sections_sat,
-                                                   $num_concurrent_sections_sun) {
+                                                   $num_concurrent_sections_sun,
+                                                   $num_master_sections_sat,
+                                                   $num_master_sections_sun,
+                                                   $master_class_instructor_duration) {
     // determine the total amount of play time for all students in the current competition
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
     $total_play_time_students = 0;
+    $total_play_time_masterclass_students = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
       foreach ($all_students_per_level as $student) {
-        $total_play_time_students += $student[$student_master_field_mapping['timing_of_pieces']];
+        $total_play_time_students += $student[strval($student_master_field_mapping['timing_of_pieces'])];
+
+        // check if student is competing in masterclass division
+        $type = $student[strval($student_master_field_mapping['competition_format'])];
+        if ($type == "Master Class") {
+          $total_play_time_masterclass_students +=
+            ($student[$student_master_field_mapping['timing_of_pieces']] + $master_class_instructor_duration);
+        }
       }
     }
 
@@ -445,10 +470,24 @@ class Scheduling_Algorithm {
     // check if the student play time is greater than the time available based
     // on the festival chairman's input
     if ($total_play_time_students > ($total_time_saturday + $total_time_sunday)) {
-      return false;
+      wp_die('<h1>ERROR: The input parameters entered on the previous page are unable
+			        to support all students that have registered for this competition.
+			        Please use the back button to return to the previous page and readjust
+              your input parameters for scheduling.</h1>');
     }
 
-    return true;
+    // check if the total playtime for masterclass students is greater than the
+    // time available based on the festival chairman's input
+    $total_time_masterclass_saturday = $num_master_sections_sat * $music_time_limit;
+    $total_time_masterclass_sunday = $num_master_sections_sun * $music_time_limit;
+    if ($total_play_time_masterclass_students > ($total_time_masterclass_saturday + $total_time_masterclass_sunday)) {
+      wp_die('<h1>ERROR: The input parameters entered on the previous page
+              regarding the masterclass sections are unable to support all students
+              that have registered in the masterclass division for this competition.
+			        Please use the back button to return to the previous page and readjust
+              your input parameters for the masterclass section (try adding more
+              masterclass sections or increasing the timeblock length).</h1>');
+    }
   }
 
   /**
@@ -467,10 +506,6 @@ class Scheduling_Algorithm {
    */
   private static function get_all_students_per_level($student_master_form_id, $level_num) {
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
-
-
-    //echo 'Level: ' . $level_num . "<br>";
-
 
     // define the search criteria
     $sorting = array(
@@ -494,11 +529,6 @@ class Scheduling_Algorithm {
     $all_students_per_level = GFAPI::get_entries($student_master_form_id,
                                                  $search_criteria, $sorting,
                                                  $paging, $total_count);
-
-    /*
-    echo '<b>all students per level in get_all_students_per_level: ' . $level_num . '</b>';
-    echo count($all_students_per_level);
-    */
 
     if (is_wp_error($all_students_per_level)) {
       wp_die($all_students_per_level->get_error_message());
@@ -530,22 +560,9 @@ class Scheduling_Algorithm {
     // iterate through all levels of the competition and calculate playing time based on day
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
-      //echo '<h1>all students per level:</h1>';
-      //echo print_r($all_students_per_level);
       foreach ($all_students_per_level as $student) {
         $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
-        //echo print_r($student);
-        //echo var_dump($total_play_time);
-        //wp_die('Total play time');
-
-        //if (empty($total_play_time)) {
-          //wp_die('empty');
-          //$total_play_time = 7;
-          //wp_die(intval($total_play_time));
-          //echo $playing_times[SAT];
-          //wp_die('saturday playing times^');
-        //}
 
         if ($day_preference == "Saturday") {
           $playing_times[SAT] += intval($total_play_time);

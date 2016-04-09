@@ -94,7 +94,8 @@ class Scheduler {
    * @param	int	$num_master_sections_sat	The number of master-class sections on saturday.
    * @param	int	$num_master_sections_sun	The number of master-class sections on sunday.
    * @param int $song_threshold 	The amount of times a song can be played in this section.
-   * @param boolean 	$group_by_level 	True if single level only, false otherwise
+   * @param boolean 	$group_by_level 	True if single level only, false otherwise.
+   * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
    *
    * @since 1.0.0
    * @author KREW
@@ -107,7 +108,8 @@ class Scheduler {
                                             $num_master_sections_sat,
                                             $num_master_sections_sun,
                                             $song_threshold,
-                                            $group_by_level) {
+                                            $group_by_level,
+                                            $master_class_instructor_duration) {
     // ensure the current scheduler object is for a regular competition
     if ($this->competition_type !== REGULAR_COMP) {
       return;
@@ -123,7 +125,7 @@ class Scheduler {
     // designate some of the sections on saturday for master-class students
     while ($num_master_sections_sat > 0) {
       for ($i = ($num_time_blocks_sat - 1); $i >= ($num_time_blocks_sat / 2); $i--) {
-        if ($num_master_sections_sat > 0 && $this->days[SAT][$i]->assign_section_to_master()) {
+        if ($num_master_sections_sat > 0 && $this->days[SAT][$i]->assign_section_to_master($master_class_instructor_duration)) {
           $num_master_sections_sat--;
         }
       }
@@ -139,7 +141,7 @@ class Scheduler {
     // designate some of the sections on sunday for master-class students
     while ($num_master_sections_sun > 0) {
       for ($i = ($num_time_blocks_sun - 1); $i >= ($num_time_blocks_sun / 2); $i--) {
-        if ($num_master_sections_sun > 0 && $this->days[SUN][$i]->assign_section_to_master()) {
+        if ($num_master_sections_sun > 0 && $this->days[SUN][$i]->assign_section_to_master($master_class_instructor_duration)) {
           $num_master_sections_sun--;
         }
       }
@@ -244,7 +246,7 @@ class Scheduler {
     }
 
     echo "<br>";
-    wp_die('schedule complete');
+    //wp_die('schedule complete');
   }
 
   /**
