@@ -95,11 +95,13 @@ class TimeBlock {
    * This function will assign a section within the current time block to be a
    * master-class section.
    *
+   * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
+   * 
    * @return true if section was designated as a master-class section, false otherwise
    */
-  public function assign_section_to_master() {
+  public function assign_section_to_master($master_class_instructor_duration) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      if ($this->sections[$i]->assign_section_to_master()) {
+      if ($this->sections[$i]->assign_section_to_master($master_class_instructor_duration)) {
         return true;
       }
     }
@@ -116,6 +118,17 @@ class TimeBlock {
       $this->sections[$i]->print_schedule();
       echo '<br>';
     }
+  }
+
+  /**
+   *
+   */
+  public function get_schedule_string() {
+    $schedule = ''; 
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $schedule .= '<tr><td>hi</td></tr>';      
+    }
+    return $schedule;
   }
 
   /**
