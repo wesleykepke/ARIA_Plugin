@@ -133,6 +133,19 @@ class Section {
   private $group_by_level;
 
   /**
+   * The time that the master class instructor has to spend with each student.
+   *
+   * This is an integer value (minutes). After each masterclass student performs,
+   * he/she will be instructed by the masterclass instructor for $master_class_instructor_duration
+   * minutes.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	int 	$master_class_instructor_duration 	Masterclass section length
+   */
+  private $master_class_instructor_duration;
+
+  /**
    * The constructor used to instantiate a new section object. The default
    * play time for a section will be 45 minutes unless otherwise specified.
    *
@@ -149,6 +162,7 @@ class Section {
     $this->skill_level = null;
     $this->song_threshold = $song_threshold;
     $this->group_by_level = $group_by_level;
+    $this->master_class_instructor_duration = null;
   }
 
   /**
@@ -160,7 +174,7 @@ class Section {
    * @return true if section is empty, false otherwise
    */
   public function is_empty() {
-    return (empty($this->students) && ($this->current_time === 0));
+    return (empty($this->students) && ($this->current_time === 0) && is_null($this->type));
   }
 
   /**
@@ -184,12 +198,21 @@ class Section {
   /**
    * The function used to predefine the type of a current section as master.
    *
-   * @return void
+   * This function will accept $master_class_instructor_duration as a parameter
+   * and assign it to the object's corresponding member variable so that when
+   * masterclass students are added, $master_class_instructor_duration can be
+   * used in addition to the student's playing time to see if they can be
+   * assigned to a section or not.
+   *
+   * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
+   *
+   * @return true if the section was assigned as a masterclass section, false otherwise
    */
-  public function assign_section_to_master() {
+  public function assign_section_to_master($master_class_instructor_duration) {
     $assigned_to_master = false;
     if (is_null($this->type)) {
       $this->type = SECTION_MASTER;
+      $this->master_class_instructor_duration = $master_class_instructor_duration;
       $assigned_to_master = true;
     }
 
@@ -210,9 +233,16 @@ class Section {
    * @return true if student was added, false otherwise
    */
   public function add_student($student) {
-    // check if adding student will cause time section to overflow
+    // check if adding student will cause time limit per section to overflow
     if (($student->get_total_play_time() + $this->current_time) > $this->music_time_limit) {
       return false;
+    }
+
+    // if the student is competing in the masterclass division, take into account instructor time
+    if ($student->get_type() === SECTION_MASTER && $this->type === SECTION_MASTER) {
+      if (($student->get_total_play_time() + $this->current_time + $this->master_class_instructor_duration) > $this->music_time_limit) {
+        return false;
+      }
     }
 
     // check if the song threshold would be broken by adding the new student
@@ -245,7 +275,13 @@ class Section {
 
     // add student to this section
     $this->students[] = $student;
-    $this->current_time += $student->get_total_play_time();
+    if ($this->type === SECTION_MASTER) {
+      // for masterclass sections, add the instructor duration length in addition to play time
+      $this->current_time += $student->get_total_play_time() + $this->master_class_instructor_duration;
+    }
+    else {
+      $this->current_time += $student->get_total_play_time();
+    }
     return true;
   }
 
