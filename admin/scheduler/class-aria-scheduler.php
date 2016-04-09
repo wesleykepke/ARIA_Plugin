@@ -250,6 +250,36 @@ class Scheduler {
   }
 
   /**
+   *
+   */
+  public function get_schedule_string() {
+    // begin table HTML
+    $schedule = '';
+    for ($i = 0; $i < count($this->days); $i++) {
+      switch ($i) {
+        case SAT:
+          $schedule .= '<table style="float: left; width: 50%;">';
+        break;
+
+        case SUN:
+          $schedule .= '<tr><table style="float: right; width: 50%;">';
+        break;
+      }
+
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $schedule .= '<tr><td>';
+        $schedule .= $this->days[$i][$j]->get_schedule_string(); 
+        $schedule .= '</td></tr>';
+        //$this->days[$i][$j]->print_schedule();
+      }
+
+      $schedule .= '</table>';    
+    }
+
+    return $schedule;
+  }
+
+  /**
    * The destructor used when a scheduler object is destroyed.
    *
    * @since 1.0.0

@@ -175,9 +175,12 @@ class Scheduling_Algorithm {
     }
 
     // print the schedule
-    $scheduler->print_schedule();
+    $confirmation = $scheduler->get_schedule_string();
+    //wp_die($confirmation); 
+    /*
     $confirmation = "Congratulations! A schedule has been successfully" .
     " created for " . $title;
+    */
     return $confirmation;
 
   }
@@ -327,6 +330,12 @@ class Scheduling_Algorithm {
     // number of judges per section
       // not done yet
 
+    // add a default submission message for the schedule competition form
+    $successful_submission_message = 'Congratulations! You have just';
+    $successful_submission_message .= ' successfully scheduled a competition.';
+    $form->confirmation['type'] = 'message';
+    $form->confirmation['message'] = $successful_submission_message;
+
     // identify form as the scheduling page
     $form_arr = $form->createFormArray();
     $form_arr['isScheduleForm'] = true;
@@ -471,8 +480,8 @@ class Scheduling_Algorithm {
     // on the festival chairman's input
     if ($total_play_time_students > ($total_time_saturday + $total_time_sunday)) {
       wp_die('<h1>ERROR: The input parameters entered on the previous page are unable
-			        to support all students that have registered for this competition.
-			        Please use the back button to return to the previous page and readjust
+              to support all students that have registered for this competition.
+              Please use the back button to return to the previous page and readjust
               your input parameters for scheduling.</h1>');
     }
 
@@ -484,7 +493,7 @@ class Scheduling_Algorithm {
       wp_die('<h1>ERROR: The input parameters entered on the previous page
               regarding the masterclass sections are unable to support all students
               that have registered in the masterclass division for this competition.
-			        Please use the back button to return to the previous page and readjust
+              Please use the back button to return to the previous page and readjust
               your input parameters for the masterclass section (try adding more
               masterclass sections or increasing the timeblock length).</h1>');
     }
