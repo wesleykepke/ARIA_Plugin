@@ -93,8 +93,8 @@ class Scheduler {
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
    * @param	int	$num_master_sections_sat	The number of master-class sections on saturday.
    * @param	int	$num_master_sections_sun	The number of master-class sections on sunday.
-   * @param int $song_threshold 	The amount of times a song can be played in this section.
-   * @param boolean 	$group_by_level 	True if single level only, false otherwise.
+   * @param 	int 	$song_threshold 	The amount of times a song can be played in this section.
+   * @param 	boolean $group_by_level 	True if single level only, false otherwise.
    * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
    *
    * @since 1.0.0
@@ -115,6 +115,21 @@ class Scheduler {
       return;
     }
 
+    /*
+    echo 'in create_normal_competition()' . "<br>";
+    echo 'time_block_duration: ' . $time_block_duration . "<br>";
+    echo 'num_time_blocks_sat: ' . $num_time_blocks_sat . "<br>";
+    echo 'num_time_blocks_sun: ' . $num_time_blocks_sun . "<br>";
+    echo 'num_concurrent_sections_sat: ' . $num_concurrent_sections_sat . "<br>";
+    echo 'num_concurrent_sections_sun: ' . $num_concurrent_sections_sun . "<br>";
+    echo 'num_master_sections_sat: ' . $num_master_sections_sat . "<br>";
+    echo 'num_master_sections_sun: ' . $num_master_sections_sun . "<br>";
+    echo 'song_threshold: ' . $song_threshold . "<br>";
+    echo 'group_by_level: ' . $group_by_level . "<br>";
+    echo 'master_class_instructor_duration: ' . $master_class_instructor_duration . "<br>";
+    wp_die(); 
+    //*/
+
     // create the time blocks with their concurrent sections for saturday
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
@@ -123,13 +138,16 @@ class Scheduler {
     }
 
     // designate some of the sections on saturday for master-class students
+    //echo 'num_master_sections_sat: ' . $num_master_sections_sat . "<br>";
     while ($num_master_sections_sat > 0) {
       for ($i = ($num_time_blocks_sat - 1); $i >= ($num_time_blocks_sat / 2); $i--) {
         if ($num_master_sections_sat > 0 && $this->days[SAT][$i]->assign_section_to_master($master_class_instructor_duration)) {
           $num_master_sections_sat--;
+          //echo 'inside if statement' . "<br>";
         }
       }
     }
+   //wp_die();
 
     // create the time blocks with their concurrent sections for sunday
     $this->days[SUN] = new SplFixedArray($num_time_blocks_sun);
@@ -255,22 +273,35 @@ class Scheduler {
   public function get_schedule_string() {
     // begin table HTML
     $schedule = '';
+    /*
+    $schedule .= '
+    <style>
+    th, td {
+      padding: 5px;
+    }
+    </style>
+    ';
+    */
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
           $schedule .= '<table style="float: left; width: 50%;">';
+          $schedule .= '<tr><th>Saturday</th></tr>';
         break;
 
         case SUN:
           $schedule .= '<tr><table style="float: right; width: 50%;">';
+          $schedule .= '<tr><th>Sunday</th></tr>';
         break;
       }
 
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         $schedule .= '<tr><td>';
-        $schedule .= $this->days[$i][$j]->get_schedule_string(); 
+        $schedule .= '<tr><th>';
+        $schedule .= 'Timeblock # ' . strval($j + 1);
+        $schedule .= $this->days[$i][$j]->get_schedule_string();
+        $schedule .= '</th></tr>'; 
         $schedule .= '</td></tr>';
-        //$this->days[$i][$j]->print_schedule();
       }
 
       $schedule .= '</table>';    
