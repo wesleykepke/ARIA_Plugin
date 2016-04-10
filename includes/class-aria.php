@@ -233,9 +233,9 @@ class ARIA {
     deletes this form while the plugin is active.
     */
     $this->loader->add_action(
-      'gform_after_submission',
+      'gform_confirmation',
       'ARIA_Music',
-      'aria_add_music_from_csv', 10, 2);
+      'aria_add_music_from_csv', 10, 4);
 
     /*
     The following two add_actions are for testing purposes only!
