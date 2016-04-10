@@ -230,6 +230,16 @@ class Student {
     );
   }
 
+  public function get_schedule_string() {
+    return array(
+      'Student Name' => $this->first_name . ' ' . $this->last_name,
+      'Student Skill Level' => $this->skill_level,
+      'Student Play Time' => $this->play_time . ' minutes',
+      'Song #1' => $this->songs[0],
+      'Song #2' => $this->songs[1]
+    );
+  }
+
   /**
    * The destructor used when a student object is destroyed.
    *

@@ -126,7 +126,12 @@ class TimeBlock {
   public function get_schedule_string() {
     $schedule = ''; 
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $schedule .= '<tr><td>hi</td></tr>';      
+      $schedule .= '<tr><th>';
+      $schedule .= 'Section #';
+      $schedule .= strval($i + 1);
+      $schedule .= ' -- ' . $this->sections[$i]->get_section_info();
+      $schedule .= $this->sections[$i]->get_schedule_string(); 
+      $schedule .= '</th></tr>';      
     }
     return $schedule;
   }

@@ -91,12 +91,12 @@ class Scheduling_Algorithm {
       $group_by_level = false;
     }
     $scheduler->create_normal_competition($num_time_blocks_sat,
-	                                        $num_time_blocks_sun,
-	                                        $time_block_duration,
-	                                        $num_concurrent_sections_sat,
-	                                        $num_concurrent_sections_sun,
-	                                        $num_master_sections_sat,
-	                                        $num_master_sections_sun,
+	                                  $num_time_blocks_sun,
+	                                  $time_block_duration,
+	                                  $num_concurrent_sections_sat,
+	                                  $num_concurrent_sections_sun,
+	                                  $num_master_sections_sat,
+	                                  $num_master_sections_sun,
                                           $song_threshold,
                                           $group_by_level,
                                           $master_class_instructor_duration);
@@ -175,6 +175,7 @@ class Scheduling_Algorithm {
     }
 
     // print the schedule
+    //$scheduler->print_schedule(); 
     $confirmation = $scheduler->get_schedule_string();
     //wp_die($confirmation); 
     /*

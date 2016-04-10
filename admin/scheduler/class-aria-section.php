@@ -160,7 +160,12 @@ class Section {
     $this->current_time = 0;
     $this->music_time_limit = ceil($section_time_limit * PLAY_TIME_FACTOR);
     $this->skill_level = null;
-    $this->song_threshold = $song_threshold;
+    if ($song_threshold == 0) {
+      $this->song_threshold = NO_SONG_THRESHOLD;
+    }
+    else {
+      $this->song_threshold = $song_threshold;
+    }
     $this->group_by_level = $group_by_level;
     $this->master_class_instructor_duration = null;
   }
@@ -174,7 +179,7 @@ class Section {
    * @return true if section is empty, false otherwise
    */
   public function is_empty() {
-    return (empty($this->students) && ($this->current_time === 0) && is_null($this->type));
+    return (empty($this->students) && ($this->current_time === 0));
   }
 
   /**
@@ -210,7 +215,7 @@ class Section {
    */
   public function assign_section_to_master($master_class_instructor_duration) {
     $assigned_to_master = false;
-    if (is_null($this->type)) {
+    if (self::is_empty()) {
       $this->type = SECTION_MASTER;
       $this->master_class_instructor_duration = $master_class_instructor_duration;
       $assigned_to_master = true;
@@ -249,7 +254,7 @@ class Section {
     $songs = $student->get_songs();
     foreach ($songs as $song) {
       $play_count = $this->get_num_times_song_played($song);
-      if ($play_count > $this->song_threshold) {
+      if ($play_count >= $this->song_threshold) {
         return false;
       }
     }
@@ -337,6 +342,84 @@ class Section {
       }
       unset($student_info);
     }
+  }
+
+  /**
+   *
+   */
+  public function get_schedule_string() {
+    $schedule = '';
+    for ($i = 0; $i < count($this->students); $i++) {
+      $student_info = $this->students[$i]->get_schedule_string();
+      $schedule .= '<tr><td>Student #';
+      $schedule .= strval($i + 1);
+      $schedule .= '<ul>';
+      foreach ($student_info as $key => $value) {
+        if (is_array($value)) {
+          for ($j = 0; $j < count($value); $j++) {
+            $schedule .= '<li>';
+            $schedule .= $value[$j];
+            $schedule .= '</li>';   
+          }
+        }
+        else {
+          $schedule .= '<li>';
+          $schedule .= $key . ': ' . $value;
+          $schedule .= '</li>';  
+        }
+      } 
+      $schedule .= '</ul></td></tr>';
+    }
+
+    return $schedule; 
+  }
+
+  /**
+   *
+   */
+  public function get_section_info() {
+    // first, determine if there is section info
+    if (self::is_empty()) {
+      return 'Section is Empty';
+    }
+
+    // determine number of students per section
+    $section_info = 'Number of Students: ' . strval(count($this->students)) . ', ';
+    
+
+    // get all skill levels in section
+    $skill_levels = array();
+    foreach ($this->students as $student) {
+      if (!in_array($student->get_skill_level(), $skill_levels)) {
+        $skill_levels[] = $student->get_skill_level(); 
+      }
+    }
+
+    if (count($skill_levels) === 1) {
+      $section_info = 'Student Skill Level: ' . strval($skill_levels[0]) . ', ';
+    }
+    else {
+      $section_info = 'Student Skill Levels: ';
+      for ($i = 0; $i < count($skill_levels); $i++) {
+        $section_info .= strval($skill_levels[$i]) . ', ';
+      }
+    }
+
+    // determine the type of the section
+    $section_info .= 'Section Type: ';
+    switch ($this->type) {
+      case SECTION_OTHER:
+        $section_info .= "Traditional/Non-Competitive/Command, ";
+      break;
+
+      case SECTION_MASTER:
+        $section_info .= "Masterclass, ";
+      break;
+    }
+
+    // include the total play time
+    $section_info .= 'Total Play Time: ' . $this->current_time . ' minutes';
+    return $section_info;
   }
 
   /**
