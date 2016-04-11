@@ -96,7 +96,7 @@ class TimeBlock {
    * master-class section.
    *
    * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
-   * 
+   *
    * @return true if section was designated as a master-class section, false otherwise
    */
   public function assign_section_to_master($master_class_instructor_duration) {
@@ -121,17 +121,31 @@ class TimeBlock {
   }
 
   /**
+   * This function will help add to the schedule for the competition using HTML.
    *
+   * Since the schedule is best demonstrated using HTML tables and lists, this
+   * function is responsible for adding onto the previously created HTML. The
+   * creation of the inner HTML will be abstracted away to the section objects.
+   *
+   * @param	array 	$rooms 	An array that contains a list of room names.
+   *
+   * @return	string	The generated HTML output
    */
-  public function get_schedule_string() {
-    $schedule = ''; 
+  public function get_schedule_string($rooms) {
+    $schedule = '';
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $schedule .= '<tr><th>';
       $schedule .= 'Section #';
-      $schedule .= strval($i + 1);
+      $schedule .= strval($i + 1) . ', ';
+      if (array_key_exists($i, $rooms)) {
+        $schedule .= 'Room: ' . $rooms[$i];
+      }
+      else {
+        $schedule .= 'Room: ' . strval($i + 1);
+      }
       $schedule .= ' -- ' . $this->sections[$i]->get_section_info();
-      $schedule .= $this->sections[$i]->get_schedule_string(); 
-      $schedule .= '</th></tr>';      
+      $schedule .= $this->sections[$i]->get_schedule_string();
+      $schedule .= '</th></tr>';
     }
     return $schedule;
   }
