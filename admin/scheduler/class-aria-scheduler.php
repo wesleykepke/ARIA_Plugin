@@ -109,7 +109,9 @@ class Scheduler {
                                             $num_master_sections_sun,
                                             $song_threshold,
                                             $group_by_level,
-                                            $master_class_instructor_duration) {
+                                            $master_class_instructor_duration,
+                                            $saturday_rooms,
+                                            $sunday_rooms) {
     // ensure the current scheduler object is for a regular competition
     if ($this->competition_type !== REGULAR_COMP) {
       return;
@@ -127,7 +129,7 @@ class Scheduler {
     echo 'song_threshold: ' . $song_threshold . "<br>";
     echo 'group_by_level: ' . $group_by_level . "<br>";
     echo 'master_class_instructor_duration: ' . $master_class_instructor_duration . "<br>";
-    wp_die(); 
+    wp_die();
     //*/
 
     // create the time blocks with their concurrent sections for saturday
@@ -268,43 +270,49 @@ class Scheduler {
   }
 
   /**
+   * This function will create the schedule for the competition using HTML.
    *
+   * Since the schedule is best demonstrated using HTML tables and lists, this
+   * function is responsible for creating the basic HTML structure. The creation
+   * of the inner HTML will be abstracted away to the timeblocks and sections.
+   *
+   * @param	array 	$saturday_rooms 	An array that contains the list of rooms for saturday.
+   * @param	array 	$sunday_rooms 	An array that contains the list of rooms for sunday.
+   *
+   * @return	string	The generated HTML output
    */
-  public function get_schedule_string() {
-    // begin table HTML
+  public function get_schedule_string($saturday_rooms, $sunday_rooms) {
     $schedule = '';
-    /*
-    $schedule .= '
-    <style>
-    th, td {
-      padding: 5px;
-    }
-    </style>
-    ';
-    */
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
           $schedule .= '<table style="float: left; width: 50%;">';
           $schedule .= '<tr><th>Saturday</th></tr>';
+          for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+            $schedule .= '<tr><td>';
+            $schedule .= '<tr><th>';
+            $schedule .= 'Timeblock # ' . strval($j + 1);
+            $schedule .= $this->days[$i][$j]->get_schedule_string($saturday_rooms);
+            $schedule .= '</th></tr>';
+            $schedule .= '</td></tr>';
+          }
         break;
 
         case SUN:
           $schedule .= '<tr><table style="float: right; width: 50%;">';
           $schedule .= '<tr><th>Sunday</th></tr>';
+          for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+            $schedule .= '<tr><td>';
+            $schedule .= '<tr><th>';
+            $schedule .= 'Timeblock # ' . strval($j + 1);
+            $schedule .= $this->days[$i][$j]->get_schedule_string($sunday_rooms);
+            $schedule .= '</th></tr>';
+            $schedule .= '</td></tr>';
+          }
         break;
       }
 
-      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $schedule .= '<tr><td>';
-        $schedule .= '<tr><th>';
-        $schedule .= 'Timeblock # ' . strval($j + 1);
-        $schedule .= $this->days[$i][$j]->get_schedule_string();
-        $schedule .= '</th></tr>'; 
-        $schedule .= '</td></tr>';
-      }
-
-      $schedule .= '</table>';    
+      $schedule .= '</table>';
     }
 
     return $schedule;
