@@ -46,6 +46,8 @@ class Scheduling_Algorithm {
     $song_threshold = $entry[$scheduling_field_mapping['song_threshold']];
     $group_by_level = $entry[$scheduling_field_mapping['group_by_level']];
     $master_class_instructor_duration = $entry[$scheduling_field_mapping['master_class_instructor_duration']];
+    $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
+    $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
@@ -97,9 +99,11 @@ class Scheduling_Algorithm {
 	                                  $num_concurrent_sections_sun,
 	                                  $num_master_sections_sat,
 	                                  $num_master_sections_sun,
-                                          $song_threshold,
-                                          $group_by_level,
-                                          $master_class_instructor_duration);
+                                    $song_threshold,
+                                    $group_by_level,
+                                    $master_class_instructor_duration,
+                                    $saturday_rooms,
+                                    $sunday_rooms);
 
     // schedule students by age/level
     $playing_times = self::calculate_playing_times($student_master_form_id);
@@ -175,9 +179,9 @@ class Scheduling_Algorithm {
     }
 
     // print the schedule
-    //$scheduler->print_schedule(); 
-    $confirmation = $scheduler->get_schedule_string();
-    //wp_die($confirmation); 
+    //$scheduler->print_schedule();
+    $confirmation = $scheduler->get_schedule_string($saturday_rooms, $sunday_rooms);
+    //wp_die($confirmation);
     /*
     $confirmation = "Congratulations! A schedule has been successfully" .
     " created for " . $title;
@@ -328,6 +332,24 @@ class Scheduling_Algorithm {
     $master_class_instructor_duration->descriptionPlacement = "above";
     $form->fields[] = $master_class_instructor_duration;
 
+    // custom room names for saturday
+    $saturday_rooms = new GF_Field_List();
+    $saturday_rooms->label = "Saturday Room Names/Numbers";
+    $saturday_rooms->id = $field_mapping['saturday_rooms'];
+    $saturday_rooms->description = "If you know the specific room names/numbers for your" .
+    " competition venue on Saturday, feel free to enter the names/numbers here.";
+    $saturday_rooms->descriptionPlacement = "above";
+    $form->fields[] = $saturday_rooms;
+
+    // custom room names for sunday
+    $sunday_rooms = new GF_Field_List();
+    $sunday_rooms->label = "Sunday Room Names/Numbers";
+    $sunday_rooms->id = $field_mapping['sunday_rooms'];
+    $sunday_rooms->description = "If you know the specific room names/numbers for your" .
+    " competition venue on Sunday, feel free to enter the names/numbers here.";
+    $sunday_rooms->descriptionPlacement = "above";
+    $form->fields[] = $sunday_rooms;
+
     // number of judges per section
       // not done yet
 
@@ -374,7 +396,9 @@ class Scheduling_Algorithm {
       'num_master_sections_sun' => 8,
       'song_threshold' => 9,
       'group_by_level' => 10,
-      'master_class_instructor_duration' => 11
+      'master_class_instructor_duration' => 11,
+      'saturday_rooms' => 12,
+      'sunday_rooms' => 13
     );
   }
 
