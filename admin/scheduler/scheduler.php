@@ -178,6 +178,16 @@ class Scheduling_Algorithm {
       }
     }
 
+    //unset($scheduler); 
+    //wp_die(print_r($scheduler)); 
+/*
+    $file_path = 'string.txt';
+    if (file_exists($file_path)) {
+      $scheduler = file_get_contents($file_path);
+      $scheduler = unserialize($scheduler); 
+    }
+*/
+
     // print the schedule
     //$scheduler->print_schedule();
     $confirmation = $scheduler->get_schedule_string($saturday_rooms, $sunday_rooms);
@@ -186,6 +196,16 @@ class Scheduling_Algorithm {
     $confirmation = "Congratulations! A schedule has been successfully" .
     " created for " . $title;
     */
+    //$scheduler_data = serialize($scheduler);
+/*
+    unset($scheduler);
+    $file_path = 'string.txt';
+      $fp = fopen($file_path, 'w');
+      fwrite($fp, $scheduler_data);
+      fclose($fp); */
+
+
+    
     return $confirmation;
 
   }
