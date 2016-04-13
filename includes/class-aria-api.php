@@ -466,6 +466,51 @@ class ARIA_API {
   }
 
   /**
+   * This function will accept a teacher name and return that teacher's email.
+   *
+   * Since the teacher's email is not stored as part of a student master entry
+   * (but a teacher's name is), this function is responsible for taking a
+   * teacher's name as input and returning that teacher's email address (located
+   * in the teacher master form of a given competition).
+   *
+   * @since 1.0.0
+   * @author KREW
+   *
+   * @param	String 	$teacher_name 	The name of the teacher whose email is desired.
+   */
+  public static function get_teacher_email($teacher_name, $teacher_master_form_id) {
+    // get all entries in the associated teacher master
+    $search_criteria = array();
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
+                                  $sorting, $paging, $total_count);
+
+    // iterate through the teacher entries and find the teacher we are looking for
+    $split_name = explode(' ', $teacher_name);
+    $split_name[0] = strtolower(trim($split_name[0]));
+    $split_name[1] = strtolower(trim($split_name[1]));
+    //echo $split_name[0] . $split_name[1] . "<br>";
+    //wp_die('inside get_teacher_email');
+    $email = null;
+    $field_mapping = self::aria_master_teacher_field_id_array();
+    //wp_die(var_dump($entries));
+    foreach ($entries as $entry) {
+      $first_name = strtolower(trim($entry[strval($field_mapping['first_name'])]));
+      $last_name = strtolower(trim($entry[strval($field_mapping['last_name'])]));
+      if (($split_name[0] == $first_name) && ($split_name[1] == $last_name)) {
+        $email = $entry[strval($field_mapping['email'])];
+      }
+    }
+
+    if (is_null($email)) {
+      wp_die('could not find email');
+    }
+    return $email;
+  }
+
+  /**
    * This function will publish a new page with a specific form.
    *
    * When a new form is created, that form most likely needs to be published
