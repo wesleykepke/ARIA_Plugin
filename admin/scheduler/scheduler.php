@@ -159,8 +159,23 @@ class Scheduling_Algorithm {
         // determine the student's skill level
         $skill_level = $student[strval($student_master_field_mapping['student_level'])];
 
+        // determine the email address of the student's parent
+        $parent_email = $student[strval($student_master_field_mapping['parent_email'])];
+
+        // determine the email address of the student's teacher
+        $teacher_email = ARIA_API::get_teacher_email($student[strval($student_master_field_mapping['teacher_name'])],
+                                                     $related_form_ids['teacher_master_form_id']);
+
+        /*
+        echo '<h1>Parent email:' . $parent_email . '</h1>';
+        echo '<h1>Teacher email:' . $teacher_email . '</h1>';
+        wp_die();
+        */
+
         // create a student object based on previously obtained information
-        $modified_student = new Student($first_name, $last_name, $type, $day_preference, $skill_level, $total_play_time);
+        $modified_student = new Student($first_name, $last_name, $type,
+                                        $day_preference, $skill_level,
+                                        $total_play_time, $teacher_email, $parent_email);
 
         // add student's first song
         $modified_student->add_song($student[strval($student_master_field_mapping['song_1_selection'])]);
@@ -178,13 +193,13 @@ class Scheduling_Algorithm {
       }
     }
 
-    //unset($scheduler); 
-    //wp_die(print_r($scheduler)); 
+    //unset($scheduler);
+    //wp_die(print_r($scheduler));
 /*
     $file_path = 'string.txt';
     if (file_exists($file_path)) {
       $scheduler = file_get_contents($file_path);
-      $scheduler = unserialize($scheduler); 
+      $scheduler = unserialize($scheduler);
     }
 */
 
@@ -205,7 +220,7 @@ class Scheduling_Algorithm {
       fclose($fp); */
 
 
-    
+
     return $confirmation;
 
   }
@@ -637,5 +652,24 @@ class Scheduling_Algorithm {
     //echo "<h1>Displaying playing times</h1>";
     //wp_die(print_r($playing_times));
     return $playing_times;
+  }
+
+  /**
+   * This function will send an email to each of the teachers in the competition.
+   *
+   * Once registration is complete, the teachers in the competition need to be
+   * emailed information regarding when each of their students is competing and
+   * about their volunteer duties. This function is responsible for generating
+   * and sending that email.
+   *
+   * @param	int	$teacher_master_form_id	The teacher master form of the given competition.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function send_teachers_competition_info($teacher_master_form_id) {
+
   }
 }
