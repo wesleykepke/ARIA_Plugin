@@ -93,6 +93,30 @@ class Student {
   private $play_time;
 
   /**
+   * The email of the student's teacher.
+   *
+   * This will represent the email of the teacher that the student registered
+   * under.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	string 	$teacher_email 	The student's teacher's email address.
+   */
+  private $teacher_email;
+
+  /**
+   * The email of the student's parent.
+   *
+   * This will represent the email of the parent that the student registered
+   * under.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var 	string 	$parent_email 	The student's parent's email address.
+   */
+  private $parent_email;
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
@@ -104,7 +128,7 @@ class Student {
    * @param int	$play_time	The total play time that the student requires.
    */
   function __construct($first_name, $last_name, $type, $day_preference,
-                       $skill_level, $play_time) {
+                       $skill_level, $play_time, $teacher_email, $parent_email) {
     $this->first_name = $first_name;
     $this->last_name = $last_name;
     $this->type = $type;
@@ -112,6 +136,8 @@ class Student {
     $this->day_preference = $day_preference;
     $this->skill_level = $skill_level;
     $this->play_time = $play_time;
+    $this->teacher_email = $teacher_email;
+    $this->parent_email = $parent_email;
   }
 
   /**
@@ -178,6 +204,26 @@ class Student {
    */
   public function get_total_play_time() {
     return $this->play_time;
+  }
+
+  /**
+   * The function will return the email address of the student's teacher.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's teacher's email address.
+   */
+  public function get_teacher_email() {
+    return $this->teacher_email;
+  }
+
+  /**
+   * The function will return the email address of the student's parent.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's parent's email address.
+   */
+  public function get_parent_email() {
+    return $this->parent_email;
   }
 
   /**
