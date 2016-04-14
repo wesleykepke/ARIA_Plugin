@@ -193,6 +193,9 @@ class Scheduling_Algorithm {
       }
     }
 
+    // code to test sending emails to teachers
+    self::send_teachers_competition_info($related_form_ids['teacher_master_form_id'], $scheduler);
+
     //unset($scheduler);
     //wp_die(print_r($scheduler));
 /*
@@ -663,13 +666,47 @@ class Scheduling_Algorithm {
    * and sending that email.
    *
    * @param	int	$teacher_master_form_id	The teacher master form of the given competition.
+   * @param 	Scheduler	$scheduler	The scheduler object for a given competition. 
    *
    * @return	void
    *
    * @since 1.0.0
    * @author KREW
    */
-  public static function send_teachers_competition_info($teacher_master_form_id) {
+  public static function send_teachers_competition_info($teacher_master_form_id, $scheduler) {
+    // get all entries in the associated teacher master
+    $search_criteria = array();
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
+                                  $sorting, $paging, $total_count);
 
+    // store all of the teacher emails in an associative array
+    $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
+    $teacher_emails_to_students = array(); 
+    foreach ($entries as $teacher) {
+      $teacher_email = $teacher[strval($field_mapping['email'])];
+      if(!array_key_exists($teacher_email, $teacher_emails_to_students)) {
+        $teacher_emails_to_students[] = $teacher_email;
+        //$teacher_emails_to_students[$teacher_email] = array(); 
+      }
+    }
+
+    // above code works
+    wp_die(var_dump($teacher_emails_to_students)); 
+    
+    // for each of the emails that were found, find all students that registered under that teacher
+    foreach ($teacher_emails_to_students as $key => &$value) {
+    //for ($i = 0; $i < count($teacher_emails_to_students); $i++) {
+      //echo var_dump($key) . '<br>';
+      //echo var_dump($value) . '<br>';
+      //wp_die(); 
+      $scheduler->group_all_students_by_teacher_email($key, $value);
+      //$scheduler->group_all_students_by_teacher_email(); 
+    }
+
+    echo 'Mapping of teacher emails to students <br>';
+    wp_die(print_r($teacher_emails_to_students));     
   }
 }
