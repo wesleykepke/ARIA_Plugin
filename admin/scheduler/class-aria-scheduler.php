@@ -319,6 +319,28 @@ class Scheduler {
   }
 
   /**
+   * This function will find all of the students participating in a competition
+   * and group them by teacher email.
+   *
+   * This function will accept a teacher's email as a parameter. Using this value,
+   * the scheduler will then iterate through all of it's timeblocks and find all 
+   * of the students scheduled in the competition that had registered under the 
+   * teacher's email that was passed as a parameter.
+   *
+   * @param 	String	$teacher_email	The email of the teacher to group students by.
+   * @param	Array	$students	The array of students that registered under the teacher. 
+   */
+  public function group_all_students_by_teacher_email($teacher_email, &$students) {
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->group_all_students_by_teacher_email($teacher_email, $students);
+      }
+    }
+
+    //wp_die(print_r($students));
+  }
+
+  /**
    * The destructor used when a scheduler object is destroyed.
    *
    * @since 1.0.0
