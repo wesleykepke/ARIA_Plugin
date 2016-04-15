@@ -227,6 +227,13 @@ class Student {
   }
 
   /**
+   *
+   */
+  public function get_info_for_email() {
+    return $this->first_name . ' ' . $this->last_name . ' is playing on..' . $this->teacher_email . '<br>';
+  }
+
+  /**
    * The function will return an associative array that contains all of the
    * information associated with a student.
    *

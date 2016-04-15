@@ -682,6 +682,11 @@ class Scheduling_Algorithm {
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
                                   $sorting, $paging, $total_count);
 
+    /* this works as expected
+    echo '<h1>Teacher Entries</h1>';
+    wp_die(print_r($entries));
+    */
+
     // store all of the teacher emails in an associative array
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
     $teacher_emails_to_students = array(); 
@@ -689,24 +694,37 @@ class Scheduling_Algorithm {
       $teacher_email = $teacher[strval($field_mapping['email'])];
       if(!array_key_exists($teacher_email, $teacher_emails_to_students)) {
         $teacher_emails_to_students[] = $teacher_email;
-        //$teacher_emails_to_students[$teacher_email] = array(); 
+        $teacher_emails_to_students[$teacher_email] = array(); 
       }
     }
 
     // above code works
-    wp_die(var_dump($teacher_emails_to_students)); 
+    //wp_die(print_r($teacher_emails_to_students)); 
     
     // for each of the emails that were found, find all students that registered under that teacher
-    foreach ($teacher_emails_to_students as $key => &$value) {
-    //for ($i = 0; $i < count($teacher_emails_to_students); $i++) {
-      //echo var_dump($key) . '<br>';
-      //echo var_dump($value) . '<br>';
-      //wp_die(); 
-      $scheduler->group_all_students_by_teacher_email($key, $value);
-      //$scheduler->group_all_students_by_teacher_email(); 
+    foreach ($teacher_emails_to_students as $key => $value) {
+      if (strpos($key, '@') !== false) {
+        $email_message = null;
+        $scheduler->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
+        foreach ($teacher_emails_to_students[$key] as $student) {
+          $email_message .= $student->get_info_for_email();
+        }
+
+        echo($email_message);
+      }
     }
 
     echo 'Mapping of teacher emails to students <br>';
     wp_die(print_r($teacher_emails_to_students));     
+
+    // iterate through all of the students per teacher and send an email
+/*
+    foreach ($teacher_emails_to_students as $key => value) {
+      if (strpos($key), )
+        foreach ($teacher_emails_to_students[$key] as $student) {
+
+        }
+    }
+*/
   }
 }
