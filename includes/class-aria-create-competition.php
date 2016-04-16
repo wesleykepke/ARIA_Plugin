@@ -70,6 +70,10 @@ class ARIA_Create_Competition {
           return $confirmation;
     }
 
+    // check to see if the given competition name has already been used. if it has,
+    // throw an error and make the festival chairman remove the old competition or rename
+    // the current competition. 
+
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
 
