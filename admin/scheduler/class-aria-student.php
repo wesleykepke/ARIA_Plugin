@@ -53,6 +53,15 @@ class Student {
   private $songs;
 
   /**
+   * The composers of the songs that the student is performing.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   array   $composers  The composers of the songs that the student is performing.
+   */
+  private $composers;
+
+  /**
    * The type of section the student will be competing in (traditional,
    * master-class, non-competitive, or command performance).
    *
@@ -134,6 +143,23 @@ class Student {
    */
   private $day;
 
+  /**
+   * The name of the student's teacher.  
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $teacher_name   The student's teacher's name.
+   */
+  private $teacher_name;
+
+  /**
+   * The room where the student is performing.  
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $room   The room name/number. 
+   */
+  private $room;
 
   /**
    * The constructor used to instantiate a new student object.
@@ -147,18 +173,22 @@ class Student {
    * @param int	$play_time	The total play time that the student requires.
    */
   function __construct($first_name, $last_name, $type, $day_preference,
-                       $skill_level, $play_time, $teacher_email, $parent_email) {
+                       $skill_level, $play_time, $teacher_email, $parent_email,
+                       $teacher_name) {
     $this->first_name = $first_name;
     $this->last_name = $last_name;
     $this->type = $type;
     $this->songs = array();
+    $this->composers = array();
     $this->day_preference = $day_preference;
     $this->skill_level = $skill_level;
     $this->play_time = $play_time;
     $this->teacher_email = $teacher_email;
     $this->parent_email = $parent_email;
     $this->start_time = null;
-    $this->day = null; 
+    $this->day = null;
+    $this->room = null;  
+    $this->teacher_name = $teacher_name; 
   }
 
   /**
@@ -169,10 +199,22 @@ class Student {
    *
    * @since 1.0.0
    * @param	string	$song_name 	The name of the song.
-   * @param	string 	$song_duration 	The duration of the song.
    */
   public function add_song($song_name) {
     $this->songs[] = $song_name;
+  }
+
+  /**
+   * The function used to add a composer to the student's list of composers.
+   *
+   * This function will simply append the composer that is passed as a parameter
+   * to the students list of composers.
+   *
+   * @since 1.0.0
+   * @param string  $composer_name  The name of the composer.
+   */
+  public function add_composer($composer_name) {
+    $this->composers[] = $composer_name;
   }
 
   /**
@@ -195,6 +237,17 @@ class Student {
    */
   public function set_day($day) {
     $this->day = $day;
+  }
+
+  /**
+   * The function will set the room of the where the student is registered
+   * to perform. 
+   *
+   * @since 1.0.0
+   * @param string   $room  The room of where the student is playing.
+   */
+  public function set_room($room) {
+    $this->room = $room;
   }
 
   /**
@@ -277,19 +330,20 @@ class Student {
     if (count($this->songs) > 2) {
       for ($i = 0; $i < count($this->songs); $i++) {
         if ($i == (count($this->songs) - 1)) {
-          $songs .= 'and ' . $this->songs[$i];
+          $songs .= 'and ' . $this->songs[$i] . ' by ' . $this->composers[$i];
         }
         else {
-          $songs .= $this->songs[$i] . ', ';
+          $songs .= $this->songs[$i] . ' by ' . $this->composers[$i]. ', ';
         }
       }
     }
     else if (count($this->songs) == 2) {
-      $songs = $this->songs[0] . ' and ' . $this->songs[1];
+      $songs = $this->songs[0] . ' by ' . $this->composers[0] . ' and ' 
+      . $this->songs[1] . ' by ' . $this->composers[1];
     }
 
     return $this->first_name . ' ' . $this->last_name . ' will be playing ' . $songs .
-      ' on ' . $this->day . ' at ' . $this->start_time . '.<br><br>';
+      ' on ' . $this->day . ' at ' . $this->start_time . ' in ' . $this->room . '.<br><br>';
   }
 
   /**
@@ -349,6 +403,31 @@ class Student {
       'Student Play Time' => $this->play_time . ' minutes',
       'Song #1' => $this->songs[0],
       'Song #2' => $this->songs[1]
+    );
+  }
+
+  /**
+   * This function will consolidate all scheduling data (of students) into a format 
+   * suitable for the document generator. 
+   *
+   * This function will prepare all data for a single student that is required of the 
+   * document generator. 
+   *
+   * @return   Array   An associative array of all student data in doc. gen. compatible form. 
+   */
+  public function get_section_info_for_doc_gen() {
+    return array(
+      'name' => $this->first_name . ' ' . $this->last_name,
+      'teacher' => $this->teacher_name,
+      'level' => $this->skill_level,
+      'song_one' => array(
+        'composer' => $this->composers[0],
+        'song' => $this->songs[0]
+      ),
+      'song_two' => array(
+        'composer' => $this->composers[1],
+        'song' => $this->songs[1]
+      )  
     );
   }
 

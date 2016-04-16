@@ -40,7 +40,8 @@ class Scheduling_Algorithm {
     $num_time_blocks_sat = $entry[$scheduling_field_mapping['num_time_blocks_sat']];
     $num_time_blocks_sun = $entry[$scheduling_field_mapping['num_time_blocks_sun']];
     $sat_start_times = unserialize($entry[$scheduling_field_mapping['sat_start_times']]);
-    $sun_start_times = unserialize($entry[$scheduling_field_mapping['sun_start_times']]);    
+    $sun_start_times = unserialize($entry[$scheduling_field_mapping['sun_start_times']]);
+    $both_start_times = array_merge($sat_start_times, $sun_start_times);    
     $num_concurrent_sections_sat = $entry[$scheduling_field_mapping['num_concurrent_sections_sat']];
     $num_concurrent_sections_sun = $entry[$scheduling_field_mapping['num_concurrent_sections_sun']];
     $num_master_sections_sat = $entry[$scheduling_field_mapping['num_master_sections_sat']];
@@ -50,6 +51,7 @@ class Scheduling_Algorithm {
     $master_class_instructor_duration = $entry[$scheduling_field_mapping['master_class_instructor_duration']];
     $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
     $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
+    $both_days_rooms = array_merge($saturday_rooms, $sunday_rooms); 
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
@@ -101,8 +103,7 @@ class Scheduling_Algorithm {
     $scheduler->create_normal_competition($num_time_blocks_sat,
                                           $num_time_blocks_sun,
                                           $time_block_duration,
-                                          $sat_start_times,
-                                          $sun_start_times,
+                                          $both_start_times,
                                           $num_concurrent_sections_sat,
                                           $num_concurrent_sections_sun,
                                           $num_master_sections_sat,
@@ -113,17 +114,13 @@ class Scheduling_Algorithm {
                                           $saturday_rooms,
                                           $sunday_rooms);
 
-    // schedule students by age/level
+    // schedule all students that are registered for the current competition
     $playing_times = self::calculate_playing_times($student_master_form_id);
-    //wp_die(print_r($playing_times));
     $current_either_saturday_total = 0;
     $current_either_sunday_total = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
       foreach ($all_students_per_level as $student) {
-        //print_r($student);
-        //wp_die('<h4>^^^displaying format of student master entry^^^</h4>');
-
         // obtain student's first and last names
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
         $last_name = $student[strval($student_master_field_mapping['student_last_name'])];
@@ -174,24 +171,27 @@ class Scheduling_Algorithm {
         $teacher_email = ARIA_API::get_teacher_email($student[strval($student_master_field_mapping['teacher_name'])],
                                                      $related_form_ids['teacher_master_form_id']);
 
-        /*
-        echo '<h1>Parent email:' . $parent_email . '</h1>';
-        echo '<h1>Teacher email:' . $teacher_email . '</h1>';
-        wp_die();
-        */
+        // determine the student's teacher's name
+        $teacher_name = $student[strval($student_master_field_mapping['teacher_name'])];
 
         // create a student object based on previously obtained information
         $modified_student = new Student($first_name, $last_name, $type,
                                         $day_preference, $skill_level,
-                                        $total_play_time, $teacher_email, $parent_email);
+                                        $total_play_time, $teacher_email, 
+                                        $parent_email, $teacher_name);
 
         // add student's first song
         $modified_student->add_song($student[strval($student_master_field_mapping['song_1_selection'])]);
 
+        // add composer of student's first song
+        $modified_student->add_composer($student[strval($student_master_field_mapping['song_1_composer'])]);
+
         // add student's second song
         $modified_student->add_song($student[strval($student_master_field_mapping['song_2_selection'])]);
 
-        //wp_die(print_r($modified_student));
+        // add composer of student's second song
+        $modified_student->add_composer($student[strval($student_master_field_mapping['song_2_composer'])]);
+
 
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
@@ -204,42 +204,11 @@ class Scheduling_Algorithm {
     // automatically write the scheduler object to a file
     self::save_scheduler_to_file($title, $scheduler);
 
-    // code to test sending emails to teachers
-    //self::send_teachers_competition_info($related_form_ids['teacher_master_form_id'], $scheduler);
-
-    //unset($scheduler);
-    //wp_die(print_r($scheduler));
-/*
-    $file_path = 'string.txt';
-    if (file_exists($file_path)) {
-      $scheduler = file_get_contents($file_path);
-      $scheduler = unserialize($scheduler);
-    }
-*/
-
-    // print the schedule
-    //$scheduler->print_schedule();
-    //wp_die(print_r($sunday_rooms));
+    // print the schedule to the festival chairman
     $confirmation = "<h4>Don't worry about saving your schedule. ARIA will automatically save the most"
-    . " recently generated schedule so you can return to it later.</h4><br>";
-    $confirmation .= $scheduler->get_schedule_string($saturday_rooms, $sunday_rooms);
-    //wp_die($confirmation);
-    /*
-    $confirmation = "Congratulations! A schedule has been successfully" .
-    " created for " . $title;
-    */
-    //$scheduler_data = serialize($scheduler);
-/*
-    unset($scheduler);
-    $file_path = 'string.txt';
-      $fp = fopen($file_path, 'w');
-      fwrite($fp, $scheduler_data);
-      fclose($fp); */
-
-
-
+    . " recently generated schedule so you can return to it later for document generation.</h4><br>";
+    $confirmation .= $scheduler->get_schedule_string();
     return $confirmation;
-
   }
 
   /**
@@ -486,7 +455,7 @@ class Scheduling_Algorithm {
   }
 
   /**
-   * This function will pre-populate the drop-down menu on the teacher upload
+   * This function will pre-populate the drop-down menu on the scheduling
    * page with all of the active competitions.
    *
    * Whenever the festival chairman visits the page that is used for adding a
@@ -727,15 +696,17 @@ class Scheduling_Algorithm {
    * about their volunteer duties. This function is responsible for generating
    * and sending that email.
    *
-   * @param	int	$teacher_master_form_id	The teacher master form of the given competition.
-   * @param 	Scheduler	$scheduler	The scheduler object for a given competition. 
+   * @param		int	$teacher_master_form_id	The teacher master form of the given competition.
+   * @param 	Scheduler	$scheduler	The scheduler object for a given competition.
+   * @param 	String 	$comp_name 	The name of the competition.  
    *
    * @return	void
    *
    * @since 1.0.0
    * @author KREW
    */
-  public static function send_teachers_competition_info($teacher_master_form_id, $scheduler) {
+  public static function send_teachers_competition_info($teacher_master_form_id, $scheduler,
+  	                                                    $comp_name) {
     // get all entries in the associated teacher master
     $search_criteria = array();
     $sorting = null;
@@ -743,11 +714,6 @@ class Scheduling_Algorithm {
     $total_count = 0;
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
                                   $sorting, $paging, $total_count);
-
-    /* this works as expected
-    echo '<h1>Teacher Entries</h1>';
-    wp_die(print_r($entries));
-    */
 
     // store all of the teacher emails in an associative array
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
@@ -759,9 +725,6 @@ class Scheduling_Algorithm {
         $teacher_emails_to_students[$teacher_email] = array(); 
       }
     }
-
-    // above code works
-    //wp_die(print_r($teacher_emails_to_students)); 
     
     // for each of the emails that were found, find all students that registered under that teacher
     foreach ($teacher_emails_to_students as $key => $value) {
@@ -772,16 +735,16 @@ class Scheduling_Algorithm {
           $email_message .= $student->get_info_for_email();
         }
 
-        echo $email_message . "<br>";
+        // once the message has been generated, send the email to the teachers
+        if (!is_null($email_message)) {
+          $subject = "Student Assignments for " . $comp_name;
+          if (!wp_mail($key, $subject, $email_message)) {
+            wp_die("<h1>Emails to teachers about competition info failed to send.
+          	  Please try again.</h1>"); 
+          }
+        }
       }
     }
-
-    wp_die(); 
-
-    //echo 'Mapping of teacher emails to students <br>';
-    //wp_die(print_r($teacher_emails_to_students));     
-
-
   }
 
   /**

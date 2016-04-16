@@ -57,8 +57,10 @@ class ARIA_Create_Competition {
    * for students and parents if it is used ONLY in conjunction with the form
    * used to create new music competitions.
    *
-   * @param Entry Object  $entry  The entry that was just submitted
-   * @param Form Object   $form   The form used to submit entries
+   * @param     Entry Object  $entry  The entry that was just submitted.
+   * @param     Form Object   $form   The form used to submit entries.
+   * @param     String/Array    $confirmation   The confirmation message to be filtered.
+   * @param     Bool    $ajax   Specifies if this form is configured to be submitted via AJAX.
    *
    * @since 1.0.0
    * @author KREW

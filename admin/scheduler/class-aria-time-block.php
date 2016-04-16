@@ -69,6 +69,15 @@ class TimeBlock {
   private $day;
 
   /**
+   * The array of room titles for the time blocks's sections. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   array   $rooms   The room names for each section of the time block.
+   */
+  private $rooms;
+
+  /**
    * The constructor used to instantiate a new time block object.
    *
    * @since 1.0.0
@@ -77,17 +86,21 @@ class TimeBlock {
    * @param int 	$song_threshold 	The amount of times a song can be played in this section.
    * @param boolean 	$group_by_level 	True if single level only, false otherwise. 
    * @param string  $start_time   The start time of the current time block.
-   * @param string  $day  The day of the current time block. 
+   * @param string  $day  The day of the current time block.
+   * @param array   $rooms  The array of room names/numbers. 
    */
   function __construct($num_concurrent_sections, $time_block_duration,
-                       $song_threshold, $group_by_level, $start_time, $day) {
+                       $song_threshold, $group_by_level, $start_time, 
+                       $day, $rooms) {
     $this->num_concurrent_sections = $num_concurrent_sections;
     $this->sections = new SplFixedArray($num_concurrent_sections);
     $this->start_time = $start_time;
-    $this->day = $day;  
+    $this->day = $day;
+    $this->rooms = $rooms;   
     for ($i = 0; $i < $num_concurrent_sections; $i++) {
       $this->sections[$i] = new Section($time_block_duration, $song_threshold, 
-                                        $group_by_level, $start_time, $day);
+                                        $group_by_level, $start_time, $day,
+                                        $rooms[$i]);
     }
   }
 
@@ -150,22 +163,15 @@ class TimeBlock {
    * function is responsible for adding onto the previously created HTML. The
    * creation of the inner HTML will be abstracted away to the section objects.
    *
-   * @param	array 	$rooms 	An array that contains a list of room names.
-   *
    * @return	string	The generated HTML output
    */
-  public function get_schedule_string($rooms) {
+  public function get_schedule_string() {
     $schedule = '';
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $schedule .= '<tr><th>';
       $schedule .= 'Section #';
       $schedule .= strval($i + 1) . ' -- ';
-      if ($rooms != false && array_key_exists($i, $rooms)) {
-        $schedule .= 'Room: ' . $rooms[$i];
-      }
-      else {
-        $schedule .= 'Room: ' . strval($i + 1);
-      }
+      $schedule .= $this->rooms[$i];
       $schedule .= ', ' . $this->sections[$i]->get_section_info();
       $schedule .= $this->sections[$i]->get_schedule_string();
       $schedule .= '</th></tr>';
@@ -189,6 +195,22 @@ class TimeBlock {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->group_all_students_by_teacher_email($teacher_email, $students);
     }
+  }
+
+  /**
+   * This function will consolidate all scheduling data into a format suitable for
+   * the document generator. 
+   *
+   * This function will iterate through all section objects of a given timeblock
+   * object. For each section, all student data will be added in a format that is 
+   * compatible with that required by the document generator.
+   *
+   * @param   Array   $doc_gen_section_daya An associative array of all student data in doc. gen. compatible form. 
+   */
+  public function get_section_info_for_doc_gen(&$doc_gen_section_data) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->get_section_info_for_doc_gen($doc_gen_section_data); 
+    } 
   }
 
   /**
