@@ -88,16 +88,17 @@ class Scheduler {
    *
    * @param	int	$num_time_blocks_sat	The number of time blocks on saturday.
    * @param	int	$num_time_blocks_sun	The number of time blocks on sunday.
-   * @param Array   $sat_start_times    The array of Saturday timeblock starting times.
-   * @param Array   $sun_start_times    The array of Sunday timeblock starting times.
+   * @param Array   $both_start_times   The array of start times for both days. 
    * @param	int	$time_block_duration	The amount of time allocated to each timeblock.
    * @param	int	$num_concurrent_sections_sat	The number of sections/timeblock on saturday.
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
    * @param	int	$num_master_sections_sat	The number of master-class sections on saturday.
    * @param	int	$num_master_sections_sun	The number of master-class sections on sunday.
-   * @param 	int 	$song_threshold 	The amount of times a song can be played in this section.
-   * @param 	boolean $group_by_level 	True if single level only, false otherwise.
+   * @param int 	$song_threshold 	The amount of times a song can be played in this section.
+   * @param boolean $group_by_level 	True if single level only, false otherwise.
    * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
+   * @param array   $saturday_rooms  The array of room assignments for saturday.
+   * @param array   $sunday_rooms  The array of room assignments for sunday.
    *
    * @since 1.0.0
    * @author KREW
@@ -105,8 +106,7 @@ class Scheduler {
   public function create_normal_competition($num_time_blocks_sat,
                                             $num_time_blocks_sun,
                                             $time_block_duration,
-                                            $sat_start_times,
-                                            $sun_start_times,
+                                            $both_start_times,
                                             $num_concurrent_sections_sat,
                                             $num_concurrent_sections_sun,
                                             $num_master_sections_sat,
@@ -136,12 +136,35 @@ class Scheduler {
     wp_die();
     //*/
 
+    // preprocess the rooms for saturday
+    for ($i = 0; $i < $num_time_blocks_sat; $i++) {
+      if ($saturday_rooms != false && array_key_exists($i, $saturday_rooms)) {
+        $saturday_rooms[$i] = 'Room: ' . $saturday_rooms[$i];
+      }
+      else {
+        $saturday_rooms[$i] = 'Room: ' . strval($i + 1);
+      }   
+    }
+
+    // preprocess the rooms for sunday 
+    for ($i = 0; $i < $num_time_blocks_sun; $i++) {
+      if ($sunday_rooms != false && array_key_exists($i, $sunday_rooms)) {
+        $sunday_rooms[$i] = 'Room: ' . $sunday_rooms[$i];
+      }
+      else {
+        $sunday_rooms[$i] = 'Room: ' . strval($i + 1);
+      }   
+    }
+
+    $start_time_index = 0; 
+
     // create the time blocks with their concurrent sections for saturday
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
       $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration,
-                                           $song_threshold, $group_by_level, $sat_start_times[$i], 
-                                           'Saturday');
+                                           $song_threshold, $group_by_level, 
+                                           $both_start_times[$start_time_index], 
+                                           'Saturday', $saturday_rooms);
     }
 
     // designate some of the sections on saturday for master-class students
@@ -158,8 +181,9 @@ class Scheduler {
     $this->days[SUN] = new SplFixedArray($num_time_blocks_sun);
     for ($i = 0; $i < $num_time_blocks_sun; $i++) {
       $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration,
-                                           $song_threshold, $group_by_level, $sun_start_times[$i],
-                                           'Sunday');
+                                           $song_threshold, $group_by_level, 
+                                           $both_start_times[$start_time_index],
+                                           'Sunday', $sunday_rooms);
     }
 
     // designate some of the sections on sunday for master-class students
@@ -279,13 +303,10 @@ class Scheduler {
    * Since the schedule is best demonstrated using HTML tables and lists, this
    * function is responsible for creating the basic HTML structure. The creation
    * of the inner HTML will be abstracted away to the timeblocks and sections.
-   *
-   * @param	array 	$saturday_rooms 	An array that contains the list of rooms for saturday.
-   * @param	array 	$sunday_rooms 	An array that contains the list of rooms for sunday.
-   *
+   * 
    * @return	string	The generated HTML output
    */
-  public function get_schedule_string($saturday_rooms, $sunday_rooms) {
+  public function get_schedule_string() {
     $schedule = '';
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
@@ -296,7 +317,7 @@ class Scheduler {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
             $schedule .= 'Timeblock # ' . strval($j + 1);
-            $schedule .= $this->days[$i][$j]->get_schedule_string($saturday_rooms);
+            $schedule .= $this->days[$i][$j]->get_schedule_string();
             $schedule .= '</th></tr>';
             $schedule .= '</td></tr>';
           }
@@ -309,7 +330,7 @@ class Scheduler {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
             $schedule .= 'Timeblock # ' . strval($j + 1);
-            $schedule .= $this->days[$i][$j]->get_schedule_string($sunday_rooms);
+            $schedule .= $this->days[$i][$j]->get_schedule_string();
             $schedule .= '</th></tr>';
             $schedule .= '</td></tr>';
           }
@@ -340,8 +361,27 @@ class Scheduler {
         $this->days[$i][$j]->group_all_students_by_teacher_email($teacher_email, $students);
       }
     }
+  }
 
-    //wp_die(print_r($students));
+  /**
+   * This function will consolidate all scheduling data into a format suitable for
+   * the document generator. 
+   *
+   * This function will iterate through all timeblock objects of all days of the 
+   * competition. For each timeblock, the associated sections will be parsed
+   * and the data will come back returned in a format that is compatible with that
+   * required by the document generator.
+   *
+   * @return  An associative array of all student data in doc. gen. compatible form. 
+   */
+  public function get_section_info_for_doc_gen() {
+    $doc_gen_section_data = array();
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->get_section_info_for_doc_gen($doc_gen_section_data); 
+      }
+    }
+    return $doc_gen_section_data; 
   }
 
   /**
