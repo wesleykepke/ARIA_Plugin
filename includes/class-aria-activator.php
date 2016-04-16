@@ -42,10 +42,12 @@ class ARIA_Activator {
       require_once("class-aria-music.php");
       require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
       require_once("class-aria-teacher-upload.php");
+      require_once(ARIA_ROOT . "/admin/scheduler/doc-generator.php"); 
       ARIA_Create_Competition::aria_create_competition_activation();
       ARIA_Music::aria_create_music_upload_form();
       Scheduling_Algorithm::aria_create_scheduling_page();
-      ARIA_TEACHER::aria_create_teacher_upload_form(); 
+      ARIA_TEACHER::aria_create_teacher_upload_form();
+      Doc_Generator::aria_create_doc_gen_page();  
     }
     else {
       wp_die("Error: ARIA requires the Gravity Forms plugin to be installed
