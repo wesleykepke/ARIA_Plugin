@@ -88,6 +88,8 @@ class Scheduler {
    *
    * @param	int	$num_time_blocks_sat	The number of time blocks on saturday.
    * @param	int	$num_time_blocks_sun	The number of time blocks on sunday.
+   * @param Array   $sat_start_times    The array of Saturday timeblock starting times.
+   * @param Array   $sun_start_times    The array of Sunday timeblock starting times.
    * @param	int	$time_block_duration	The amount of time allocated to each timeblock.
    * @param	int	$num_concurrent_sections_sat	The number of sections/timeblock on saturday.
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
@@ -103,6 +105,8 @@ class Scheduler {
   public function create_normal_competition($num_time_blocks_sat,
                                             $num_time_blocks_sun,
                                             $time_block_duration,
+                                            $sat_start_times,
+                                            $sun_start_times,
                                             $num_concurrent_sections_sat,
                                             $num_concurrent_sections_sun,
                                             $num_master_sections_sat,
@@ -136,7 +140,8 @@ class Scheduler {
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
       $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration,
-                                           $song_threshold, $group_by_level);
+                                           $song_threshold, $group_by_level, $sat_start_times[$i], 
+                                           'Saturday');
     }
 
     // designate some of the sections on saturday for master-class students
@@ -145,17 +150,16 @@ class Scheduler {
       for ($i = ($num_time_blocks_sat - 1); $i >= ($num_time_blocks_sat / 2); $i--) {
         if ($num_master_sections_sat > 0 && $this->days[SAT][$i]->assign_section_to_master($master_class_instructor_duration)) {
           $num_master_sections_sat--;
-          //echo 'inside if statement' . "<br>";
         }
       }
     }
-   //wp_die();
 
     // create the time blocks with their concurrent sections for sunday
     $this->days[SUN] = new SplFixedArray($num_time_blocks_sun);
     for ($i = 0; $i < $num_time_blocks_sun; $i++) {
       $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration,
-                                           $song_threshold, $group_by_level);
+                                           $song_threshold, $group_by_level, $sun_start_times[$i],
+                                           'Sunday');
     }
 
     // designate some of the sections on sunday for master-class students

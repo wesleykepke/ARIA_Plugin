@@ -117,6 +117,25 @@ class Student {
   private $parent_email;
 
   /**
+   * The start time of the current time block. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $start_time   The start time of the current time block.
+   */
+  private $start_time;
+
+  /**
+   * The day of the current time block. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $day   The day that the current time block is on.
+   */
+  private $day;
+
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
@@ -138,6 +157,8 @@ class Student {
     $this->play_time = $play_time;
     $this->teacher_email = $teacher_email;
     $this->parent_email = $parent_email;
+    $this->start_time = null;
+    $this->day = null; 
   }
 
   /**
@@ -152,6 +173,28 @@ class Student {
    */
   public function add_song($song_name) {
     $this->songs[] = $song_name;
+  }
+
+  /**
+   * The function will set the start time of the when the student is registered
+   * to perform. 
+   *
+   * @since 1.0.0
+   * @param string   $start_time   The start time of the current time block.
+   */
+  public function set_start_time($start_time) {
+    $this->start_time = $start_time;
+  }
+
+  /**
+   * The function will set the day of the when the student is registered
+   * to perform. 
+   *
+   * @since 1.0.0
+   * @param string   $start_time   The start time of the current time block.
+   */
+  public function set_day($day) {
+    $this->day = $day;
   }
 
   /**
@@ -230,7 +273,23 @@ class Student {
    *
    */
   public function get_info_for_email() {
-    return $this->first_name . ' ' . $this->last_name . ' is playing on..' . $this->teacher_email . '<br>';
+    $songs = null;
+    if (count($this->songs) > 2) {
+      for ($i = 0; $i < count($this->songs); $i++) {
+        if ($i == (count($this->songs) - 1)) {
+          $songs .= 'and ' . $this->songs[$i];
+        }
+        else {
+          $songs .= $this->songs[$i] . ', ';
+        }
+      }
+    }
+    else if (count($this->songs) == 2) {
+      $songs = $this->songs[0] . ' and ' . $this->songs[1];
+    }
+
+    return $this->first_name . ' ' . $this->last_name . ' will be playing ' . $songs .
+      ' on ' . $this->day . ' at ' . $this->start_time . '.<br><br>';
   }
 
   /**

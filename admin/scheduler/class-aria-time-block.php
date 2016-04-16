@@ -51,20 +51,43 @@ class TimeBlock {
   private $sections;
 
   /**
+   * The start time of the current time block. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $start_time   The start time of the current time block.
+   */
+  private $start_time;
+
+  /**
+   * The day of the current time block. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $day   The day that the current time block is on.
+   */
+  private $day;
+
+  /**
    * The constructor used to instantiate a new time block object.
    *
    * @since 1.0.0
    * @param	int 	$num_concurrent_sections 	The number of concurrent sections.
    * @param	int 	$time_block_duration 	The length of the concurrent sections.
    * @param int 	$song_threshold 	The amount of times a song can be played in this section.
-   * @param boolean 	$group_by_level 	True if single level only, false otherwise
+   * @param boolean 	$group_by_level 	True if single level only, false otherwise. 
+   * @param string  $start_time   The start time of the current time block.
+   * @param string  $day  The day of the current time block. 
    */
   function __construct($num_concurrent_sections, $time_block_duration,
-                       $song_threshold, $group_by_level) {
+                       $song_threshold, $group_by_level, $start_time, $day) {
     $this->num_concurrent_sections = $num_concurrent_sections;
     $this->sections = new SplFixedArray($num_concurrent_sections);
+    $this->start_time = $start_time;
+    $this->day = $day;  
     for ($i = 0; $i < $num_concurrent_sections; $i++) {
-      $this->sections[$i] = new Section($time_block_duration, $song_threshold, $group_by_level);
+      $this->sections[$i] = new Section($time_block_duration, $song_threshold, 
+                                        $group_by_level, $start_time, $day);
     }
   }
 
@@ -136,14 +159,14 @@ class TimeBlock {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $schedule .= '<tr><th>';
       $schedule .= 'Section #';
-      $schedule .= strval($i + 1) . ', ';
-      if (array_key_exists($i, $rooms)) {
+      $schedule .= strval($i + 1) . ' -- ';
+      if ($rooms != false && array_key_exists($i, $rooms)) {
         $schedule .= 'Room: ' . $rooms[$i];
       }
       else {
         $schedule .= 'Room: ' . strval($i + 1);
       }
-      $schedule .= ' -- ' . $this->sections[$i]->get_section_info();
+      $schedule .= ', ' . $this->sections[$i]->get_section_info();
       $schedule .= $this->sections[$i]->get_schedule_string();
       $schedule .= '</th></tr>';
     }

@@ -39,6 +39,8 @@ class Scheduling_Algorithm {
     $time_block_duration = $entry[$scheduling_field_mapping['time_block_duration']];
     $num_time_blocks_sat = $entry[$scheduling_field_mapping['num_time_blocks_sat']];
     $num_time_blocks_sun = $entry[$scheduling_field_mapping['num_time_blocks_sun']];
+    $sat_start_times = unserialize($entry[$scheduling_field_mapping['sat_start_times']]);
+    $sun_start_times = unserialize($entry[$scheduling_field_mapping['sun_start_times']]);    
     $num_concurrent_sections_sat = $entry[$scheduling_field_mapping['num_concurrent_sections_sat']];
     $num_concurrent_sections_sun = $entry[$scheduling_field_mapping['num_concurrent_sections_sun']];
     $num_master_sections_sat = $entry[$scheduling_field_mapping['num_master_sections_sat']];
@@ -54,14 +56,16 @@ class Scheduling_Algorithm {
     $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
     $student_master_form_id = $related_form_ids['student_master_form_id'];
 
-    //echo $student_master_form_id;
-    //wp_die('student master form id');
+    //print_r($sat_start_times);
+    //print_r($sun_start_times);
 
     /*
     // successfully takes input from form
     echo 'time_block_duration: ' . $time_block_duration . "<br>";
     echo 'num_time_blocks_sat: ' . $num_time_blocks_sat . "<br>";
     echo 'num_time_blocks_sun: ' . $num_time_blocks_sun . "<br>";
+    echo 'sat_start_times: ' . $sat_start_times . "<br>";
+    echo 'sun_start_times: ' . $sun_start_times . "<br>";
     echo 'num_concurrent_sections_sat: ' . $num_concurrent_sections_sat . "<br>";
     echo 'num_concurrent_sections_sun: ' . $num_concurrent_sections_sun . "<br>";
     echo 'num_master_sections_sat: ' . $num_master_sections_sat . "<br>";
@@ -77,6 +81,8 @@ class Scheduling_Algorithm {
     self::can_scheduler_be_created($student_master_form_id,
                                    $num_time_blocks_sat,
                                    $num_time_blocks_sun,
+                                   $sat_start_times,
+                                   $sun_start_times,
                                    $time_block_duration,
                                    $num_concurrent_sections_sat,
                                    $num_concurrent_sections_sun,
@@ -93,17 +99,19 @@ class Scheduling_Algorithm {
       $group_by_level = false;
     }
     $scheduler->create_normal_competition($num_time_blocks_sat,
-	                                  $num_time_blocks_sun,
-	                                  $time_block_duration,
-	                                  $num_concurrent_sections_sat,
-	                                  $num_concurrent_sections_sun,
-	                                  $num_master_sections_sat,
-	                                  $num_master_sections_sun,
-                                    $song_threshold,
-                                    $group_by_level,
-                                    $master_class_instructor_duration,
-                                    $saturday_rooms,
-                                    $sunday_rooms);
+                                          $num_time_blocks_sun,
+                                          $time_block_duration,
+                                          $sat_start_times,
+                                          $sun_start_times,
+                                          $num_concurrent_sections_sat,
+                                          $num_concurrent_sections_sun,
+                                          $num_master_sections_sat,
+                                          $num_master_sections_sun,
+                                          $song_threshold,
+                                          $group_by_level,
+                                          $master_class_instructor_duration,
+                                          $saturday_rooms,
+                                          $sunday_rooms);
 
     // schedule students by age/level
     $playing_times = self::calculate_playing_times($student_master_form_id);
@@ -193,8 +201,11 @@ class Scheduling_Algorithm {
       }
     }
 
+    // automatically write the scheduler object to a file
+    self::save_scheduler_to_file($title, $scheduler);
+
     // code to test sending emails to teachers
-    self::send_teachers_competition_info($related_form_ids['teacher_master_form_id'], $scheduler);
+    //self::send_teachers_competition_info($related_form_ids['teacher_master_form_id'], $scheduler);
 
     //unset($scheduler);
     //wp_die(print_r($scheduler));
@@ -208,7 +219,10 @@ class Scheduling_Algorithm {
 
     // print the schedule
     //$scheduler->print_schedule();
-    $confirmation = $scheduler->get_schedule_string($saturday_rooms, $sunday_rooms);
+    //wp_die(print_r($sunday_rooms));
+    $confirmation = "<h4>Don't worry about saving your schedule. ARIA will automatically save the most"
+    . " recently generated schedule so you can return to it later.</h4><br>";
+    $confirmation .= $scheduler->get_schedule_string($saturday_rooms, $sunday_rooms);
     //wp_die($confirmation);
     /*
     $confirmation = "Congratulations! A schedule has been successfully" .
@@ -297,6 +311,27 @@ class Scheduling_Algorithm {
     $num_time_blocks_sun->descriptionPlacement = "above";
     $form->fields[] = $num_time_blocks_sun;
 
+    // start times of timeblocks on Saturday
+    $sat_start_times = new GF_Field_List();
+    $sat_start_times->label = "Saturday Timeblock Starting Times";
+    $sat_start_times->id = $field_mapping['sat_start_times'];
+    $sat_start_times->isRequired = true;
+    $sat_start_times->description = "NOTE: Please enter the starting times" .
+    " of each timeblock on Saturday (9:00 AM, 9:30 AM, 1:30 PM, etc.).";
+    $sat_start_times->descriptionPlacement = "above";
+    $form->fields[] = $sat_start_times;
+
+
+    // start times of timeblocks on Sunday
+    $sun_start_times = new GF_Field_List(); 
+    $sun_start_times->label = "Sunday Timeblock Starting Times";
+    $sun_start_times->id = $field_mapping['sun_start_times'];
+    $sun_start_times->isRequired = true;
+    $sun_start_times->description = "NOTE: Please enter the starting times" .
+    " of each timeblock on Sunday (9:00 AM, 9:30 AM, 1:30 PM, etc.).";
+    $sun_start_times->descriptionPlacement = "above";
+    $form->fields[] = $sun_start_times;
+
     // number of concurrent sections on saturday
     $num_concurrent_sections_sat = new GF_Field_Number();
     $num_concurrent_sections_sat->label = "Number of Concurrent Sections on Saturday";
@@ -322,6 +357,9 @@ class Scheduling_Algorithm {
     $num_master_sections_sat->label = "Total Number of Masterclass Sections on Saturday";
     $num_master_sections_sat->id = $field_mapping['num_master_sections_sat'];
     $num_master_sections_sat->isRequired = true;
+    $num_master_sections_sat->description = "NOTE: This value will determine"
+    . " how many sections on Saturday are reserved for masterclass students.";
+    $num_master_sections_sat->descriptionPlacement = "above";
     $form->fields[] = $num_master_sections_sat;
 
     // number of master-class sections on sunday
@@ -329,6 +367,9 @@ class Scheduling_Algorithm {
     $num_master_sections_sun->label = "Total Number of Masterclass Sections on Sunday";
     $num_master_sections_sun->id = $field_mapping['num_master_sections_sun'];
     $num_master_sections_sun->isRequired = true;
+    $num_master_sections_sun->description = "NOTE: This value will determine"
+    . " how many sections on Sunday are reserved for masterclass students.";
+    $num_master_sections_sun->descriptionPlacement = "above";
     $form->fields[] = $num_master_sections_sun;
 
     // threshold for number of times a song appears per section
@@ -375,7 +416,8 @@ class Scheduling_Algorithm {
     $saturday_rooms->label = "Saturday Room Names/Numbers";
     $saturday_rooms->id = $field_mapping['saturday_rooms'];
     $saturday_rooms->description = "If you know the specific room names/numbers for your" .
-    " competition venue on Saturday, feel free to enter the names/numbers here.";
+    " competition venue on Saturday, feel free to enter the names/numbers here. If you do" .
+    " not know the names, ARIA will provide default room names for the schedule.";
     $saturday_rooms->descriptionPlacement = "above";
     $form->fields[] = $saturday_rooms;
 
@@ -384,7 +426,8 @@ class Scheduling_Algorithm {
     $sunday_rooms->label = "Sunday Room Names/Numbers";
     $sunday_rooms->id = $field_mapping['sunday_rooms'];
     $sunday_rooms->description = "If you know the specific room names/numbers for your" .
-    " competition venue on Sunday, feel free to enter the names/numbers here.";
+    " competition venue on Sunday, feel free to enter the names/numbers here. If you do" .
+    " not know the names, ARIA will provide default room names for the schedule.";
     $sunday_rooms->descriptionPlacement = "above";
     $form->fields[] = $sunday_rooms;
 
@@ -428,15 +471,17 @@ class Scheduling_Algorithm {
       'time_block_duration' => 2,
       'num_time_blocks_sat' => 3,
       'num_time_blocks_sun' => 4,
-      'num_concurrent_sections_sat' => 5,
-      'num_concurrent_sections_sun' => 6,
-      'num_master_sections_sat' => 7,
-      'num_master_sections_sun' => 8,
-      'song_threshold' => 9,
-      'group_by_level' => 10,
-      'master_class_instructor_duration' => 11,
-      'saturday_rooms' => 12,
-      'sunday_rooms' => 13
+      'sat_start_times' => 5,
+      'sun_start_times' => 6,
+      'num_concurrent_sections_sat' => 7,
+      'num_concurrent_sections_sun' => 8,
+      'num_master_sections_sat' => 9,
+      'num_master_sections_sun' => 10,
+      'song_threshold' => 11,
+      'group_by_level' => 12,
+      'master_class_instructor_duration' => 12,
+      'saturday_rooms' => 13,
+      'sunday_rooms' => 14
     );
   }
 
@@ -495,6 +540,8 @@ class Scheduling_Algorithm {
    * @param	$student_master_form_id	int	The student master form of the given competition.
    * @param	int	$num_time_blocks_sat	The number of time blocks on saturday.
    * @param	int	$num_time_blocks_sun	The number of time blocks on sunday.
+   * @param Array   $sat_start_times    The array of Saturday timeblock starting times.
+   * @param Array   $sun_start_times    The array of Sunday timeblock starting times.
    * @param	int	$time_block_duration	The amount of time allocated to each timeblock.
    * @param	int	$num_concurrent_sections_sat	The number of sections/timeblock on saturday.
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
@@ -510,12 +557,27 @@ class Scheduling_Algorithm {
   private static function can_scheduler_be_created($student_master_form_id,
                                                    $num_time_blocks_sat,
                                                    $num_time_blocks_sun,
+                                                   $sat_start_times,
+                                                   $sun_start_times,
                                                    $time_block_duration,
                                                    $num_concurrent_sections_sat,
                                                    $num_concurrent_sections_sun,
                                                    $num_master_sections_sat,
                                                    $num_master_sections_sun,
                                                    $master_class_instructor_duration) {
+    // check to see if the festival chairman entered the same amount of timeblock 
+    // starting times as the number of timeblocks
+    if ($num_time_blocks_sat != count($sat_start_times)) {
+      wp_die("<h1>ERROR: The number of timeblock start times for Saturday must match the value
+              entered for 'Number of Timeblocks on Saturday'. You requested " . $num_time_blocks_sat .
+              " timeblocks for Saturday but specified " . count($sat_start_times) . " start time(s). </h1>"); 
+    }
+    else if ($num_time_blocks_sun != count($sun_start_times)) {
+      wp_die("<h1>ERROR: The number of timeblock start times for Sunday must match the value
+              entered for 'Number of Timeblocks on Sunday'. You requested " . $num_time_blocks_sun .
+              " timeblocks for Sunday but specified " . count($sun_start_times) . " start time(s). </h1>"); 
+    }
+
     // determine the total amount of play time for all students in the current competition
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
     $total_play_time_students = 0;
@@ -710,21 +772,43 @@ class Scheduling_Algorithm {
           $email_message .= $student->get_info_for_email();
         }
 
-        echo($email_message);
+        echo $email_message . "<br>";
       }
     }
 
-    echo 'Mapping of teacher emails to students <br>';
-    wp_die(print_r($teacher_emails_to_students));     
+    wp_die(); 
 
-    // iterate through all of the students per teacher and send an email
-/*
-    foreach ($teacher_emails_to_students as $key => value) {
-      if (strpos($key), )
-        foreach ($teacher_emails_to_students[$key] as $student) {
+    //echo 'Mapping of teacher emails to students <br>';
+    //wp_die(print_r($teacher_emails_to_students));     
 
-        }
-    }
-*/
+
+  }
+
+  /**
+   * This function will write the contents of a given scheduler object to a file. 
+   *
+   * Once the schedule has been generated, ARIA will automatically write that schedule
+   * to a file so that it can be referenced later (for sending teachers/parents emails
+   * and for document generation). 
+   *
+   * NOTE: This code will place the generated file inside of 
+   *
+   * @param     String  $title  The title for a given competition. 
+   * @param     Scheduler   $scheduler  The scheduler object for a given competition. 
+   *
+   * @return    void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  private static function save_scheduler_to_file($title, $scheduler) {
+    $title = str_replace(' ', '_', $title); 
+    $file_path = ARIA_FILE_UPLOAD_LOC . $title . ".txt";
+    $scheduler_data = serialize($scheduler);
+    $fp = fopen($file_path, 'w+');
+    if ($fp) {
+      fwrite($fp, $scheduler_data);
+      fclose($fp);
+    } 
   }
 }
