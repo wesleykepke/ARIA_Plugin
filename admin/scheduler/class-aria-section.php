@@ -155,13 +155,22 @@ class Section {
   private $start_time;
 
   /**
-   * The day of the current time block. 
+   * The day of the current time block (and section). 
    *
    * @since 1.0.0
    * @access private
    * @var   string   $day   The day that the current time block is on.
    */
   private $day;
+
+  /**
+   * The name/number of the section's room. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $room   The name or number of the room. 
+   */
+  private $room;
 
   /**
    * The constructor used to instantiate a new section object. 
@@ -171,12 +180,13 @@ class Section {
    * @param int   $song_threshold   The amount of times a song can be played in this section.
    * @param boolean   $group_by_level   True if single level only, false otherwise
    * @param string   $start_time   The start time of the current time block.
-   * @param string  $day  The day of the current time block. 
+   * @param string  $day  The day of the current time block.
+   * @param string  $room   The name/number of the room for the current section.  
    */
   function __construct($section_time_limit = DEFAULT_SECTION_TIME,
                        $song_threshold = NO_SONG_THRESHOLD,
                        $group_by_level = false,
-                       $start_time, $day) {
+                       $start_time, $day, $room) {
     $this->type = null;
     $this->students = array();
     $this->section_time_limit = $section_time_limit;
@@ -193,6 +203,7 @@ class Section {
     $this->master_class_instructor_duration = null;
     $this->start_time = $start_time;
     $this->day = $day;
+    $this->room = $room; 
   }
 
   /**
@@ -306,6 +317,7 @@ class Section {
     // add student to this section
     $student->set_start_time($this->start_time);
     $student->set_day($this->day); 
+    $student->set_room($this->room);
     $this->students[] = $student;
     if ($this->type === SECTION_MASTER) {
       // for masterclass sections, add the instructor duration length in addition to play time
@@ -470,6 +482,35 @@ class Section {
         $students[] = $this->students[$i];  
       } 
     }
+  }
+
+  /**
+   * This function will consolidate all scheduling data into a format suitable for
+   * the document generator. 
+   *
+   * This function will iterate through all student objects of a given section
+   * object. For each section, all student data will be added in a format that is 
+   * compatible with that required by the document generator.
+   *
+   * @param   Array   $doc_gen_section_daya An associative array of all student data in doc. gen. compatible form.
+   */
+  public function get_section_info_for_doc_gen(&$doc_gen_section_data) {
+    // not sure about this if statement
+    if (self::is_empty()) {
+      return; 
+    }
+
+    // for each student registered in the section, get their data 
+    $doc_gen_single_section_data = array();
+    $doc_gen_single_section_data['section_name'] = $this->room;
+    $doc_gen_single_section_data['judge'] = "Don't have this data..";
+    $doc_gen_single_section_data['proctor'] = "Don't have this data..";
+    $doc_gen_single_section_data['monitor'] = "Don't have this data..";
+    $doc_gen_single_section_data['students'] = array(); 
+    for ($i = 0; $i < count($this->students); $i++) {
+      $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();
+    }
+    $doc_gen_section_data[] = $doc_gen_single_section_data; 
   }
 
   /**
