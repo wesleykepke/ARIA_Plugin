@@ -146,14 +146,37 @@ class Section {
   private $master_class_instructor_duration;
 
   /**
-   * The constructor used to instantiate a new section object. The default
-   * play time for a section will be 45 minutes unless otherwise specified.
+   * The start time of the current time block. 
    *
    * @since 1.0.0
+   * @access private
+   * @var   string   $start_time   The start time of the current time block.
+   */
+  private $start_time;
+
+  /**
+   * The day of the current time block. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $day   The day that the current time block is on.
+   */
+  private $day;
+
+  /**
+   * The constructor used to instantiate a new section object. 
+   *
+   * @since 1.0.0
+   * @param int   $section_time_limit  The length of the concurrent sections.
+   * @param int   $song_threshold   The amount of times a song can be played in this section.
+   * @param boolean   $group_by_level   True if single level only, false otherwise
+   * @param string   $start_time   The start time of the current time block.
+   * @param string  $day  The day of the current time block. 
    */
   function __construct($section_time_limit = DEFAULT_SECTION_TIME,
                        $song_threshold = NO_SONG_THRESHOLD,
-                       $group_by_level = false) {
+                       $group_by_level = false,
+                       $start_time, $day) {
     $this->type = null;
     $this->students = array();
     $this->section_time_limit = $section_time_limit;
@@ -168,6 +191,8 @@ class Section {
     }
     $this->group_by_level = $group_by_level;
     $this->master_class_instructor_duration = null;
+    $this->start_time = $start_time;
+    $this->day = $day;
   }
 
   /**
@@ -279,6 +304,8 @@ class Section {
     }
 
     // add student to this section
+    $student->set_start_time($this->start_time);
+    $student->set_day($this->day); 
     $this->students[] = $student;
     if ($this->type === SECTION_MASTER) {
       // for masterclass sections, add the instructor duration length in addition to play time
@@ -383,8 +410,11 @@ class Section {
       return 'Section is Empty';
     }
 
+    // get start time of the section
+    $section_info = 'Start Time: ' . $this->start_time . ', ';
+
     // determine number of students per section
-    $section_info = 'Number of Students: ' . strval(count($this->students)) . ', ';
+    $section_info .= 'Number of Students: ' . strval(count($this->students)) . ', ';
     
 
     // get all skill levels in section
@@ -396,10 +426,10 @@ class Section {
     }
 
     if (count($skill_levels) === 1) {
-      $section_info = 'Student Skill Level: ' . strval($skill_levels[0]) . ', ';
+      $section_info .= 'Student Skill Level: ' . strval($skill_levels[0]) . ', ';
     }
     else {
-      $section_info = 'Student Skill Levels: ';
+      $section_info .= 'Student Skill Levels: ';
       for ($i = 0; $i < count($skill_levels); $i++) {
         $section_info .= strval($skill_levels[$i]) . ', ';
       }

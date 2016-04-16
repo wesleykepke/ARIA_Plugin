@@ -17,6 +17,9 @@
 // ARIA plugin file location
 define("ARIA_ROOT", "/var/www/html/wp-content/plugins/ARIA");
 
+// ARIA file upload location
+define("ARIA_FILE_UPLOAD_LOC", getcwd() . '/wp-content/uploads/'); 
+
 // Competitions
 define("CREATE_COMPETITION_FORM_NAME", "ARIA: Create a Competition");
 define("MUSIC_UPLOAD_FORM_NAME", "ARIA: Upload Music");
