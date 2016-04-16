@@ -141,6 +141,31 @@ class ARIA_API {
   }
 
   /**
+   * This function will find the ID of the form used to generate competition
+   * documents and send emails. 
+   *
+   * This function will iterate through all of the active form objects and
+   * return the ID of the form that is used to generate competition documents
+   * and send teachers emails. If no such form exists, the function will 
+   * return -1.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_doc_gen_form_id() {
+    $form_id = -1;
+    $all_active_forms = GFAPI::get_forms();
+
+    foreach ($all_active_forms as $form) {
+      if ($form['title'] === DOC_GEN_FORM_NAME) {
+        $form_id = $form['id'];
+      }
+    }
+
+    return $form_id;
+  }
+
+  /**
    * This function will find the file path of the uploaded csv music file.
    *
    * This function will extract the name of the csv file containing the music
