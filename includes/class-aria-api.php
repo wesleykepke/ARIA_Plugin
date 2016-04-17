@@ -295,7 +295,8 @@ class ARIA_API {
       'competition_theory_score' => 21,
       'competition_judge_csv_upload' => 22,
       'competition_festival_chairman_email' => 23,
-      'competition_command_performance_opt' => 24
+      'competition_command_performance_opt' => 24,
+      'competition_location_2' => 25
     );
   }
 

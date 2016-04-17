@@ -194,6 +194,16 @@ class ARIA_Create_Competition {
     $location_field->isRequired = false;
     $location_field = self::aria_add_default_address_inputs($location_field);
 
+    // second location
+    $location_field_2 = new GF_Field_Address();
+    $location_field_2->label = "Second Competition Location (If applicable)";
+    $location_field_2->id = $field_mappings['competition_location_2'];
+    $location_field_2->isRequired = false;
+    $location_field_2->description = 'If different location for second day.';
+    $location_field_2->descriptionPlacement = 'above';
+    $location_field_2 = self::aria_add_default_address_inputs($location_field_2);
+
+
     // student registration begin date
     $student_registration_start_date_field = new GF_Field_Date();
     $student_registration_start_date_field->label = "Student Registration Start Date";
@@ -337,7 +347,7 @@ class ARIA_Create_Competition {
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
     */
-
+    /*
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
     $command_perf_date_field->label = "Command Performance Date";
@@ -351,7 +361,7 @@ class ARIA_Create_Competition {
     $command_performance_time_field->label = "Command Performance Start Time";
     $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
     $command_performance_time_field->isRequired = false;
-
+    */
     // command performance options
     $command_performance_option_field = new GF_Field_List();
     $command_performance_option_field->label = "Command Performance Time Options For Students";
@@ -383,6 +393,7 @@ class ARIA_Create_Competition {
     $form->fields[] = $start_date_field;
     $form->fields[] = $end_date_field;
     $form->fields[] = $location_field;
+    $form->fields[] = $location_field_2;
     $form->fields[] = $student_registration_start_date_field;
     $form->fields[] = $student_registration_end_date_field;
     $form->fields[] = $teacher_registration_start_date_field;
@@ -398,8 +409,8 @@ class ARIA_Create_Competition {
     */
     $form->fields[] = $num_judges_per_section_field;
     $form->fields[] = $judge_csv_file_upload_field;
-    $form->fields[] = $command_perf_date_field;
-    $form->fields[] = $command_performance_time_field;
+    //$form->fields[] = $command_perf_date_field;
+    //$form->fields[] = $command_performance_time_field;
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
     $form->confirmation['type'] = 'message';
