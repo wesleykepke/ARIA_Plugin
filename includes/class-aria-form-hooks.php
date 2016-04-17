@@ -49,8 +49,14 @@ class ARIA_Form_Hooks {
     // get all of the teacher entries in the form's teacher master form
     $teacher_master_field_mapping = ARIA_API::aria_master_teacher_field_id_array();
     $related_forms = $form['aria_relations'];
-    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id']);
+
+    // sort by teacher last name
+    $search = array();
+    $sorting = array( 'key' => $teacher_master_field_mapping['last_name'], 'direction' => 'ASC', 'is_numeric' => false );
+    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting);
     $formatted_teacher_names = array();
+
+
     foreach ($teacher_entries as $entry) {
       $single_teacher = array(
         'text' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
@@ -109,10 +115,11 @@ class ARIA_Form_Hooks {
     $teacher_hash = hash("md5", $teacher_name);
 
     // Hash for student (student name and entry date)
-    $student_name_and_entry =
+    $student_name =
         $entry[(string)$student_fields["student_first_name"]];
-    $student_name_and_entry .= ' ' .
+    $student_name .= ' ' .
         $entry[(string)$student_fields["student_last_name"]];
+    $student_name_and_entry = $student_name;
     $student_name_and_entry .= ' ' . $entry["date_created"];
 
     $student_hash = hash("md5", $student_name_and_entry);
@@ -179,7 +186,6 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_level"]) => $entry[strval($student_fields["student_level"])],
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
-      strval($student_master_fields["not_listed_teacher_name"]) => $entry[strval($student_fields["not_listed_teacher_name"])],
       strval($student_master_fields["available_festival_days"]) => $entry[strval($student_fields["available_festival_days"])],
       strval($student_master_fields["preferred_command_performance"]) => $entry[strval($student_fields["preferred_command_performance"])],
       strval($student_master_fields["song_1_period"]) => null,
@@ -200,9 +206,25 @@ class ARIA_Form_Hooks {
       wp_die(__LINE__.$student_result->get_error_message());
     }
 
+    $email_info = array();
+    $email_info['teacher_hash'] = $teacher_hash;
+    $email_info['teacher_name'] = $teacher_name;
+    $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
+    $email_info['teacher_url'] = $related_forms['teacher_public_form_url'];
+    $email_info['student_hash'] = $student_hash;
+    $email_info['student_name'] = $student_name;
+
+    $comp_name = strpos($form['title'], 'Student Registration');
+    $comp_name = substr($form['title'], 0, $comp_name - 1);
+    $email_info['competition_name'] = $comp_name;
+
+/*
     ARIA_Registration_Handler::aria_send_registration_emails($teacher_hash,
       $related_forms['teacher_public_form_url'],
-      $teacher_entry[strval($teacher_master_fields["email"])], $student_hash);
+      $teacher_entry[strval($teacher_master_fields["email"])], $student_hash);*/
+
+    ARIA_Registration_Handler::aria_send_registration_emails($email_info);
+
   }
 
   public static function aria_before_teacher_render($form, $is_ajax) {

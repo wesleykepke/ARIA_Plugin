@@ -80,7 +80,7 @@ class ARIA_Create_Competition {
     $competition_name = $entry[$field_mapping['competition_name']];
 
     // create the student and teacher (master) forms
-    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
+    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
 
     // upload content of the teacher csv file into the teacher master form
@@ -89,7 +89,7 @@ class ARIA_Create_Competition {
 
     // create the student and teacher forms
     $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
-    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
@@ -193,6 +193,16 @@ class ARIA_Create_Competition {
     $location_field->id = $field_mappings['competition_location'];
     $location_field->isRequired = false;
     $location_field = self::aria_add_default_address_inputs($location_field);
+
+    // second location
+    $location_field_2 = new GF_Field_Address();
+    $location_field_2->label = "Second Competition Location (If applicable)";
+    $location_field_2->id = $field_mappings['competition_location_2'];
+    $location_field_2->isRequired = false;
+    $location_field_2->description = 'If different location for second day.';
+    $location_field_2->descriptionPlacement = 'above';
+    $location_field_2 = self::aria_add_default_address_inputs($location_field_2);
+
 
     // student registration begin date
     $student_registration_start_date_field = new GF_Field_Date();
@@ -337,7 +347,7 @@ class ARIA_Create_Competition {
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
     */
-
+    /*
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
     $command_perf_date_field->label = "Command Performance Date";
@@ -351,14 +361,14 @@ class ARIA_Create_Competition {
     $command_performance_time_field->label = "Command Performance Start Time";
     $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
     $command_performance_time_field->isRequired = false;
-
+    */
     // command performance options
     $command_performance_option_field = new GF_Field_List();
     $command_performance_option_field->label = "Command Performance Time Options For Students";
     $command_performance_option_field->id = $field_mappings['competition_command_performance_opt'];
     $command_performance_option_field->isRequired = false;
     $command_performance_option_field->description = "These are the options given to the students when registering. ";
-    $command_performance_option_field->description .= "e.g. Thursday at 5:30pm, 7PM on Jan 1, Either 5:30 or 7pm, etc.";
+    $command_performance_option_field->description .= "e.g. Either 5:30 or 7pm, Thursday at 5:30pm, 7PM on Jan 1, etc.";
     $command_performance_option_field->descriptionPlacement = 'above';
 
     // theory score required for special recognition
@@ -377,12 +387,23 @@ class ARIA_Create_Competition {
     $theory_score_field->id = $field_mappings['competition_theory_score'];
     $theory_score_field->isRequired = false;
 
+    // master class
+    $has_master_class = new GF_Field_Radio();
+    $has_master_class->label = "Allow students to register for master class?";
+    $has_master_class->id = $field_mappings['competition_has_master_class'];
+    $has_master_class->isRequired = false;
+    $has_master_class->choices = array(
+        array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+        array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+
     // assign all of the previous attributes to our newly created form
     $form->fields[] = $fc_email_field;
     $form->fields[] = $name_field;
     $form->fields[] = $start_date_field;
     $form->fields[] = $end_date_field;
     $form->fields[] = $location_field;
+    $form->fields[] = $location_field_2;
     $form->fields[] = $student_registration_start_date_field;
     $form->fields[] = $student_registration_end_date_field;
     $form->fields[] = $teacher_registration_start_date_field;
@@ -398,10 +419,11 @@ class ARIA_Create_Competition {
     */
     $form->fields[] = $num_judges_per_section_field;
     $form->fields[] = $judge_csv_file_upload_field;
-    $form->fields[] = $command_perf_date_field;
-    $form->fields[] = $command_performance_time_field;
+    //$form->fields[] = $command_perf_date_field;
+    //$form->fields[] = $command_performance_time_field;
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
+    $form->fields[] = $has_master_class;
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = 'Successful';
 
@@ -576,7 +598,7 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-   private static function aria_create_teacher_form($competition_entry, $volunteer_time_options_array) {
+   private static function aria_create_teacher_form($competition_entry, $volunteer_time_options_array, $has_master_class) {
     $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     $competition_name = $competition_entry[$field_mapping['competition_name']];
@@ -609,7 +631,6 @@ class ARIA_Create_Competition {
     $teacher_form->fields[] = $teacher_phone_field;
     $ariaFieldIds['phone'] = $teacher_phone_field->id;
 
-    // !!!new field
     // teacher is judging
     $teacher_judging_field = new GF_Field_Radio();
     $teacher_judging_field->label = "Are you scheduled to judge for the festival?";
@@ -957,9 +978,12 @@ class ARIA_Create_Competition {
     $competition_format_field->isRequired = false;
     $competition_format_field->choices = array(
       array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
-      array('text' => 'Competitive', 'value' => 'Competitive', 'isSelected' => false),
-      array('text' => 'Master Class (if upper level)', 'value' => 'Master Class', 'isSelected' => false)
+      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false)
     );
+    if( $has_master_class == "Yes" )
+    {
+        $competition_format_field->choices[] = array('text' => 'Master Class', 'value' => 'Master Class', 'isSelected' => false);
+    }
     $teacher_form->fields[] = $competition_format_field;
     $ariaFieldIds['competition_format'] = $competition_format_field->id;
 
@@ -1069,11 +1093,19 @@ class ARIA_Create_Competition {
     $piano_teachers_field->id = $field_id_array['teacher_name'];
     $piano_teachers_field->isRequired = true;
     $piano_teachers_field->description = "Please select your teachers name";
-    $piano_teachers_field->description .= " from the drop-down below.";
+    $piano_teachers_field->description .= " from the drop-down below. ";
+    $piano_teachers_field->description .= "If your teacher is not listed, please ";
+    $piano_teachers_field->description .= "contact the festival chairman.";
     $piano_teachers_field->descriptionPlacement = 'above';
 
     // add all of the piano teachers that are competing in this competition
     $formatted_teacher_names = array();
+
+    // alphabetize teachers
+    usort($teacher_names, function($a, $b) {
+        return strcmp($a[1], $b[1]);
+    });
+
     foreach ($teacher_names as $key => $value) {
       $single_teacher = array(
         'text' => $value[0] . ' ' . $value[1],
@@ -1088,6 +1120,7 @@ class ARIA_Create_Competition {
     $student_form->fields[] = $piano_teachers_field;
     $ariaFieldIds['teacher_name'] = $piano_teachers_field->id;
 
+/*
     // student's piano teacher does not exist
     $teacher_missing_field_name = new GF_Field_Text();
     $teacher_missing_field_name->label = "If your teacher's name is not listed, " .
@@ -1105,7 +1138,7 @@ class ARIA_Create_Competition {
     $teacher_missing_field_email->isRequired = false;
     $student_form->fields[] = $teacher_missing_field_email;
     $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_email->id;
-
+*/
     // student's available times to compete
     $available_times = new GF_Field_Radio();
     $available_times->label = "Available Festival Days";
@@ -1115,9 +1148,9 @@ class ARIA_Create_Competition {
     "requests will be honored.";
     $available_times->descriptionPlacement = 'above';
     $available_times->choices = array(
+      array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false),
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
-      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false),
-      array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false)
+      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
     );
     $student_form->fields[] = $available_times;
     $ariaFieldIds['available_festival_days'] = $available_times->id;
@@ -1127,7 +1160,7 @@ class ARIA_Create_Competition {
 
     // student's available times to compete for command performance
     $command_times = new GF_Field_Radio();
-    $command_times->label = "Preferred Command Performance Time (check all available times)";
+    $command_times->label = "Preferred Command Performance Time";
     $command_times->id = $field_id_array['preferred_command_performance'];
     $command_times->isRequired = false;
     $command_times->description = "Please select the Command Performance time ".
@@ -1189,8 +1222,9 @@ class ARIA_Create_Competition {
     "room during performances of non-family members. I understand that ".
     "requests for specific days/times will be scheduled if possible but cannot".
     " be guaranteed.";
+    $compliance_field->descriptionPlacement = 'above';
     $compliance_field->choices = array(
-      array('text' => 'I have read and agree with the following statement:',
+      array('text' => 'I have read and agree with the above statement.',
       'value' => 'Agree',
       'isSelected' => false),
     );
