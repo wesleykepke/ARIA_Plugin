@@ -968,7 +968,7 @@ class ARIA_Create_Competition {
     $competition_format_field->isRequired = false;
     $competition_format_field->choices = array(
       array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
-      array('text' => 'Competitive', 'value' => 'Competitive', 'isSelected' => false),
+      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false),
       array('text' => 'Master Class (if upper level)', 'value' => 'Master Class', 'isSelected' => false)
     );
     $teacher_form->fields[] = $competition_format_field;
