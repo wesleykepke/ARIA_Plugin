@@ -368,7 +368,7 @@ class ARIA_Create_Competition {
     $command_performance_option_field->id = $field_mappings['competition_command_performance_opt'];
     $command_performance_option_field->isRequired = false;
     $command_performance_option_field->description = "These are the options given to the students when registering. ";
-    $command_performance_option_field->description .= "e.g. Thursday at 5:30pm, 7PM on Jan 1, Either 5:30 or 7pm, etc.";
+    $command_performance_option_field->description .= "e.g. Either 5:30 or 7pm, Thursday at 5:30pm, 7PM on Jan 1, etc.";
     $command_performance_option_field->descriptionPlacement = 'above';
 
     // theory score required for special recognition
@@ -1135,9 +1135,9 @@ class ARIA_Create_Competition {
     "requests will be honored.";
     $available_times->descriptionPlacement = 'above';
     $available_times->choices = array(
+      array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false),
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
-      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false),
-      array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false)
+      array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
     );
     $student_form->fields[] = $available_times;
     $ariaFieldIds['available_festival_days'] = $available_times->id;
@@ -1147,7 +1147,7 @@ class ARIA_Create_Competition {
 
     // student's available times to compete for command performance
     $command_times = new GF_Field_Radio();
-    $command_times->label = "Preferred Command Performance Time (check all available times)";
+    $command_times->label = "Preferred Command Performance Time";
     $command_times->id = $field_id_array['preferred_command_performance'];
     $command_times->isRequired = false;
     $command_times->description = "Please select the Command Performance time ".
@@ -1209,8 +1209,9 @@ class ARIA_Create_Competition {
     "room during performances of non-family members. I understand that ".
     "requests for specific days/times will be scheduled if possible but cannot".
     " be guaranteed.";
+    $compliance_field->descriptionPlacement = 'above';
     $compliance_field->choices = array(
-      array('text' => 'I have read and agree with the following statement:',
+      array('text' => 'I have read and agree with the above statement.',
       'value' => 'Agree',
       'isSelected' => false),
     );
