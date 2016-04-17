@@ -1080,11 +1080,19 @@ class ARIA_Create_Competition {
     $piano_teachers_field->id = $field_id_array['teacher_name'];
     $piano_teachers_field->isRequired = true;
     $piano_teachers_field->description = "Please select your teachers name";
-    $piano_teachers_field->description .= " from the drop-down below.";
+    $piano_teachers_field->description .= " from the drop-down below. ";
+    $piano_teachers_field->description .= "If your teacher is not listed, please ";
+    $piano_teachers_field->description .= "contact the festival chairman.";
     $piano_teachers_field->descriptionPlacement = 'above';
 
     // add all of the piano teachers that are competing in this competition
     $formatted_teacher_names = array();
+
+    // alphabetize teachers
+    usort($teacher_names, function($a, $b) {
+        return strcmp($a[1], $b[1]);
+    });
+
     foreach ($teacher_names as $key => $value) {
       $single_teacher = array(
         'text' => $value[0] . ' ' . $value[1],
@@ -1099,6 +1107,7 @@ class ARIA_Create_Competition {
     $student_form->fields[] = $piano_teachers_field;
     $ariaFieldIds['teacher_name'] = $piano_teachers_field->id;
 
+/*
     // student's piano teacher does not exist
     $teacher_missing_field_name = new GF_Field_Text();
     $teacher_missing_field_name->label = "If your teacher's name is not listed, " .
@@ -1116,7 +1125,7 @@ class ARIA_Create_Competition {
     $teacher_missing_field_email->isRequired = false;
     $student_form->fields[] = $teacher_missing_field_email;
     $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_email->id;
-
+*/
     // student's available times to compete
     $available_times = new GF_Field_Radio();
     $available_times->label = "Available Festival Days";

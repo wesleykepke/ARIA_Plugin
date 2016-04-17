@@ -49,8 +49,14 @@ class ARIA_Form_Hooks {
     // get all of the teacher entries in the form's teacher master form
     $teacher_master_field_mapping = ARIA_API::aria_master_teacher_field_id_array();
     $related_forms = $form['aria_relations'];
-    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id']);
+
+    // sort by teacher last name
+    $search = array();
+    $sorting = array( 'key' => $teacher_master_field_mapping['last_name'], 'direction' => 'ASC', 'is_numeric' => false );
+    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting);
     $formatted_teacher_names = array();
+
+
     foreach ($teacher_entries as $entry) {
       $single_teacher = array(
         'text' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
