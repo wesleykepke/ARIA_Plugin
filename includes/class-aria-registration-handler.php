@@ -31,7 +31,7 @@ class ARIA_Registration_Handler {
 	/**
 	 * Function for sending emails.
 	 */
-  public static function aria_send_registration_emails($teacher_hash, $teacher_url, $teacher_email, $student_hash) {
+  public static function aria_send_registration_emails($email_info) {
     // this is going to need to iterate through a given teachers array
     // of students and generate a url that has that specific teacher's hash
     // and a hash for each of the students involved in the competition
@@ -45,15 +45,21 @@ class ARIA_Registration_Handler {
     $teacher_link .= "?teacher_hash=" . $teacher_hash;
     $teacher_link .= "&student_hash=" . $student_hash;
 */
-    $teacher_url .= "?teacher_hash=" . $teacher_hash;
-    $teacher_url .= "&student_hash=" . $student_hash;
+    $send_url = $email_info['teacher_url'];
+    $send_url .= "?teacher_hash=" . $email_info['teacher_hash'];
+    $send_url .= "&student_hash=" . $email_info['student_hash'];
 
-    $message = "Congratulations. One of your students has registered for an NNMTA";
-    $message .= " music competition. Please click on the following link to finish";
-    $message .= " registering your student: " . $teacher_url;
+    $message = "Hello " . $email_info['teacher_name'] . "!\n";
+    $message .= "Congratulations. Your student " . $email_info['student_name'];
+    $message .= " has registered for the NNMTA";
+    $message .= " music competition: " . $email_info['competition_name'];
+    $message .= ".\n Please click on the following link to finish";
+    $message .= " registering your student: " . $send_url;
+    $message .= "\n\nThank you, \nNNMTA Festival Chair";
 
-    $subject = "NNMTA Music Competition - Registration";
-    if (!wp_mail((string)$teacher_email, $subject, $message)) {
+    $subject = "NNMTA " . $email_info['competition_name'] . " - Registration";
+
+    if (!wp_mail((string)$email_info['teacher_email'], $subject, $message)) {
       wp_die('Teacher registration email failed to send.');
     }
 
