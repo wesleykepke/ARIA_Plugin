@@ -80,7 +80,7 @@ class ARIA_Create_Competition {
     $competition_name = $entry[$field_mapping['competition_name']];
 
     // create the student and teacher (master) forms
-    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
+    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
 
     // upload content of the teacher csv file into the teacher master form
@@ -89,7 +89,7 @@ class ARIA_Create_Competition {
 
     // create the student and teacher forms
     $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
-    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+    $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
 
@@ -387,6 +387,16 @@ class ARIA_Create_Competition {
     $theory_score_field->id = $field_mappings['competition_theory_score'];
     $theory_score_field->isRequired = false;
 
+    // master class
+    $has_master_class = new GF_Field_Radio();
+    $has_master_class->label = "Allow students to register for master class?";
+    $has_master_class->id = $field_mappings['competition_has_master_class'];
+    $has_master_class->isRequired = false;
+    $has_master_class->choices = array(
+        array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+        array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+
     // assign all of the previous attributes to our newly created form
     $form->fields[] = $fc_email_field;
     $form->fields[] = $name_field;
@@ -413,6 +423,7 @@ class ARIA_Create_Competition {
     //$form->fields[] = $command_performance_time_field;
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
+    $form->fields[] = $has_master_class;
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = 'Successful';
 
@@ -587,7 +598,7 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-   private static function aria_create_teacher_form($competition_entry, $volunteer_time_options_array) {
+   private static function aria_create_teacher_form($competition_entry, $volunteer_time_options_array, $has_master_class) {
     $field_mapping = ARIA_API::aria_competition_field_id_array();
 
     $competition_name = $competition_entry[$field_mapping['competition_name']];
@@ -620,7 +631,6 @@ class ARIA_Create_Competition {
     $teacher_form->fields[] = $teacher_phone_field;
     $ariaFieldIds['phone'] = $teacher_phone_field->id;
 
-    // !!!new field
     // teacher is judging
     $teacher_judging_field = new GF_Field_Radio();
     $teacher_judging_field->label = "Are you scheduled to judge for the festival?";
@@ -968,9 +978,12 @@ class ARIA_Create_Competition {
     $competition_format_field->isRequired = false;
     $competition_format_field->choices = array(
       array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
-      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false),
-      array('text' => 'Master Class (if upper level)', 'value' => 'Master Class', 'isSelected' => false)
+      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false)
     );
+    if( $has_master_class == "Yes" )
+    {
+        $competition_format_field->choices[] = array('text' => 'Master Class', 'value' => 'Master Class', 'isSelected' => false);
+    }
     $teacher_form->fields[] = $competition_format_field;
     $ariaFieldIds['competition_format'] = $competition_format_field->id;
 

@@ -37,7 +37,7 @@ class ARIA_Create_Master_Forms {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_create_student_master_form($competition_name, $command_options_array) {
+  public static function aria_create_student_master_form($competition_name, $command_options_array, $has_master_class) {
     $student_master_form
         = new GF_Form($competition_name . " Student Master", "");
     $field_id_array = ARIA_API::aria_master_student_field_id_array();
@@ -216,9 +216,12 @@ class ARIA_Create_Master_Forms {
     $competition_format_field->isRequired = false;
     $competition_format_field->choices = array(
       array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
-      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false),
-      array('text' => 'Master Class (if upper level)', 'value' => 'Master Class', 'isSelected' => false)
+      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false)
     );
+    if( $has_master_class == "Yes" )
+    {
+        $competition_format_field->choices[] = array('text' => 'Master Class', 'value' => 'Master Class', 'isSelected' => false);
+    }
     $student_master_form->fields[] = $competition_format_field;
 
     // timing field

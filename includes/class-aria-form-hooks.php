@@ -209,10 +209,10 @@ class ARIA_Form_Hooks {
     $email_info = array();
     $email_info['teacher_hash'] = $teacher_hash;
     $email_info['teacher_name'] = $teacher_name;
-
+    $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
+    $email_info['teacher_url'] = $related_forms['teacher_public_form_url'];
     $email_info['student_hash'] = $student_hash;
     $email_info['student_name'] = $student_name;
-    $email_info['teacher_url'] = $related_forms['teacher_public_form_url'];
 
     $comp_name = strpos($form['title'], 'Student Registration');
     $comp_name = substr($form['title'], 0, $comp_name - 1);
