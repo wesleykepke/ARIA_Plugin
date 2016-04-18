@@ -392,13 +392,14 @@ class Scheduler {
    * will then have the responsibility of assigning the judges to the sections
    * within the timeblocks.
    *
-   * @param   Array   $judges   The array of judges in the current competition. 
+   * @param   Array   $judges   The array of judges in the current competition.
+   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.  
    */
-  public function assign_judges($judges) {
+  public function assign_judges($judges, $num_judges_per_section) {
     $judge_count = 0;
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $this->days[$i][$j]->assign_judges($judges, $judge_count);
+        $this->days[$i][$j]->assign_judges($judges, $judge_count, $num_judges_per_section);
       }
     }    
   }
