@@ -49,6 +49,7 @@ class Scheduling_Algorithm {
     $song_threshold = $entry[$scheduling_field_mapping['song_threshold']];
     $group_by_level = $entry[$scheduling_field_mapping['group_by_level']];
     $master_class_instructor_duration = $entry[$scheduling_field_mapping['master_class_instructor_duration']];
+    $num_judges_per_section = $entry[$scheduling_field_mapping['num_judges_per_section']];
     $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
     $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
     $both_days_rooms = array_merge($saturday_rooms, $sunday_rooms); 
@@ -205,7 +206,7 @@ class Scheduling_Algorithm {
     $judges = self::determine_judges($related_form_ids['teacher_master_form_id']);
     $proctors = self::determine_proctors($related_form_ids['teacher_master_form_id']);
     //wp_die(print_r($proctors));
-    $scheduler->assign_judges($judges);
+    $scheduler->assign_judges($judges, $num_judges_per_section);
     $scheduler->assign_proctors($proctors);
 
     // automatically write the scheduler object to a file
@@ -387,6 +388,14 @@ class Scheduling_Algorithm {
     $master_class_instructor_duration->descriptionPlacement = "above";
     $form->fields[] = $master_class_instructor_duration;
 
+    // number of judges per section
+    $num_judges_per_section = new GF_Field_Number();
+    $num_judges_per_section->label = "Number of Judges per Section";
+    $num_judges_per_section->id = $field_mapping['num_judges_per_section'];
+    $num_judges_per_section->description = "How many judges should be assigned to a section?";
+    $num_judges_per_section->descriptionPlacement = "above";
+    $form->fields[] = $num_judges_per_section;
+
     // custom room names for saturday
     $saturday_rooms = new GF_Field_List();
     $saturday_rooms->label = "Saturday Room Names/Numbers";
@@ -406,9 +415,6 @@ class Scheduling_Algorithm {
     " not know the names, ARIA will provide default room names for the schedule.";
     $sunday_rooms->descriptionPlacement = "above";
     $form->fields[] = $sunday_rooms;
-
-    // number of judges per section
-      // not done yet
 
     // add a default submission message for the schedule competition form
     $successful_submission_message = 'Congratulations! You have just';
@@ -455,9 +461,10 @@ class Scheduling_Algorithm {
       'num_master_sections_sun' => 10,
       'song_threshold' => 11,
       'group_by_level' => 12,
-      'master_class_instructor_duration' => 12,
-      'saturday_rooms' => 13,
-      'sunday_rooms' => 14
+      'master_class_instructor_duration' => 13,
+      'num_judges_per_section' => 14,
+      'saturday_rooms' => 15,
+      'sunday_rooms' => 16
     );
   }
 
