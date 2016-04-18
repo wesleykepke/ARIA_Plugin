@@ -221,12 +221,15 @@ class TimeBlock {
    * each of the timeblocks. 
    *
    * @param   Array   $judges   The array of judges in the current competition.
-   * @param   Integer   $judge_count  An integer to help offset into $judges.  
+   * @param   Integer   $judge_count  An integer to help offset into $judges.
+   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.  
    */
-  public function assign_judges($judges, $judge_count) {
+  public function assign_judges($judges, $judge_count, $num_judges_per_section) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $this->sections[$i]->assign_judge($judges[$judge_count % count($judges)]);
-      $judge_count++; 
+      for ($j = 0; $j < $num_judges_per_section; $j++) {
+        $this->sections[$i]->assign_judge($judges[$judge_count % count($judges)]);
+        $judge_count++; 
+      }
     }    
   }
 
