@@ -249,7 +249,8 @@ class ARIA_Create_Competition {
     $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
     $teacher_volunteer_times_field->id = $field_mappings['competition_volunteer_times'];
     $teacher_volunteer_times_field->isRequired = false;
-    $teacher_volunteer_times_field->description = "e.g. Saturday (10am-4pm), Sunday night, etc.";
+    $teacher_volunteer_times_field->description = "Enter at least two times for teachers to volunteer ";
+    $teacher_volunteer_times_field->description .= "e.g. Saturday (10am-4pm), Sunday night, etc.";
     $teacher_volunteer_times_field->descriptionPlacement = 'above';
 
     // teacher csv file upload

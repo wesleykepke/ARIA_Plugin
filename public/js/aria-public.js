@@ -43,6 +43,57 @@ jQuery(document).ready(function($) {
 	}
 
 
+	var volunteer_selects_field = input_id_arr['volunteer_time'];
+	var volunteer_checkboxes = 'choice_' + teacher_form_id + '_' + field_id_arr['volunteer_time'];
+	var judging_field = input_id_arr['is_judging'];
+	var is_judging = true;
+
+	var error_msg = "Error: Please select at least TWO volunteer times before submitting";
+
+	// Determine whether user is judging
+	$(judging_field).change(function(){
+		judging_answer = $('input[name=input_' + field_id_arr['is_judging'] + ']:checked').val();
+		if( judging_answer == "No" ){
+			is_judging = false;
+			$('#gform_submit_button_' + teacher_form_id).before("<p class='volunteer_error'>"+error_msg+"</p>");
+			$('#gform_submit_button_' + teacher_form_id).prop("disabled", true);
+		}
+		else
+		{
+
+				$('.volunteer_error').remove();
+				$('#gform_submit_button_' + teacher_form_id).removeAttr("disabled");
+		}
+	});
+
+
+	// When user checks or unchecks volunteer time
+	$(volunteer_selects_field).change(function(){
+		// If they are not judging
+		if( is_judging == false )
+		{
+			var num_selected = $('input[id^=' + volunteer_checkboxes + ']:checkbox:checked').length;
+			// Disable submit if less than two boxes are selected
+			if(num_selected < 2)
+			{
+				if($('.volunteer_error').length){
+
+				}
+				else
+				{
+					$('#gform_submit_button_' + teacher_form_id).before("<p class='volunteer_error'>"+error_msg+"</p>");
+
+				}
+				$('#gform_submit_button_' + teacher_form_id).prop("disabled", true);
+			}
+			else
+			{
+				$('.volunteer_error').remove();
+				$('#gform_submit_button_' + teacher_form_id).removeAttr("disabled");
+			}
+		}
+	});
+
 	// get student level
 	var st_level = $(input_id_arr['student_level']).val();
 
