@@ -75,9 +75,17 @@ class ARIA_Create_Competition {
     // check to see if the given competition name has already been used. if it has,
     // throw an error and make the festival chairman remove the old competition or rename
     // the current competition. 
-
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
+    $all_forms = GFAPI::get_forms(true, false);
+    foreach ($all_forms as $form) {
+      if (strpos($form['title'], $competition_name) !== false) {
+        wp_die("<h1>ERROR: A competition with the name '$competition_name' already 
+            exists. Please remove all of the forms and pages for '$competition_name' 
+            and try creating the competition again or change the name of 
+            the competition you're tyring to create.</h1>"); 
+      }
+    }
 
     // create the student and teacher (master) forms
     $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_has_master_class']]);

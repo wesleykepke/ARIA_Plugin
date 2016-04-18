@@ -173,6 +173,25 @@ class Section {
   private $room;
 
   /**
+   * The judges of the current section. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   array   $judges   The name(s) of the judge(s). 
+   */
+  private $judges;
+
+  /**
+   * The proctor of the current section. 
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $proctor   The name of the proctor.  
+   */
+  private $proctor;
+
+
+  /**
    * The constructor used to instantiate a new section object. 
    *
    * @since 1.0.0
@@ -203,7 +222,9 @@ class Section {
     $this->master_class_instructor_duration = null;
     $this->start_time = $start_time;
     $this->day = $day;
-    $this->room = $room; 
+    $this->room = $room;
+    $this->judges = array();
+    $this->proctor = null;   
   }
 
   /**
@@ -225,6 +246,28 @@ class Section {
    */
   public function get_type() {
     return $this->type;
+  }
+
+  /**
+   * The function used to add judges to the section. 
+   *
+   * @param  $judge  String  The name of the judge to add to the competition.
+   * 
+   * @return void
+   */
+  public function assign_judge($judge) {
+    $this->judges[] = $judge;
+  }
+
+  /**
+   * The function used to add proctors to the section. 
+   *
+   * @param  $proctor  String  The name of the proctor to add to the competition.
+   * 
+   * @return void
+   */
+  public function assign_proctor($proctor) {
+    $this->proctor = $proctor;
   }
 
   /**
@@ -414,7 +457,13 @@ class Section {
   }
 
   /**
+   * This function will return a plethora of information regarding the current section.
    *
+   * This function returns a formatted string that lists all of the information about a 
+   * given section. This info is primarily used as a label for the different sections in
+   * the scheduler output.
+   *
+   * @return void
    */
   public function get_section_info() {
     // first, determine if there is section info
@@ -428,6 +477,26 @@ class Section {
     // determine number of students per section
     $section_info .= 'Number of Students: ' . strval(count($this->students)) . ', ';
     
+    // determine the judge(s) of the section
+    if (count($this->judges) > 1) {
+      $section_info .= 'Judge(s): ';
+      for ($i = 0; $i < count($this->judges); $i++) {
+        $section_info .= $this->judges[$i];
+        if ($i + 1 != count($this->judges)) {
+          $section_info .= ', ';
+        }
+        else {
+          $section_info .= ' ';
+        }
+      }
+    }
+    else {
+      $section_info .= 'Judge: ';
+      $section_info .= $this->judges[0] . ', ';
+    }
+
+    // determine the proctor of the section
+    $section_info .= "Proctor: $this->proctor, ";
 
     // get all skill levels in section
     $skill_levels = array();
@@ -500,12 +569,27 @@ class Section {
       return; 
     }
 
-    // for each student registered in the section, get their data 
+    // add the base information (of section info)    
     $doc_gen_single_section_data = array();
     $doc_gen_single_section_data['section_name'] = $this->room;
-    $doc_gen_single_section_data['judge'] = "Don't have this data..";
+
+    // adjust formatting for more than one judge
+    if (count($this->judges) > 1) {
+      for ($i = 0; $i < count($this->judges); $i++) {
+        $doc_gen_single_section_data['judge'] .= $this->judges[$i];
+        if ($i + 1 != count($this->judges)) {
+          $doc_gen_single_section_data['judge'] .= ', ';
+        }
+      }
+    }
+    else {
+      $doc_gen_single_section_data['judge'] = $this->judges[0];
+    }
+
     $doc_gen_single_section_data['proctor'] = "Don't have this data..";
     $doc_gen_single_section_data['monitor'] = "Don't have this data..";
+
+    // for each student registered in the section, get their data 
     $doc_gen_single_section_data['students'] = array(); 
     for ($i = 0; $i < count($this->students); $i++) {
       $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();

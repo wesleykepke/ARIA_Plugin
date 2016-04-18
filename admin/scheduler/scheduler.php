@@ -201,6 +201,13 @@ class Scheduling_Algorithm {
       }
     }
 
+    // assign the judges for the competition
+    $judges = self::determine_judges($related_form_ids['teacher_master_form_id']);
+    $proctors = self::determine_proctors($related_form_ids['teacher_master_form_id']);
+    //wp_die(print_r($proctors));
+    $scheduler->assign_judges($judges);
+    $scheduler->assign_proctors($proctors);
+
     // automatically write the scheduler object to a file
     self::save_scheduler_to_file($title, $scheduler);
 
@@ -773,5 +780,95 @@ class Scheduling_Algorithm {
       fwrite($fp, $scheduler_data);
       fclose($fp);
     } 
+  }
+
+  /**
+   * This function will find all of the teachers in a given competition that are
+   * registered to be judges. 
+   *
+   * This function will iterate through all of the teachers in the teacher master
+   * form of a given competition and check to see which teachers are registered 
+   * to judge. The info (first and last names of judges) will be consolidated into
+   * an array and returned to the caller. 
+   *
+   * @param   Integer   $teacher_master_form_id   The form id of the teacher master form.
+   *
+   * @return  An array of teacher names that are judges. 
+   * 
+   * @since 1.0.0
+   * @author KREW
+   */
+  private static function determine_judges($teacher_master_form_id) {
+    // get all entries in the associated teacher master
+    $search_criteria = array();
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
+                                  $sorting, $paging, $total_count);
+
+    // check to see which of the teachers are scheduled to judge for the competition
+    $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
+    $judges = array(); 
+    foreach ($entries as $entry) {
+      if (array_key_exists($field_mapping[strval('is_judging')], $entry)) {
+        if ($entry[strval($field_mapping['is_judging'])] == 'Yes') {
+          $first_name = $entry[strval($field_mapping['first_name'])];
+          $last_name = $entry[strval($field_mapping['last_name'])];
+          $name = $first_name . ' ' . $last_name;
+          $judges[] = $name;
+        }
+      }
+    }
+
+    return $judges;  
+  }
+
+  /**
+   * This function will find all of the teachers in a given competition that have
+   * volunteered to be proctors. 
+   *
+   * This function will iterate through all of the teachers in the teacher master
+   * form of a given competition and check to see which teachers have volunteered 
+   * to be a proctor. The info (first and last names of judges) will be consolidated 
+   * into an array and returned to the caller. 
+   *
+   * @param   Integer   $teacher_master_form_id   The form id of the teacher master form.
+   *
+   * @return  An array of teacher names that are proctors. 
+   * 
+   * @since 1.0.0
+   * @author KREW
+   */
+  private static function determine_proctors($teacher_master_form_id) {
+    // get all entries in the associated teacher master
+    $search_criteria = array();
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
+                                  $sorting, $paging, $total_count);
+
+    // check to see which of the teachers are scheduled to judge for the competition
+    $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
+    $proctors = array();
+    $volunteer_index = 1; 
+    foreach ($entries as $entry) {
+      $volunteer_index = 1; 
+      $search_key = $field_mapping[strval('volunteer_preference')] . '.' . strval($volunteer_index);
+      while (array_key_exists($search_key, $entry)) {
+        if ($entry[$search_key] == 'Proctor sessions') {
+          $first_name = $entry[strval($field_mapping['first_name'])];
+          $last_name = $entry[strval($field_mapping['last_name'])];
+          $name = $first_name . ' ' . $last_name;
+          $proctors[] = $name;
+        }
+
+        $volunteer_index++;
+        $search_key = $field_mapping[strval('volunteer_preference')] . '.' . strval($volunteer_index);
+      }
+    }
+
+    return $proctors;  
   }
 }
