@@ -83,7 +83,7 @@ class ARIA_Create_Competition {
         wp_die("<h1>ERROR: A competition with the name '$competition_name' already 
             exists. Please remove all of the forms and pages for '$competition_name' 
             and try creating the competition again or change the name of 
-            the competition you're tyring to create.</h1>"); 
+            the competition you're trying to create.</h1>"); 
       }
     }
 
