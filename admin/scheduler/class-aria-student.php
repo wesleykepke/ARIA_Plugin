@@ -323,9 +323,17 @@ class Student {
   }
 
   /**
+   * This function will construct the competition info on a per-student basis.
    *
+   * Using the information that is stored for each student, this function
+   * will construct and return a sentence that describes all of the stored
+   * information about a student for an upcoming competition. 
+   *
+   * @since 1.0.0
+   * @return string Represents the student's competition information. 
    */
   public function get_info_for_email() {
+    // process the student's songs 
     $songs = null;
     if (count($this->songs) > 2) {
       for ($i = 0; $i < count($this->songs); $i++) {
@@ -342,6 +350,7 @@ class Student {
       . $this->songs[1] . ' by ' . $this->composers[1];
     }
 
+    // construct and return the sentence of student information
     return $this->first_name . ' ' . $this->last_name . ' will be playing ' . $songs .
       ' on ' . $this->day . ' at ' . $this->start_time . ' in ' . $this->room . '.<br><br>';
   }

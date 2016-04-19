@@ -490,14 +490,12 @@ class Scheduling_Algorithm {
     }
 
     // Get all of the active competitions
-    $competition_field_mapping = ARIA_API::aria_competition_field_id_array();
-    $competition_form_id = ARIA_API::aria_get_create_competition_form_id();
-    $entries = GFAPI::get_entries($competition_form_id);
+    $all_active_competitions = ARIA_API::aria_get_all_active_comps();
     $competition_names = array();
-    foreach ($entries as $entry) {
+    foreach ($all_active_competitions as $competition) {
       $single_competition = array(
-        'text' => $entry[$competition_field_mapping['competition_name']],
-        'value' => $entry[$competition_field_mapping['competition_name']],
+        'text' => $competition,
+        'value' => $competition,
         'isSelected' => false
       );
       $competition_names[] = $single_competition;
@@ -728,6 +726,23 @@ class Scheduling_Algorithm {
     $total_count = 0;
     $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
                                   $sorting, $paging, $total_count);
+
+    // get the associated entry in the create competition form
+    $create_comp_form_id = ARIA_API::aria_get_create_competition_form_id();
+    $comp_field_id_array = ARIA_API::aria_competition_field_id_array(); 
+    $comp_entries = GFAPI::get_entries($create_comp_form_id, $search_criteria,
+                                       $sorting, $paging, $total_count);
+
+    //cho '<h1>send teachers comp info</h1>';
+    //wp_die(print_r($comp_entries));
+    $first_location = null;
+    $second_location = null;  
+    foreach ($comp_entries as $entry) {
+      if ($entry[strval($comp_field_id_array['competition_name'])] == $comp_name) {
+        echo '<h1>About to get location data</h1>'; 
+        wp_die();  
+      }
+    }
 
     // store all of the teacher emails in an associative array
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
