@@ -215,6 +215,14 @@ class ARIA {
       'aria_after_teacher_upload', 10, 4
     );
 
+    /*
+
+    */
+    $this->loader->add_action(
+    	'gform_post_payment_action',
+    	'ARIA_Registration_Handler',
+    	'aria_test_payment', 10, 4
+    	);
 
     /*
     The action registered for this hook is to invoke processing after the

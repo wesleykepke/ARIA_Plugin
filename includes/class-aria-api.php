@@ -398,7 +398,9 @@ class ARIA_API {
       'preferred_command_performance' => 9,
       'student_level' => 10,
       'compliance_statement' => 11,
-      'compliance_statement_agreement' => 12
+      'compliance_statement_agreement' => 12,
+      'level_pricing' => 13,
+      'registration_total' => 14
     );
   }
 

@@ -196,7 +196,7 @@ class ARIA_Create_Competition {
 
     // second location
     $location_field_2 = new GF_Field_Address();
-    $location_field_2->label = "Second Competition Location (If applicable)";
+    $location_field_2->label = "Sunday Competition Location (If different from above)";
     $location_field_2->id = $field_mappings['competition_location_2'];
     $location_field_2->isRequired = false;
     $location_field_2->description = 'If different location for second day.';
@@ -1235,6 +1235,38 @@ class ARIA_Create_Competition {
     for ($i=1; $i <= count($compliance_field->inputs); $i++) {
       $ariaFieldIds["compliance_statement_option_{$i}"] = "{$compliance_field->id}.{$i}";
     }
+
+
+    $product_field = new GF_Field_Product();
+    $product_field->label = "Student Level Price";
+    $product_field->id = $field_id_array['level_pricing'];
+    $product_field->isRequired = false;
+    $product_field->basePrice = "$1.00";
+    $product_field->disableQuantity = true;
+    $product_field->inputType = "select";
+    $product_field->enablePrice = true;
+    $product_field->choices = array(
+
+      array('text' => '1', 'value' => '1', 'isSelected' => false, 'price' => '$0.00'),
+      array('text' => '2', 'value' => '2', 'isSelected' => false, 'price' => '$2.00'),
+      array('text' => '3', 'value' => '3', 'isSelected' => false, 'price' => '$3.00'),
+      array('text' => '4', 'value' => '4', 'isSelected' => false, 'price' => '$4.00'),
+      array('text' => '5', 'value' => '5', 'isSelected' => false, 'price' => '$5.00'),
+      array('text' => '6', 'value' => '6', 'isSelected' => false, 'price' => '$6.00'),
+      array('text' => '7', 'value' => '7', 'isSelected' => false, 'price' => '$7.00'),
+      array('text' => '8', 'value' => '8', 'isSelected' => false, 'price' => '$8.00'),
+      array('text' => '9', 'value' => '9', 'isSelected' => false, 'price' => '$9.00'),
+      array('text' => '10', 'value' => '10', 'isSelected' => false, 'price' => '$10.00'),
+      array('text' => '11', 'value' => '11', 'isSelected' => false, 'price' => '$11.00')
+    );
+    $student_form->fields[] = $product_field;
+
+    $total_field = new GF_Field_Total();
+    $total_field->label = "Total Registration Cost";
+    $total_field->id = $field_id_array['registration_total'];
+    $total_field->isRequired = false;
+    $student_form->fields[] = $total_field;
+
 
     // custom submission message to let the festival chairman know the creation was
     // a success
