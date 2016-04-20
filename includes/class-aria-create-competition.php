@@ -1228,8 +1228,48 @@ class ARIA_Create_Competition {
     $student_level_field->description .= " contacts his/her instructor and can verify";
     $student_level_field->description .= " this value.";
     $student_level_field->descriptionPlacement = 'above';
+    $student_level_field->hidden = true;
     $student_form->fields[] = $student_level_field;
     $ariaFieldIds['student_level'] = $student_level_field->id;
+
+        $pricing = array();
+    for( $i = 1; $i <= 11; $i++ )
+    {
+        $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
+
+        $pricing[$i] = $price;
+    }
+
+    $product_field = new GF_Field_Product();
+    $product_field->label = "Student Level Price";
+    $product_field->id = $field_id_array['level_pricing'];
+    $product_field->isRequired = false;
+    $product_field->basePrice = "$1.00";
+    $product_field->disableQuantity = true;
+    $product_field->inputType = "select";
+    $product_field->enablePrice = true;
+    $product_field->description = "Please enter your student's festival level.";
+    $product_field->description .= " If you do not know this value, please do";
+    $product_field->description .= " not submit this form until your child";
+    $product_field->description .= " contacts his/her instructor and can verify";
+    $product_field->description .= " this value.";
+
+    $product_field->descriptionPlacement = 'above';
+    $product_field->choices = array(
+
+      array('text' => '1', 'value' => '1', 'isSelected' => false, 'price' => $pricing[1]),
+      array('text' => '2', 'value' => '2', 'isSelected' => false, 'price' => $pricing[2]),
+      array('text' => '3', 'value' => '3', 'isSelected' => false, 'price' => $pricing[3]),
+      array('text' => '4', 'value' => '4', 'isSelected' => false, 'price' => $pricing[4]),
+      array('text' => '5', 'value' => '5', 'isSelected' => false, 'price' => $pricing[5]),
+      array('text' => '6', 'value' => '6', 'isSelected' => false, 'price' => $pricing[6]),
+      array('text' => '7', 'value' => '7', 'isSelected' => false, 'price' => $pricing[7]),
+      array('text' => '8', 'value' => '8', 'isSelected' => false, 'price' => $pricing[8]),
+      array('text' => '9', 'value' => '9', 'isSelected' => false, 'price' => $pricing[9]),
+      array('text' => '10', 'value' => '10', 'isSelected' => false, 'price' => $pricing[10]),
+      array('text' => '11', 'value' => '11', 'isSelected' => false, 'price' => $pricing[11])
+    );
+    $student_form->fields[] = $product_field;
 
     // the compliance field for parents
     $compliance_field = new GF_Field_checkbox();
@@ -1259,30 +1299,6 @@ class ARIA_Create_Competition {
       $ariaFieldIds["compliance_statement_option_{$i}"] = "{$compliance_field->id}.{$i}";
     }
 
-
-    $product_field = new GF_Field_Product();
-    $product_field->label = "Student Level Price";
-    $product_field->id = $field_id_array['level_pricing'];
-    $product_field->isRequired = false;
-    $product_field->basePrice = "$1.00";
-    $product_field->disableQuantity = true;
-    $product_field->inputType = "select";
-    $product_field->enablePrice = true;
-    $product_field->choices = array(
-
-      array('text' => '1', 'value' => '1', 'isSelected' => false, 'price' => '$0.00'),
-      array('text' => '2', 'value' => '2', 'isSelected' => false, 'price' => '$2.00'),
-      array('text' => '3', 'value' => '3', 'isSelected' => false, 'price' => '$3.00'),
-      array('text' => '4', 'value' => '4', 'isSelected' => false, 'price' => '$4.00'),
-      array('text' => '5', 'value' => '5', 'isSelected' => false, 'price' => '$5.00'),
-      array('text' => '6', 'value' => '6', 'isSelected' => false, 'price' => '$6.00'),
-      array('text' => '7', 'value' => '7', 'isSelected' => false, 'price' => '$7.00'),
-      array('text' => '8', 'value' => '8', 'isSelected' => false, 'price' => '$8.00'),
-      array('text' => '9', 'value' => '9', 'isSelected' => false, 'price' => '$9.00'),
-      array('text' => '10', 'value' => '10', 'isSelected' => false, 'price' => '$10.00'),
-      array('text' => '11', 'value' => '11', 'isSelected' => false, 'price' => '$11.00')
-    );
-    $student_form->fields[] = $product_field;
 
     $total_field = new GF_Field_Total();
     $total_field->label = "Total Registration Cost";
