@@ -41,6 +41,7 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_competition_activation() {
+
     // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
     if ($form_id === -1) {
@@ -1285,6 +1286,23 @@ class ARIA_Create_Competition {
     // make sure the new form was added without error
     if (is_wp_error($new_form_id)) {
       wp_die($new_form_id->get_error_message());
+    }
+
+    // create feed for payment
+    $feed_meta = array(
+            'feedName' => 'Student Registration Feed',
+            'paypalEmail' => PAYMENT_EMAIL,
+            'mode' => 'production',
+            'transactionType' => 'product',
+            'paymentAmount' => 'form_total',
+            'disableShipping' => 1,
+            'disableNote' => 0,
+            'type' => 'product' 
+        );
+    $feed_slug = 'gravityformspaypal';
+    $new_feed_id = GFAPI::add_feed( $new_form_id, $feed_meta, $feed_slug);
+    if (is_wp_error($new_feed_id)) {
+      wp_die($new_feed_id->get_error_message());
     }
 
     return $new_form_id;

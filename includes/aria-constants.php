@@ -38,6 +38,9 @@ define("TEACHER_MAS", "Teacher Master");
 // Default password
 define("CHAIRMAN_PASS", "collectrocks");
 
+// Payment email
+define("PAYMENT_EMAIL", "reneeii@live.com");
+
 // Enumerating constants for competitions
 const STUDENT_FORM = 1;
 const STUDENT_MASTER = 2;
