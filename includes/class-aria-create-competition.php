@@ -398,6 +398,25 @@ class ARIA_Create_Competition {
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
 
+    $section_break = new GF_Field_Section();
+    $section_break->label = "Pricing";
+
+
+    // level price
+    $pricing = array();
+   for( $i = 1; $i <= 11; $i++ )
+    {
+        $level_price = new GF_Field_Number();
+        $level_price->label = "Price for Level " . $i . " Student";
+        $level_price->id = $field_mappings['level_' . $i . '_price'];
+        $level_price->defaultValue = '0.00';
+        $level_price->size = 'small';
+        $level_price->isRequired = false;
+        $level_price->numberFormat = 'currency';
+        $pricing[] = $level_price;
+        unset($level_price);
+    }
+
     // assign all of the previous attributes to our newly created form
     $form->fields[] = $fc_email_field;
     $form->fields[] = $name_field;
@@ -425,6 +444,9 @@ class ARIA_Create_Competition {
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
     $form->fields[] = $has_master_class;
+
+    $form->fields[] = $section_break;
+    $form->fields = array_merge($form->fields, $pricing);
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = 'Successful';
 

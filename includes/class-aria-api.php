@@ -298,7 +298,17 @@ class ARIA_API {
       'competition_command_performance_opt' => 24,
       'competition_location_2' => 25,
       'competition_has_master_class' => 26,
-      'level_1_price' => 27
+      'level_1_price' => 27,
+      'level_2_price' => 28, 
+      'level_3_price' => 29, 
+      'level_4_price' => 30, 
+      'level_5_price' => 31, 
+      'level_6_price' => 32, 
+      'level_7_price' => 33, 
+      'level_8_price' => 34, 
+      'level_9_price' => 35, 
+      'level_10_price' => 36, 
+      'level_11_price' => 37 
     );
   }
 
