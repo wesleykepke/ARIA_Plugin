@@ -344,7 +344,7 @@ class ARIA_API {
       'competition_2_state' => 25.4,
       'competition_2_zip' => 25.5,
       'competition_2_country' => 25.6,
-      'competition_has_master_class' => 26
+      'competition_has_master_class' => 26,
       'level_1_price' => 27,
       'level_2_price' => 28, 
       'level_3_price' => 29, 
