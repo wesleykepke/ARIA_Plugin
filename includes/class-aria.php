@@ -216,13 +216,15 @@ class ARIA {
     );
 
     /*
+	 * Payment testing
+    
 
-    */
     $this->loader->add_action(
-    	'gform_post_payment_action',
+    	'gform_paypal_fulfillment',
     	'ARIA_Registration_Handler',
     	'aria_test_payment', 10, 4
     	);
+    */
 
     /*
     The action registered for this hook is to invoke processing after the
@@ -237,9 +239,14 @@ class ARIA {
     The action registered for this hook is to invoke processing after a student
     has submitted their registration.
     */
-    $this->loader->add_action('gform_after_submission',
+
+    $this->loader->add_action('gform_paypal_fulfillment',
       'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
 
+    /*
+    $this->loader->add_action('gform_after_submission',
+      'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
+	*/
     /*
     The action registered for this hook is to invoke processing after a teacher
     has submitted their registration.
