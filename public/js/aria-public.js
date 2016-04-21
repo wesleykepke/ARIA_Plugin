@@ -11,21 +11,34 @@ jQuery(document).ready(function($) {
 	var public_key = "1ff591984b";
 	var private_key = "c4efb4676e0d6a6";
 
-	//local
 
 	var form_name = $('.gform_title').text();
-	//get_test();
 
+	// get current  form id from current form
+	var current_form = $('.gform_fields').attr('id');
+	var current_form_id = current_form.split('_');
+	current_form_id = current_form_id[current_form_id.length -1];
+
+	// Student registration
+	if( form_name.indexOf( "Student Registration" ) != -1 ){
+        var field_id_arr = get_ids();
+		var level_pay_field = '#input_' + current_form_id + '_' + field_id_arr['level_pricing'];
+		var level_field = '#input_' + current_form_id + '_' + field_id_arr['student_level'];
+		var hidden_student_level = '#field_' + current_form_id + '_' + field_id_arr['student_level'];
+		$(hidden_student_level).hide();
+
+		// Update student level
+		$(level_pay_field).change(function(){
+			var values = $(level_pay_field).val().split("|");
+			//alert(values[0]);
+			$(level_field).val(values[0]).change();
+		});
+	}
+
+
+	// Teacher registration
 	if( form_name.indexOf( "Teacher Registration" ) != -1 ){
 
-//alert("running");
-	//alert( $('.gform_title').text() );
-	// get teacher  form id from current form
-	var teacher_form = $('.gform_fields').attr('id');
-	var teacher_form_id = teacher_form.split('_');
-	teacher_form_id = teacher_form_id[teacher_form_id.length -1];
-
-		//alert( "teacher form:" + teacher_form_id );
 
 	// get music DB form id from Gravity Forms
 	var music_form_id = get_music_form_id();
@@ -35,7 +48,7 @@ jQuery(document).ready(function($) {
         var field_id_arr = get_ids();
 
     // prefix IDs
-    var input_prefix = '#input_' + teacher_form_id + '_';
+    var input_prefix = '#input_' + current_form_id + '_';
 	var input_id_arr = [];
 	for( key in field_id_arr ){
 		input_id_arr[key] = input_prefix + field_id_arr[key];
@@ -44,7 +57,7 @@ jQuery(document).ready(function($) {
 
 
 	var volunteer_selects_field = input_id_arr['volunteer_time'];
-	var volunteer_checkboxes = 'choice_' + teacher_form_id + '_' + field_id_arr['volunteer_time'];
+	var volunteer_checkboxes = 'choice_' + current_form_id + '_' + field_id_arr['volunteer_time'];
 	var judging_field = input_id_arr['is_judging'];
 	var is_judging = true;
 
@@ -55,14 +68,14 @@ jQuery(document).ready(function($) {
 		judging_answer = $('input[name=input_' + field_id_arr['is_judging'] + ']:checked').val();
 		if( judging_answer == "No" ){
 			is_judging = false;
-			$('#gform_submit_button_' + teacher_form_id).before("<p class='volunteer_error'>"+error_msg+"</p>");
-			$('#gform_submit_button_' + teacher_form_id).prop("disabled", true);
+			$('#gform_submit_button_' + current_form_id).before("<p class='volunteer_error'>"+error_msg+"</p>");
+			$('#gform_submit_button_' + current_form_id).prop("disabled", true);
 		}
 		else
 		{
 
 				$('.volunteer_error').remove();
-				$('#gform_submit_button_' + teacher_form_id).removeAttr("disabled");
+				$('#gform_submit_button_' + current_form_id).removeAttr("disabled");
 		}
 	});
 
@@ -81,15 +94,15 @@ jQuery(document).ready(function($) {
 				}
 				else
 				{
-					$('#gform_submit_button_' + teacher_form_id).before("<p class='volunteer_error'>"+error_msg+"</p>");
+					$('#gform_submit_button_' + current_form_id).before("<p class='volunteer_error'>"+error_msg+"</p>");
 
 				}
-				$('#gform_submit_button_' + teacher_form_id).prop("disabled", true);
+				$('#gform_submit_button_' + current_form_id).prop("disabled", true);
 			}
 			else
 			{
 				$('.volunteer_error').remove();
-				$('#gform_submit_button_' + teacher_form_id).removeAttr("disabled");
+				$('#gform_submit_button_' + current_form_id).removeAttr("disabled");
 			}
 		}
 	});
