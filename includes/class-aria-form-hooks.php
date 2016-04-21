@@ -86,7 +86,11 @@ class ARIA_Form_Hooks {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_after_student_submission($entry, $form) {
+  public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
+
+    $form_id = $entry['form_id'];
+    $form = GFAPI::get_form($form_id);
+    
     // Only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
