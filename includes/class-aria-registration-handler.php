@@ -28,6 +28,12 @@ require_once("aria-constants.php");
 */
 class ARIA_Registration_Handler {
 
+  /**
+  * Testing payment email stuff
+  */
+  public static function aria_test_payment($entry, $action){
+    wp_die($action['type']);
+  }
 	/**
 	 * Function for sending emails.
 	 */
@@ -58,11 +64,11 @@ class ARIA_Registration_Handler {
     $message .= "\n\nThank you, \nNNMTA Festival Chair";
 
     $subject = "NNMTA " . $email_info['competition_name'] . " - Registration";
-
+/*!!! just commenting out for testing
     if (!wp_mail((string)$email_info['teacher_email'], $subject, $message)) {
       wp_die('Teacher registration email failed to send.');
     }
-
+*/
   }
 
 	/**
