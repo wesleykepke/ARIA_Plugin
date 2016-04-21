@@ -739,10 +739,21 @@ class Scheduling_Algorithm {
     $second_location = null;  
     foreach ($comp_entries as $entry) {
       if ($entry[strval($comp_field_id_array['competition_name'])] == $comp_name) {
-        echo '<h1>About to get location data</h1>'; 
-        wp_die();  
+        $first_loc_base = strval($comp_field_id_array['competition_location']);
+        $first_loc_end = strval($comp_field_id_array['competition_country']);
+        $first_loc_itr = 1;
+        $first_loc_start = ($first_loc_base . '.' . strval($first_loc_itr)); 
+        while (strcmp($first_loc_start, $first_loc_end) != 0) {
+          if (!empty($entry[$first_loc_start])) {
+            $first_location .= ($entry[$first_loc_start] . ', ');
+          }
+          $first_loc_itr++;
+          $first_loc_start = ($first_loc_base . '.' . strval($first_loc_itr)); 
+        }
       }
     }
+
+    wp_die(print_r($first_location));
 
     // store all of the teacher emails in an associative array
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
