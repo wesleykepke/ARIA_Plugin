@@ -166,6 +166,47 @@ class ARIA_API {
   }
 
   /**
+   * This function will find the names of all active competitions. 
+   *
+   * This function will iterate through all of the active competitions
+   * and return an array of all of the competition names. 
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_all_active_comps() {
+    // get all of the forms 
+    $all_active_forms = GFAPI::get_forms(true, false);
+    $field_mapping = self::aria_competition_field_id_array();
+    $comp_names = array();  
+
+    // for each of the forms, get the prepended title name
+    foreach ($all_active_forms as $form) {
+      $name = $form['title'];
+      $split_name = explode(' ', $name);
+      $prepended_name = null;
+
+      // only consider forms that are for registration
+      if (strpos($name, 'Student Registration') !== false) {
+        // iterate through all of the forms and obtain the title
+        for ($i = 0; $i < (count($split_name) - 2); $i++) {
+          $prepended_name .= $split_name[$i];
+          if ($i + 1 != (count($split_name) - 2)) {
+            $prepended_name .= ' ';
+          }
+        }
+
+        // add the name if we have not already processed it
+        if (!in_array($prepended_name, $comp_names)) {
+          $comp_names[] = $prepended_name;
+        }
+      }
+    } 
+
+    return $comp_names; 
+  }
+
+  /**
    * This function will find the file path of the uploaded csv music file.
    *
    * This function will extract the name of the csv file containing the music
@@ -296,7 +337,13 @@ class ARIA_API {
       'competition_judge_csv_upload' => 22,
       'competition_festival_chairman_email' => 23,
       'competition_command_performance_opt' => 24,
-      'competition_location_2' => 25,
+      'competition_2' => 25,
+      'competition_2_address_first' => 25.1,
+      'competition_2_address_second' => 25.2,
+      'competition_2_city' => 25.3,
+      'competition_2_state' => 25.4,
+      'competition_2_zip' => 25.5,
+      'competition_2_country' => 25.6,
       'competition_has_master_class' => 26,
       'level_1_price' => 27,
       'level_2_price' => 28, 

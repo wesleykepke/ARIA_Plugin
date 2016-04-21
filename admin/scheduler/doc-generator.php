@@ -165,14 +165,12 @@ class Doc_Generator {
     }
 
     // Get all of the active competitions
-    $competition_field_mapping = ARIA_API::aria_competition_field_id_array();
-    $competition_form_id = ARIA_API::aria_get_create_competition_form_id();
-    $entries = GFAPI::get_entries($competition_form_id);
+    $all_active_competitions = ARIA_API::aria_get_all_active_comps();
     $competition_names = array();
-    foreach ($entries as $entry) {
+    foreach ($all_active_competitions as $competition) {
       $single_competition = array(
-        'text' => $entry[$competition_field_mapping['competition_name']],
-        'value' => $entry[$competition_field_mapping['competition_name']],
+        'text' => $competition,
+        'value' => $competition,
         'isSelected' => false
       );
       $competition_names[] = $single_competition;
