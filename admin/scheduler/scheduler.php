@@ -733,27 +733,45 @@ class Scheduling_Algorithm {
     $comp_entries = GFAPI::get_entries($create_comp_form_id, $search_criteria,
                                        $sorting, $paging, $total_count);
 
-    //cho '<h1>send teachers comp info</h1>';
+    //echo '<h1>send teachers comp info</h1>';
     //wp_die(print_r($comp_entries));
     $first_location = null;
     $second_location = null;  
     foreach ($comp_entries as $entry) {
       if ($entry[strval($comp_field_id_array['competition_name'])] == $comp_name) {
-        $first_loc_base = strval($comp_field_id_array['competition_location']);
-        $first_loc_end = strval($comp_field_id_array['competition_country']);
+        // get the info for the (first) competition location
+        $first_loc_base = $comp_field_id_array['competition_location'];
+        $first_loc_start = $comp_field_id_array['competition_address_first'];
+        $first_loc_end = $comp_field_id_array['competition_country'];
         $first_loc_itr = 1;
-        $first_loc_start = ($first_loc_base . '.' . strval($first_loc_itr)); 
-        while (strcmp($first_loc_start, $first_loc_end) != 0) {
-          if (!empty($entry[$first_loc_start])) {
-            $first_location .= ($entry[$first_loc_start] . ', ');
+        while ($first_loc_start <= $first_loc_end) {
+          if (!empty($entry[strval($first_loc_start)])) {
+            $first_location .= $entry[strval($first_loc_start)];
+            if ((floatval($first_loc_start) + 0.1) <= $first_loc_end) {
+              $first_location .= ', ';
+            }
           }
           $first_loc_itr++;
-          $first_loc_start = ($first_loc_base . '.' . strval($first_loc_itr)); 
+          $first_loc_start = floatval(($first_loc_base . '.' . strval($first_loc_itr)));
+        }
+
+        // get the info for the (second, optional) competition location
+        $second_loc_base = $comp_field_id_array['competition_2'];
+        $second_loc_start = $comp_field_id_array['competition_2_address_first'];
+        $second_loc_end = $comp_field_id_array['competition_2_country'];
+        $second_loc_itr = 1;
+        while ($second_loc_start <= $second_loc_end) {
+          if (!empty($entry[strval($second_loc_start)])) {
+            $second_location .= $entry[strval($second_loc_start)];
+            if ((floatval($second_loc_start) + 0.1) <= $second_loc_end) {
+              $second_location .= ', ';
+            }
+          }
+          $second_loc_itr++;
+          $second_loc_start = floatval(($second_loc_base . '.' . strval($second_loc_itr)));
         }
       }
     }
-
-    wp_die(print_r($first_location));
 
     // store all of the teacher emails in an associative array
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
@@ -769,13 +787,26 @@ class Scheduling_Algorithm {
     // for each of the emails that were found, find all students that registered under that teacher
     foreach ($teacher_emails_to_students as $key => $value) {
       if (strpos($key, '@') !== false) {
-        $email_message = null;
+        $sat_email_message = "Saturday Location: $first_location\n";
+        
+        if (is_null($second_location)) {
+          $sun_email_message = $sat_email_message;
+        }
+        else {
+          $sun_email_message = "Sunday Location: $first_location\n";
+        }
+        
         $scheduler->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
         foreach ($teacher_emails_to_students[$key] as $student) {
-          $email_message .= $student->get_info_for_email();
+          // students who requested saturday
+          $sat_email_message .= $student->get_info_for_email();
+
+          // students who requested sunday
+          $sun_email_message .= $student->get_info_for_email();
         }
 
         // once the message has been generated, send the email to the teachers
+        $email_message = $sat_email_message . "\n" . $sun_email_message; 
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;
           if (!wp_mail($key, $subject, $email_message)) {
