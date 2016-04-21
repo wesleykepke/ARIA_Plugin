@@ -214,6 +214,43 @@ class TimeBlock {
   }
 
   /**
+   * This function will assign judges to the current competition. 
+   *
+   * Using an array of names (for judges) that is passed as a parameter, this
+   * function will assign the judges in the competition to the sections within
+   * each of the timeblocks. 
+   *
+   * @param   Array   $judges   The array of judges in the current competition.
+   * @param   Integer   $judge_count  An integer to help offset into $judges.
+   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.  
+   */
+  public function assign_judges($judges, $judge_count, $num_judges_per_section) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      for ($j = 0; $j < $num_judges_per_section; $j++) {
+        $this->sections[$i]->assign_judge($judges[$judge_count % count($judges)]);
+        $judge_count++; 
+      }
+    }    
+  }
+
+  /**
+   * This function will assign proctors to the current competition. 
+   *
+   * Using an array of names (for proctors) that is passed as a parameter, this
+   * function will assign the proctors in the competition to the sections within
+   * each of the timeblocks. 
+   *
+   * @param   Array   $proctors   The array of proctors in the current competition.
+   * @param   Integer   $proctor_count  An integer to help offset into $proctors.   
+   */
+  public function assign_proctors($proctors, $proctor_count) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->assign_proctor($proctors[$proctor_count % count($proctors)]);
+      $proctor_count++; 
+    }   
+  }
+
+  /**
    * The destructor used when a time block object is destroyed.
    *
    * @since 1.0.0

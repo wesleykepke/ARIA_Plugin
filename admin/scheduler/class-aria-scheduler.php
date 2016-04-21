@@ -385,6 +385,45 @@ class Scheduler {
   }
 
   /**
+   * This function will assign judges to the current competition. 
+   *
+   * Using an array of names (for judges) that is passed as a parameter, this
+   * function will assign the judges in the competition to timeblocks, which
+   * will then have the responsibility of assigning the judges to the sections
+   * within the timeblocks.
+   *
+   * @param   Array   $judges   The array of judges in the current competition.
+   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.  
+   */
+  public function assign_judges($judges, $num_judges_per_section) {
+    $judge_count = 0;
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->assign_judges($judges, $judge_count, $num_judges_per_section);
+      }
+    }    
+  }
+
+  /**
+   * This function will assign proctors to the current competition. 
+   *
+   * Using an array of names (for proctors) that is passed as a parameter, this
+   * function will assign the proctors in the competition to timeblocks, which
+   * will then have the responsibility of assigning the proctors to the sections
+   * within the timeblocks.
+   *
+   * @param   Array   $proctors   The array of proctors in the current competition. 
+   */
+  public function assign_proctors($proctors) {
+    $proctor_count = 0;
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->assign_proctors($proctors, $proctor_count);
+      }
+    }    
+  }
+
+  /**
    * The destructor used when a scheduler object is destroyed.
    *
    * @since 1.0.0
