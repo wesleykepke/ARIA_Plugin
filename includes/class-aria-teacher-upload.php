@@ -118,6 +118,10 @@ class ARIA_Teacher {
     $teacher_phone_field->isRequired = true;
     $form->fields[] = $teacher_phone_field;
 
+    // set confirmation
+    $form->confirmation['type'] = 'message';
+    $form->confirmation['message'] = 'Successful';
+
     // Identify form as a teacher uploading form
     $form_array = $form->createFormArray();
     $form_array['isSingleTeacherUploadForm'] = true;
