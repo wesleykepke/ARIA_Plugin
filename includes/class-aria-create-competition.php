@@ -79,8 +79,8 @@ class ARIA_Create_Competition {
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
     $all_forms = GFAPI::get_forms(true, false);
-    foreach ($all_forms as $form) {
-      if (strpos($form['title'], $competition_name) !== false) {
+    foreach ($all_forms as $single_form) {
+      if (strpos($single_form['title'], $competition_name) !== false) {
         wp_die("<h1>ERROR: A competition with the name '$competition_name' already 
             exists. Please remove all of the forms and pages for '$competition_name' 
             and try creating the competition again or change the name of 
