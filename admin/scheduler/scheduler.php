@@ -788,7 +788,7 @@ class Scheduling_Algorithm {
         $sat_email_message = "Saturday Location: $first_location\n";
         
         if (is_null($second_location)) {
-          $sun_email_message = $sat_email_message;
+          $sun_email_message = "Sunday Location: $first_location\n";
         }
         else {
           $sun_email_message = "Sunday Location: $second_location\n";

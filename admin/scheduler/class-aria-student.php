@@ -351,7 +351,7 @@ class Student {
     }
 
     // construct and return the sentence of student information
-    return "$this->first_name  $this->last_name will be playing $songs on $this->day at $this->start_time in $this->room.\n\n";
+    return "$this->first_name $this->last_name will be playing $songs on $this->day at $this->start_time in $this->room.\n\n";
   }
 
   /**http://php.net/manual/en/function.floatval.php

@@ -35,24 +35,30 @@ class ARIA_Activator {
     require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
     // make sure that the Gravity Forms plugin is enabled
-    if (is_plugin_active('gravityforms/gravityforms.php')) {
-      // create various forms upon initialization
-      require_once( 'class-gf-form.php' );
-      require_once("class-aria-create-competition.php");
-      require_once("class-aria-music.php");
-      require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
-      require_once("class-aria-teacher-upload.php");
-      require_once(ARIA_ROOT . "/admin/scheduler/doc-generator.php"); 
-      ARIA_Create_Competition::aria_create_competition_activation();
-      ARIA_Music::aria_create_music_upload_form();
-      Scheduling_Algorithm::aria_create_scheduling_page();
-      ARIA_TEACHER::aria_create_teacher_upload_form();
-      Doc_Generator::aria_create_doc_gen_page();  
-    }
-    else {
-      wp_die("Error: ARIA requires the Gravity Forms plugin to be installed
-        and enabled. Please enable the Gravity Forms plugin and reactivate
+    $gf_active = is_plugin_active('gravityforms/gravityforms.php');
+    $gf_paypal_active = is_plugin_active('gravityformspaypal/paypal.php');
+    if (!$gf_active) {
+        wp_die("Error: ARIA requires the 'Gravity Forms' plugin to be installed
+        and enabled. Please enable the 'Gravity Forms' plugin and reactivate
         ARIA.");
     }
+    else if (!$gf_paypal_active) {
+      wp_die("Error: ARIA requires the 'Gravity Forms PayPal Standard Add-On' plugin to be
+        installed and enabled. Please enable the 'Gravity Forms PayPal Standard Add-On' plugin and
+        reactivate ARIA.");
+    }
+
+    // create various forms upon initialization
+    require_once( 'class-gf-form.php' );
+    require_once("class-aria-create-competition.php");
+    require_once("class-aria-music.php");
+    require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
+    require_once("class-aria-teacher-upload.php");
+    require_once(ARIA_ROOT . "/admin/scheduler/doc-generator.php"); 
+    ARIA_Create_Competition::aria_create_competition_activation();
+    ARIA_Music::aria_create_music_upload_form();
+    Scheduling_Algorithm::aria_create_scheduling_page();
+    ARIA_TEACHER::aria_create_teacher_upload_form();
+    Doc_Generator::aria_create_doc_gen_page();  
   }
 }
