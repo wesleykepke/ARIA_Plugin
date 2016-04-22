@@ -733,8 +733,6 @@ class Scheduling_Algorithm {
     $comp_entries = GFAPI::get_entries($create_comp_form_id, $search_criteria,
                                        $sorting, $paging, $total_count);
 
-    //echo '<h1>send teachers comp info</h1>';
-    //wp_die(print_r($comp_entries));
     $first_location = null;
     $second_location = null;  
     foreach ($comp_entries as $entry) {
@@ -793,24 +791,28 @@ class Scheduling_Algorithm {
           $sun_email_message = $sat_email_message;
         }
         else {
-          $sun_email_message = "Sunday Location: $first_location\n";
+          $sun_email_message = "Sunday Location: $second_location\n";
         }
         
         $scheduler->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
-        foreach ($teacher_emails_to_students[$key] as $student) {
+        foreach ($teacher_emails_to_students[$key] as $student) {       
           // students who requested saturday
-          $sat_email_message .= $student->get_info_for_email();
+          if ($student->get_day_preference() === SAT) {
+            $sat_email_message .= $student->get_info_for_email();
+          }
 
           // students who requested sunday
-          $sun_email_message .= $student->get_info_for_email();
+          else if ($student->get_day_preference() === SUN) {
+            $sun_email_message .= $student->get_info_for_email();
+          }
         }
 
         // once the message has been generated, send the email to the teachers
-        $email_message = $sat_email_message . "\n" . $sun_email_message; 
+        $email_message = $sat_email_message . "\n\n" . $sun_email_message; 
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;
           if (!wp_mail($key, $subject, $email_message)) {
-            wp_die("<h1>Emails to teachers about competition info failed to send.
+            wp_die("<h1>Emails to teachers regarding competition info failed to send.
           	  Please try again.</h1>"); 
           }
         }
