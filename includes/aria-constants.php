@@ -15,10 +15,10 @@
  */
 
 // ARIA plugin file location
-define("ARIA_ROOT", "/var/www/html/wp-content/plugins/ARIA");
+define("ARIA_ROOT", ABSPATH . "wp-content/plugins/ARIA");
 
 // ARIA file upload location
-define("ARIA_FILE_UPLOAD_LOC", getcwd() . '/wp-content/uploads/'); 
+define("ARIA_FILE_UPLOAD_LOC", ABSPATH . '/wp-content/uploads/');
 
 // Competitions
 define("CREATE_COMPETITION_FORM_NAME", "ARIA: Create a Competition");
@@ -26,7 +26,7 @@ define("MUSIC_UPLOAD_FORM_NAME", "ARIA: Upload Music");
 define("NNMTA_MUSIC_DATABASE_NAME", "NNMTA: Music Database");
 define("TEACHER_UPLOAD_FORM_NAME", "ARIA: Upload Teacher");
 define("SCHEDULER_FORM_NAME", "ARIA: Schedule a Competition");
-define("DOC_GEN_FORM_NAME", "ARIA: Generate Competition Documents"); 
+define("DOC_GEN_FORM_NAME", "ARIA: Generate Competition Documents");
 define("CSV_UPLOAD_FIELD_NAME", "CSV Music File");
 define("CSV_TEACHER_FIELD_NAME", "CSV Teacher File");
 define("CSV_JUDGE_FIELD_NAME", "CSV Judge File");
