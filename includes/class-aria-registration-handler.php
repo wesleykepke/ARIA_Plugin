@@ -64,8 +64,9 @@ class ARIA_Registration_Handler {
     $message .= "\n\nThank you, \nNNMTA Festival Chair";
 
     $subject = "NNMTA " . $email_info['competition_name'] . " - Registration";
-
+wp_mail('ren825@gmail.com', $subject, $message);
     if (!wp_mail((string)$email_info['teacher_email'], $subject, $message)) {
+      wp_mail('ren825@gmail.com', 'failed', 'it failed');
       wp_die('Teacher registration email failed to send.');
     }
     
