@@ -193,7 +193,8 @@ class ARIA_Music {
      $song_catalog_field->id = $field_id_arr['song_catalog'];
      $song_catalog_field->isRequired = false;
      $nnmta_music_form->fields[] = $song_catalog_field;
-
+    $nnmta_music_form->confirmation['type'] = 'message';
+    $nnmta_music_form->confirmation['message'] = 'Successful';
      // add the new form to the festival chairman's dashboard
      $nnmta_music_form_array = $nnmta_music_form->createFormArray();
      $nnmta_music_form_array['isMusicUploadForm'] = false;
