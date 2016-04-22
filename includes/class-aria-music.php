@@ -49,6 +49,7 @@ class ARIA_Music {
     // check if the form for storing NNMTA music exists
     $music_db_form_id = ARIA_API::aria_get_nnmta_database_form_id();
     self::aria_remove_all_music_from_nnmta_database($music_db_form_id);
+    $music_db_form_id = ARIA_API::aria_get_nnmta_database_form_id();
 
     // locate the full path of the csv file
     $csv_music_file = ARIA_API::aria_get_music_csv_file_path($entry, $form);
@@ -193,8 +194,9 @@ class ARIA_Music {
      $song_catalog_field->id = $field_id_arr['song_catalog'];
      $song_catalog_field->isRequired = false;
      $nnmta_music_form->fields[] = $song_catalog_field;
-    $nnmta_music_form->confirmation['type'] = 'message';
-    $nnmta_music_form->confirmation['message'] = 'Successful';
+     $nnmta_music_form->confirmation['type'] = 'message';
+     $nnmta_music_form->confirmation['message'] = 'Successful';
+     
      // add the new form to the festival chairman's dashboard
      $nnmta_music_form_array = $nnmta_music_form->createFormArray();
      $nnmta_music_form_array['isMusicUploadForm'] = false;
@@ -227,6 +229,10 @@ class ARIA_Music {
     $search_criteria = array();
 
     // get all of the music in the nnmta music database
+    if (GFAPI::delete_form($music_db_form_id)) {
+      self::aria_create_nnmta_music_form();
+    }
+    /*
     $all_songs = GFAPI::get_entries($music_db_form_id, $search_criteria,
                                     $sorting, $paging, $total_count);
 
@@ -236,7 +242,7 @@ class ARIA_Music {
         wp_die('ERROR: Unable to delete all songs. Please repeat the music
           upload process');
       }
-    }
+    } */
   }
 
   /**
