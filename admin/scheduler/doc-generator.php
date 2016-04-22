@@ -72,8 +72,8 @@ class Doc_Generator {
     // are performing
 
 
-    print_r($scheduler); 
-    wp_die(); 
+    //print_r($scheduler); 
+    //wp_die(); 
   }
 
   /**
