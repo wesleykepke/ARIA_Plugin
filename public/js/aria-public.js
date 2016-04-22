@@ -21,7 +21,7 @@ jQuery(document).ready(function($) {
 
 	// Student registration
 	if( form_name.indexOf( "Student Registration" ) != -1 ){
-        var field_id_arr = get_ids();
+        var field_id_arr = get_student_ids();
 		var level_pay_field = '#input_' + current_form_id + '_' + field_id_arr['level_pricing'];
 		var level_field = '#input_' + current_form_id + '_' + field_id_arr['student_level'];
 		var hidden_student_level = '#field_' + current_form_id + '_' + field_id_arr['student_level'];
@@ -45,7 +45,7 @@ jQuery(document).ready(function($) {
 
 
 	// get field ids
-        var field_id_arr = get_ids();
+        var field_id_arr = get_teacher_ids();
 
     // prefix IDs
     var input_prefix = '#input_' + current_form_id + '_';
@@ -130,7 +130,6 @@ jQuery(document).ready(function($) {
 	$(input_id_arr['student_name']+'_6').prop("disabled", true);
 
 	var period_html = store_periods();
-
 
 	// Song 1 Selection
 
@@ -281,10 +280,10 @@ jQuery(document).ready(function($) {
 	}// end of get music form id function
 
 	// get field IDs function
-        function get_ids(){
+        function get_student_ids(){
 		var idResult, temp;
 		// !!! local
-		var myUrl = local_host + "/wp-content/plugins/ARIA/includes/aria_get_ids.php";
+		var myUrl = local_host + "/wp-content/plugins/ARIA/includes/aria-get-student.php";
 		$.ajax({
 			type: "GET",
 			url: myUrl,
@@ -304,6 +303,29 @@ jQuery(document).ready(function($) {
 
 	} // end of get IDs function
 
+	// get field IDs function
+        function get_teacher_ids(){
+		var idResult, temp;
+		// !!! local
+		var myUrl = local_host + "/wp-content/plugins/ARIA/includes/aria-get-teacher.php";
+		$.ajax({
+			type: "GET",
+			url: myUrl,
+			async: false,
+
+			success: function(result){
+				temp = result;
+			}
+
+		}).then( function(){
+		//	alert(temp);
+			idResult = JSON.parse(temp);
+		});
+
+
+		return idResult;
+
+	} // end of get IDs function
 
 	function get_songs( level, levelID ){
         	var d = new Date,
