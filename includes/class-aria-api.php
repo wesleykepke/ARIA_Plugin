@@ -16,10 +16,15 @@
 
 // Make sure Gravity Forms is installed and enabled
 require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-if (!is_plugin_active('gravityforms/gravityforms.php')) {
-  wp_die("Error: ARIA requires the Gravity Forms plugin to be installed
-  and enabled. Please enable the Gravity Forms plugin and reactivate
-  ARIA.");
+$gf_active = is_plugin_active('gravityforms/gravityforms.php');
+$gf_paypal_active = is_plugin_active('gravityformspaypal/paypal.php');
+if (!$gf_active) {
+  deactivate_plugins('ARIA/aria.php'); 
+  wp_die("Error: ARIA requires the 'Gravity Forms' plugin to be installed and enabled. Please enable the 'Gravity Forms' plugin and reactivate ARIA.");
+}
+else if (!$gf_paypal_active) {
+  deactivate_plugins('ARIA/aria.php'); 
+  wp_die("Error: ARIA requires the 'Gravity Forms PayPal Standard Add-On' plugin to be installed and enabled. Please enable the 'Gravity Forms PayPal Standard Add-On' plugin and reactivate ARIA.");
 }
 
 require_once("aria-constants.php");
