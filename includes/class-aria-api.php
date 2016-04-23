@@ -342,7 +342,7 @@ class ARIA_API {
       'competition_judge_csv_upload' => 22,
       'competition_festival_chairman_email' => 23,
       'competition_command_performance_opt' => 24,
-      'competition_2' => 25,
+      'competition_2_address' => 25,
       'competition_2_address_first' => 25.1,
       'competition_2_address_second' => 25.2,
       'competition_2_city' => 25.3,

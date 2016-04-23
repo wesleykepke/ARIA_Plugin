@@ -44,6 +44,7 @@ class ARIA_Create_Competition {
 
     // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
+    
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
       ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS);
@@ -205,8 +206,9 @@ class ARIA_Create_Competition {
 
     // second location
     $location_field_2 = new GF_Field_Address();
+ 
     $location_field_2->label = "Sunday Competition Location (If different from above)";
-    $location_field_2->id = $field_mappings['competition_location_2'];
+    $location_field_2->id = $field_mappings['competition_2_address'];
     $location_field_2->isRequired = false;
     $location_field_2->description = 'If different location for second day.';
     $location_field_2->descriptionPlacement = 'above';
@@ -356,8 +358,8 @@ class ARIA_Create_Competition {
     $num_command_performance_field->label = "Number of Command Performance Performances";
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
-    */
-    /*
+    
+    
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
     $command_perf_date_field->label = "Command Performance Date";
@@ -372,6 +374,7 @@ class ARIA_Create_Competition {
     $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
     $command_performance_time_field->isRequired = false;
     */
+
     // command performance options
     $command_performance_option_field = new GF_Field_List();
     $command_performance_option_field->label = "Command Performance Time Options For Students";
@@ -439,6 +442,7 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end_date_field;
     $form->fields[] = $teacher_volunteer_times_field;
     $form->fields[] = $teacher_csv_file_upload_field;
+    
     /*
     $form->fields[] = $num_traditional_sections_field;
     $form->fields[] = $num_master_sections_field;
@@ -472,6 +476,7 @@ class ARIA_Create_Competition {
     else {
       return $new_form_id;
     }
+
   }
 
   /**
