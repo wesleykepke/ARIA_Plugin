@@ -445,7 +445,7 @@ class ARIA_Create_Competition {
     $form->fields[] = $has_master_class;
 
     $form->fields[] = $section_break;
-    $form->field[] = $paypal_email_field;
+    $form->fields[] = $paypal_email_field;
     $form->fields = array_merge($form->fields, $pricing);
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = 'Successful';
