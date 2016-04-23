@@ -97,7 +97,7 @@ class ARIA_Create_Competition {
     $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $field_mapping['competition_festival_chairman_email']);
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_festival_chairman_email']]);
     $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
@@ -125,32 +125,33 @@ class ARIA_Create_Competition {
     $teacher_master_form['aria_relations'] = $related_forms;
 
     // add time limits
-    $student_public_form['scheduleStart'] = $field_mapping['competition_student_reg_start'];
+    $student_public_form['scheduleForm'] = true;
+    $student_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_student_reg_start']];
     $student_public_form['scheduleStartHour'] = 12;
     $student_public_form['scheduleStartMinute'] = 0;
     $student_public_form['scheduleStartAmpm'] = 'am';
 
-    $student_public_form['scheduleEnd'] = $field_mapping['competition_student_reg_end'];
-    $student_public_form['scheduleEndHour'] = 12;
-    $student_public_form['scheduleEndMinute'] = 0;
-    $student_public_form['scheduleEndAmpm'] = 'am';
+    $student_public_form['scheduleEnd'] = $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['scheduleEndHour'] = 11;
+    $student_public_form['scheduleEndMinute'] = 59;
+    $student_public_form['scheduleEndAmpm'] = 'pm';
 
-    $student_public_form['scheduleMessage'] = 'The registration for the' . $competition_name . 'page is no longer available';
-    $student_public_form['schedulePendingMessage'] = 'The registration for the' . $competition_name . 'page is not yet available';
+    $student_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
 
-    $teacher_public_form['scheduleStart'] = $field_mapping['competition_teacher_reg_start'];
+    $teacher_public_form['scheduleForm'] = true;
+    $teacher_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_teacher_reg_start']];
     $teacher_public_form['scheduleStartHour'] = 12;
     $teacher_public_form['scheduleStartMinute'] = 0;
     $teacher_public_form['scheduleStartAmpm'] = 'am';
 
-    $teacher_public_form['scheduleEnd'] = $field_mapping['competition_teacher_reg_end'];
-    $teacher_public_form['scheduleEndHour'] = 12;
-    $teacher_public_form['scheduleEndMinute'] = 0;
-    $teacher_public_form['scheduleEndAmpm'] = 'am';
+    $teacher_public_form['scheduleEnd'] = $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['scheduleEndHour'] = 11;
+    $teacher_public_form['scheduleEndMinute'] = 59;
+    $teacher_public_form['scheduleEndAmpm'] = 'pm';
 
-    $teacher_public_form['scheduleMessage'] = 'The registration for the' . $competition_name . 'page is no longer available';
-    $teacher_public_form['schedulePendingMessage'] = 'The registration for the' . $competition_name . 'page is not yet available';
-
+    $teacher_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
 
     // update the related forms
     GFAPI::update_form($student_public_form);
