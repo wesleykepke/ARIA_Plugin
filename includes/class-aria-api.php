@@ -360,7 +360,9 @@ class ARIA_API {
       'level_8_price' => 34,
       'level_9_price' => 35,
       'level_10_price' => 36,
-      'level_11_price' => 37
+      'level_11_price' => 37,
+      'paypal_email' => 38
+
     );
   }
 

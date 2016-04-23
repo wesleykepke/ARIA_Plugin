@@ -124,7 +124,9 @@ jQuery(document).ready(function($) {
 		music = get_songs(st_level, levelField);
 	});
 
-	// Disable student fields
+	// Disable teacher student field
+	$(input_id_arr['teacher_name']+'_3').prop("disabled", true);
+	$(input_id_arr['teacher_name']+'_6').prop("disabled", true);
 	$(input_id_arr['student_level']).prop("disabled", true);
 	$(input_id_arr['student_name']+'_3').prop("disabled", true);
 	$(input_id_arr['student_name']+'_6').prop("disabled", true);
