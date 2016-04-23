@@ -75,16 +75,16 @@ class ARIA_Create_Competition {
 
     // check to see if the given competition name has already been used. if it has,
     // throw an error and make the festival chairman remove the old competition or rename
-    // the current competition. 
+    // the current competition.
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
     $all_forms = GFAPI::get_forms(true, false);
     foreach ($all_forms as $single_form) {
       if (strpos($single_form['title'], $competition_name) !== false) {
-        wp_die("<h1>ERROR: A competition with the name '$competition_name' already 
-            exists. Please remove all of the forms and pages for '$competition_name' 
-            and try creating the competition again or change the name of 
-            the competition you're trying to create.</h1>"); 
+        wp_die("<h1>ERROR: A competition with the name '$competition_name' already
+            exists. Please remove all of the forms and pages for '$competition_name'
+            and try creating the competition again or change the name of
+            the competition you're trying to create.</h1>");
       }
     }
 
@@ -123,6 +123,34 @@ class ARIA_Create_Competition {
     $teacher_public_form['aria_relations'] = $related_forms;
     $student_master_form['aria_relations'] = $related_forms;
     $teacher_master_form['aria_relations'] = $related_forms;
+
+    // add time limits
+    $student_public_form['scheduleStart'] = $field_mapping['competition_student_reg_start'];
+    $student_public_form['scheduleStartHour'] = 12;
+    $student_public_form['scheduleStartMinute'] = 0;
+    $student_public_form['scheduleStartAmpm'] = 'am';
+
+    $student_public_form['scheduleEnd'] = $field_mapping['competition_student_reg_end'];
+    $student_public_form['scheduleEndHour'] = 12;
+    $student_public_form['scheduleEndMinute'] = 0;
+    $student_public_form['scheduleEndAmpm'] = 'am';
+
+    $student_public_form['scheduleMessage'] = 'The registration for the' . $competition_name . 'page is no longer available';
+    $student_public_form['schedulePendingMessage'] = 'The registration for the' . $competition_name . 'page is not yet available';
+
+    $teacher_public_form['scheduleStart'] = $field_mapping['competition_teacher_reg_start'];
+    $teacher_public_form['scheduleStartHour'] = 12;
+    $teacher_public_form['scheduleStartMinute'] = 0;
+    $teacher_public_form['scheduleStartAmpm'] = 'am';
+    
+    $teacher_public_form['scheduleEnd'] = $field_mapping['competition_teacher_reg_end'];
+    $teacher_public_form['scheduleEndHour'] = 12;
+    $teacher_public_form['scheduleEndMinute'] = 0;
+    $teacher_public_form['scheduleEndAmpm'] = 'am';
+
+    $teacher_public_form['scheduleMessage'] = 'The registration for the' . $competition_name . 'page is no longer available';
+    $teacher_public_form['schedulePendingMessage'] = 'The registration for the' . $competition_name . 'page is not yet available';
+
 
     // update the related forms
     GFAPI::update_form($student_public_form);
@@ -1344,7 +1372,7 @@ class ARIA_Create_Competition {
             'paymentAmount' => 'form_total',
             'disableShipping' => 1,
             'disableNote' => 0,
-            'type' => 'product' 
+            'type' => 'product'
         );
     $feed_slug = 'gravityformspaypal';
     $new_feed_id = GFAPI::add_feed( $new_form_id, $feed_meta, $feed_slug);
