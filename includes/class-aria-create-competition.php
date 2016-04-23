@@ -47,7 +47,7 @@ class ARIA_Create_Competition {
     
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
-      ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS);
+      ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
     }
   }
 
@@ -76,16 +76,16 @@ class ARIA_Create_Competition {
 
     // check to see if the given competition name has already been used. if it has,
     // throw an error and make the festival chairman remove the old competition or rename
-    // the current competition. 
+    // the current competition.
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['competition_name']];
     $all_forms = GFAPI::get_forms(true, false);
     foreach ($all_forms as $single_form) {
       if (strpos($single_form['title'], $competition_name) !== false) {
-        wp_die("<h1>ERROR: A competition with the name '$competition_name' already 
-            exists. Please remove all of the forms and pages for '$competition_name' 
-            and try creating the competition again or change the name of 
-            the competition you're trying to create.</h1>"); 
+        wp_die("<h1>ERROR: A competition with the name '$competition_name' already
+            exists. Please remove all of the forms and pages for '$competition_name'
+            and try creating the competition again or change the name of
+            the competition you're trying to create.</h1>");
       }
     }
 
@@ -98,7 +98,7 @@ class ARIA_Create_Competition {
     $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_festival_chairman_email']]).'.';
     $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
@@ -124,6 +124,35 @@ class ARIA_Create_Competition {
     $teacher_public_form['aria_relations'] = $related_forms;
     $student_master_form['aria_relations'] = $related_forms;
     $teacher_master_form['aria_relations'] = $related_forms;
+
+    // add time limits
+    $student_public_form['scheduleForm'] = true;
+    $student_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_student_reg_start']];
+    $student_public_form['scheduleStartHour'] = 12;
+    $student_public_form['scheduleStartMinute'] = 0;
+    $student_public_form['scheduleStartAmpm'] = 'am';
+
+    $student_public_form['scheduleEnd'] = $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['scheduleEndHour'] = 11;
+    $student_public_form['scheduleEndMinute'] = 59;
+    $student_public_form['scheduleEndAmpm'] = 'pm';
+
+    $student_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
+
+    $teacher_public_form['scheduleForm'] = true;
+    $teacher_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_teacher_reg_start']];
+    $teacher_public_form['scheduleStartHour'] = 12;
+    $teacher_public_form['scheduleStartMinute'] = 0;
+    $teacher_public_form['scheduleStartAmpm'] = 'am';
+
+    $teacher_public_form['scheduleEnd'] = $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['scheduleEndHour'] = 11;
+    $teacher_public_form['scheduleEndMinute'] = 59;
+    $teacher_public_form['scheduleEndAmpm'] = 'pm';
+
+    $teacher_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
 
     // update the related forms
     GFAPI::update_form($student_public_form);
@@ -1018,7 +1047,7 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_create_student_form($competition_entry, $teacher_names, $command_options_array) {
+  private static function aria_create_student_form($competition_entry, $teacher_names, $command_options_array, $competition_festival_chairman_email) {
     $create_comp_field_mapping = ARIA_API::aria_competition_field_id_array();
     $field_id_array = ARIA_API::aria_student_field_id_array();
     $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
@@ -1078,7 +1107,7 @@ class ARIA_Create_Competition {
     $piano_teachers_field->description = "Please select your teachers name";
     $piano_teachers_field->description .= " from the drop-down below. ";
     $piano_teachers_field->description .= "If your teacher is not listed, please ";
-    $piano_teachers_field->description .= "contact the festival chairman.";
+    $piano_teachers_field->description .= 'contact the festival chairman at '.$competition_festival_chairman_email;
     $piano_teachers_field->descriptionPlacement = 'above';
 
     // add all of the piano teachers that are competing in this competition
@@ -1287,7 +1316,7 @@ class ARIA_Create_Competition {
             'paymentAmount' => 'form_total',
             'disableShipping' => 1,
             'disableNote' => 0,
-            'type' => 'product' 
+            'type' => 'product'
         );
     $feed_slug = 'gravityformspaypal';
     $new_feed_id = GFAPI::add_feed( $new_form_id, $feed_meta, $feed_slug);
