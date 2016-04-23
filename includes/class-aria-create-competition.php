@@ -97,7 +97,7 @@ class ARIA_Create_Competition {
     $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_festival_chairman_email']]);
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_festival_chairman_email']]).'.';
     $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
