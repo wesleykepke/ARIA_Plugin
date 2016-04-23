@@ -44,6 +44,7 @@ class ARIA_Create_Competition {
 
     // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
+    
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
       ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS);
@@ -205,8 +206,9 @@ class ARIA_Create_Competition {
 
     // second location
     $location_field_2 = new GF_Field_Address();
+ 
     $location_field_2->label = "Sunday Competition Location (If different from above)";
-    $location_field_2->id = $field_mappings['competition_location_2'];
+    $location_field_2->id = $field_mappings['competition_2_address'];
     $location_field_2->isRequired = false;
     $location_field_2->description = 'If different location for second day.';
     $location_field_2->descriptionPlacement = 'above';
@@ -268,63 +270,8 @@ class ARIA_Create_Competition {
     $teacher_csv_file_upload_field->description .= ' teachers to this competition later.';
     $teacher_csv_file_upload_field->descriptionPlacement = 'above';
 
-    // number of concurrent traditional sections
-    /*
-    $num_traditional_sections_field = new GF_Field_Number();
-    $num_traditional_sections_field->label = "Number of Concurrent Traditional Sections";
-    $num_traditional_sections_field->id = $field_mappings['competition_num_traditional'];
-    $num_traditional_sections_field->isRequired = false;
-    */
+/*
 
-    // number of concurrent master class sections
-    /*
-    $num_master_sections_field = new GF_Field_Number();
-    $num_master_sections_field->label = "Number of Concurrent Master Sections";
-    $num_master_sections_field->id = $field_mappings['competition_num_master'];
-    $num_master_sections_field->isRequired = false;
-    */
-
-    // length of sections
-    /*
-    $section_length_field = new GF_Field_Number();
-    $section_length_field->label = "Section Length (minutes)";
-    $section_length_field->id = $field_mappings['competition_section_length'];
-    $section_length_field->isRequired = false;
-    */
-
-    // time buffer required at beginnning (welcome, go over rules, introduce judges, etc.)
-    /*
-    $beginning_time_buffer_field = new GF_Field_Number();
-    $beginning_time_buffer_field->label = "Competition Introduction Length (minutes)";
-    $beginning_time_buffer_field->id = $field_mappings['competition_beg_time_buffer'];
-    $beginning_time_buffer_field->isRequired = false;
-    $beginning_time_buffer_field->description = 'Enter the amount of time required';
-    $beginning_time_buffer_field->description .= ' for the competition introduction';
-    $beginning_time_buffer_field->description .= ' (welcome, go over rules, ';
-    $beginning_time_buffer_field->description .= ' introduce judges, etc.).';
-    $beginning_time_buffer_field->descriptionPlacement = 'above';
-    */
-
-    // time buffer requred at end (award certificates)
-    /*
-    $ending_time_buffer_field = new GF_Field_Number();
-    $ending_time_buffer_field->label = "Competition Conclusion Length";
-    $ending_time_buffer_field->id = $field_mappings['competition_end_time_buffer'];
-    $ending_time_buffer_field->isRequired = false;
-    $ending_time_buffer_field->description = 'Enter the amount of time required';
-    $ending_time_buffer_field->description .= ' for the competition conclusion';
-    $ending_time_buffer_field->description .= ' (award certificates, closing, ';
-    $ending_time_buffer_field->description .= ' remarks, etc.).';
-    $ending_time_buffer_field->descriptionPlacement = 'above';
-    */
-
-    // amount of time per lunch break
-    /*
-    $lunch_break_field = new GF_Field_Number();
-    $lunch_break_field->label = "Amount of Time for Lunch (minutes)";
-    $lunch_break_field->id = $field_mappings['competition_lunch_break'];
-    $lunch_break_field->isRequired = false;
-    */
 
     // number of judges per sections
     $num_judges_per_section_field = new GF_Field_Number();
@@ -351,13 +298,13 @@ class ARIA_Create_Competition {
       // not sure how to handle this at the moment
 
     // number of command performances
-    /*
+  
     $num_command_performance_field = new GF_Field_Number();
     $num_command_performance_field->label = "Number of Command Performance Performances";
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
-    */
-    /*
+    
+    
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
     $command_perf_date_field->label = "Command Performance Date";
@@ -372,13 +319,14 @@ class ARIA_Create_Competition {
     $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
     $command_performance_time_field->isRequired = false;
     */
+
     // command performance options
     $command_performance_option_field = new GF_Field_List();
     $command_performance_option_field->label = "Command Performance Time Options For Students";
     $command_performance_option_field->id = $field_mappings['competition_command_performance_opt'];
     $command_performance_option_field->isRequired = false;
     $command_performance_option_field->description = "These are the options given to the students when registering. ";
-    $command_performance_option_field->description .= "e.g. Either 5:30 or 7pm, Thursday at 5:30pm, 7PM on Jan 1, etc.";
+    $command_performance_option_field->description .= "e.g. Thursday at 5:30pm, 7PM on Jan 1, etc.";
     $command_performance_option_field->descriptionPlacement = 'above';
 
     // theory score required for special recognition
@@ -439,17 +387,19 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end_date_field;
     $form->fields[] = $teacher_volunteer_times_field;
     $form->fields[] = $teacher_csv_file_upload_field;
+    
     /*
     $form->fields[] = $num_traditional_sections_field;
     $form->fields[] = $num_master_sections_field;
     $form->fields[] = $beginning_time_buffer_field;
     $form->fields[] = $ending_time_buffer_field;
     $form->fields[] = $lunch_break_field;
-    */
+
     $form->fields[] = $num_judges_per_section_field;
     $form->fields[] = $judge_csv_file_upload_field;
-    //$form->fields[] = $command_perf_date_field;
-    //$form->fields[] = $command_performance_time_field;
+    $form->fields[] = $command_perf_date_field;
+    $form->fields[] = $command_performance_time_field;
+    */
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
     $form->fields[] = $has_master_class;
@@ -472,6 +422,7 @@ class ARIA_Create_Competition {
     else {
       return $new_form_id;
     }
+
   }
 
   /**
@@ -1199,6 +1150,8 @@ class ARIA_Create_Competition {
     "that you prefer in the event that your child receives a superior rating.";
     $command_times->descriptionPlacement = 'above';
     $command_times->choices = array();
+    $command_times->choices[]
+          = array('text' => 'Any time', 'value' => 'Any time', 'isSelected' => false);
     if (is_array($command_options_array)) {
       $index = 1;
       foreach( $command_options_array as $command_time ) {
@@ -1241,14 +1194,6 @@ class ARIA_Create_Competition {
     $student_form->fields[] = $student_level_field;
     $ariaFieldIds['student_level'] = $student_level_field->id;
 
-        $pricing = array();
-    for( $i = 1; $i <= 11; $i++ )
-    {
-        $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
-
-        $pricing[$i] = $price;
-    }
-
     $product_field = new GF_Field_Product();
     $product_field->label = "Student Level Price";
     $product_field->id = $field_id_array['level_pricing'];
@@ -1262,22 +1207,20 @@ class ARIA_Create_Competition {
     $product_field->description .= " not submit this form until your child";
     $product_field->description .= " contacts his/her instructor and can verify";
     $product_field->description .= " this value.";
-
     $product_field->descriptionPlacement = 'above';
-    $product_field->choices = array(
 
-      array('text' => '1', 'value' => '1', 'isSelected' => false, 'price' => $pricing[1]),
-      array('text' => '2', 'value' => '2', 'isSelected' => false, 'price' => $pricing[2]),
-      array('text' => '3', 'value' => '3', 'isSelected' => false, 'price' => $pricing[3]),
-      array('text' => '4', 'value' => '4', 'isSelected' => false, 'price' => $pricing[4]),
-      array('text' => '5', 'value' => '5', 'isSelected' => false, 'price' => $pricing[5]),
-      array('text' => '6', 'value' => '6', 'isSelected' => false, 'price' => $pricing[6]),
-      array('text' => '7', 'value' => '7', 'isSelected' => false, 'price' => $pricing[7]),
-      array('text' => '8', 'value' => '8', 'isSelected' => false, 'price' => $pricing[8]),
-      array('text' => '9', 'value' => '9', 'isSelected' => false, 'price' => $pricing[9]),
-      array('text' => '10', 'value' => '10', 'isSelected' => false, 'price' => $pricing[10]),
-      array('text' => '11', 'value' => '11', 'isSelected' => false, 'price' => $pricing[11])
-    );
+    $product_field->choices = array();
+    for( $i = 1; $i <= 11; $i++ )
+    {
+        $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
+        if($price != 0)
+        {
+          $product_field->choices[] = array('text' => $i, 
+                                            'value' => $i, 
+                                            'isSelected' => false, 
+                                            'price' => $price);
+        }
+    }
     $student_form->fields[] = $product_field;
 
     // the compliance field for parents

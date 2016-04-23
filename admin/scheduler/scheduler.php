@@ -754,7 +754,7 @@ class Scheduling_Algorithm {
         }
 
         // get the info for the (second, optional) competition location
-        $second_loc_base = $comp_field_id_array['competition_2'];
+        $second_loc_base = $comp_field_id_array['competition_2_address'];
         $second_loc_start = $comp_field_id_array['competition_2_address_first'];
         $second_loc_end = $comp_field_id_array['competition_2_country'];
         $second_loc_itr = 1;
