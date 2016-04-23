@@ -316,10 +316,10 @@ class ARIA_Form_Hooks {
     }
 
     // If the teacher does exist, update the teacher master with the new information
-    $teacher_master_entry[strval($teacher_master_field_ids['first_name'])] =
+/*    $teacher_master_entry[strval($teacher_master_field_ids['first_name'])] =
       $entry[strval($teacher_public_field_ids['first_name'])];
     $teacher_master_entry[strval($teacher_master_field_ids['last_name'])] =
-      $entry[strval($teacher_public_field_ids['last_name'])];
+      $entry[strval($teacher_public_field_ids['last_name'])];*/
     $teacher_master_entry[strval($teacher_master_field_ids['email'])] =
       $entry[strval($teacher_public_field_ids['email'])];
     $teacher_master_entry[strval($teacher_master_field_ids['phone'])] =
