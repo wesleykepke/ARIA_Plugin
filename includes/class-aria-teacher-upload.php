@@ -155,7 +155,7 @@ class ARIA_Teacher {
   public static function aria_before_teacher_upload($form, $is_ajax) {
     // Only perform prepopulation if it's the teacher upload form
     if (!array_key_exists('isSingleTeacherUploadForm', $form)
-        || !$form['isSingleTeacherUploadconfirmationForm']) {
+        || !$form['isSingleTeacherUploadForm']) {
           return;
     }
 
