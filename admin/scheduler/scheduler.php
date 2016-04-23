@@ -41,7 +41,7 @@ class Scheduling_Algorithm {
     $num_time_blocks_sun = $entry[$scheduling_field_mapping['num_time_blocks_sun']];
     $sat_start_times = unserialize($entry[$scheduling_field_mapping['sat_start_times']]);
     $sun_start_times = unserialize($entry[$scheduling_field_mapping['sun_start_times']]);
-    $both_start_times = array_merge($sat_start_times, $sun_start_times);    
+    $both_start_times = array_merge($sat_start_times, $sun_start_times);
     $num_concurrent_sections_sat = $entry[$scheduling_field_mapping['num_concurrent_sections_sat']];
     $num_concurrent_sections_sun = $entry[$scheduling_field_mapping['num_concurrent_sections_sun']];
     $num_master_sections_sat = $entry[$scheduling_field_mapping['num_master_sections_sat']];
@@ -52,7 +52,7 @@ class Scheduling_Algorithm {
     $num_judges_per_section = $entry[$scheduling_field_mapping['num_judges_per_section']];
     $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
     $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
-    $both_days_rooms = array_merge($saturday_rooms, $sunday_rooms); 
+    $both_days_rooms = array_merge($saturday_rooms, $sunday_rooms);
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
@@ -178,7 +178,7 @@ class Scheduling_Algorithm {
         // create a student object based on previously obtained information
         $modified_student = new Student($first_name, $last_name, $type,
                                         $day_preference, $skill_level,
-                                        $total_play_time, $teacher_email, 
+                                        $total_play_time, $teacher_email,
                                         $parent_email, $teacher_name);
 
         // add student's first song
@@ -300,7 +300,7 @@ class Scheduling_Algorithm {
 
 
     // start times of timeblocks on Sunday
-    $sun_start_times = new GF_Field_List(); 
+    $sun_start_times = new GF_Field_List();
     $sun_start_times->label = "Sunday Timeblock Starting Times";
     $sun_start_times->id = $field_mapping['sun_start_times'];
     $sun_start_times->isRequired = true;
@@ -432,7 +432,7 @@ class Scheduling_Algorithm {
       wp_die($form_id->get_error_message());
     }
     else {
-      $scheduler_url = ARIA_API::aria_publish_form(SCHEDULER_FORM_NAME, $form_id, CHAIRMAN_PASS);
+      $scheduler_url = ARIA_API::aria_publish_form(SCHEDULER_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
     }
   }
 
@@ -546,17 +546,17 @@ class Scheduling_Algorithm {
                                                    $num_master_sections_sat,
                                                    $num_master_sections_sun,
                                                    $master_class_instructor_duration) {
-    // check to see if the festival chairman entered the same amount of timeblock 
+    // check to see if the festival chairman entered the same amount of timeblock
     // starting times as the number of timeblocks
     if ($num_time_blocks_sat != count($sat_start_times)) {
       wp_die("<h1>ERROR: The number of timeblock start times for Saturday must match the value
               entered for 'Number of Timeblocks on Saturday'. You requested " . $num_time_blocks_sat .
-              " timeblocks for Saturday but specified " . count($sat_start_times) . " start time(s). </h1>"); 
+              " timeblocks for Saturday but specified " . count($sat_start_times) . " start time(s). </h1>");
     }
     else if ($num_time_blocks_sun != count($sun_start_times)) {
       wp_die("<h1>ERROR: The number of timeblock start times for Sunday must match the value
               entered for 'Number of Timeblocks on Sunday'. You requested " . $num_time_blocks_sun .
-              " timeblocks for Sunday but specified " . count($sun_start_times) . " start time(s). </h1>"); 
+              " timeblocks for Sunday but specified " . count($sun_start_times) . " start time(s). </h1>");
     }
 
     // determine the total amount of play time for all students in the current competition
@@ -710,7 +710,7 @@ class Scheduling_Algorithm {
    *
    * @param		int	$teacher_master_form_id	The teacher master form of the given competition.
    * @param 	Scheduler	$scheduler	The scheduler object for a given competition.
-   * @param 	String 	$comp_name 	The name of the competition.  
+   * @param 	String 	$comp_name 	The name of the competition.
    *
    * @return	void
    *
@@ -729,12 +729,12 @@ class Scheduling_Algorithm {
 
     // get the associated entry in the create competition form
     $create_comp_form_id = ARIA_API::aria_get_create_competition_form_id();
-    $comp_field_id_array = ARIA_API::aria_competition_field_id_array(); 
+    $comp_field_id_array = ARIA_API::aria_competition_field_id_array();
     $comp_entries = GFAPI::get_entries($create_comp_form_id, $search_criteria,
                                        $sorting, $paging, $total_count);
 
     $first_location = null;
-    $second_location = null;  
+    $second_location = null;
     foreach ($comp_entries as $entry) {
       if ($entry[strval($comp_field_id_array['competition_name'])] == $comp_name) {
         // get the info for the (first) competition location
@@ -773,29 +773,29 @@ class Scheduling_Algorithm {
 
     // store all of the teacher emails in an associative array
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
-    $teacher_emails_to_students = array(); 
+    $teacher_emails_to_students = array();
     foreach ($entries as $teacher) {
       $teacher_email = $teacher[strval($field_mapping['email'])];
       if(!array_key_exists($teacher_email, $teacher_emails_to_students)) {
         $teacher_emails_to_students[] = $teacher_email;
-        $teacher_emails_to_students[$teacher_email] = array(); 
+        $teacher_emails_to_students[$teacher_email] = array();
       }
     }
-    
+
     // for each of the emails that were found, find all students that registered under that teacher
     foreach ($teacher_emails_to_students as $key => $value) {
       if (strpos($key, '@') !== false) {
         $sat_email_message = "Saturday Location: $first_location\n";
-        
+
         if (is_null($second_location)) {
           $sun_email_message = "Sunday Location: $first_location\n";
         }
         else {
           $sun_email_message = "Sunday Location: $second_location\n";
         }
-        
+
         $scheduler->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
-        foreach ($teacher_emails_to_students[$key] as $student) {       
+        foreach ($teacher_emails_to_students[$key] as $student) {
           // students who requested saturday
           if ($student->get_day_preference() === SAT) {
             $sat_email_message .= $student->get_info_for_email();
@@ -808,12 +808,12 @@ class Scheduling_Algorithm {
         }
 
         // once the message has been generated, send the email to the teachers
-        $email_message = $sat_email_message . "\n\n" . $sun_email_message; 
+        $email_message = $sat_email_message . "\n\n" . $sun_email_message;
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;
           if (!wp_mail($key, $subject, $email_message)) {
             wp_die("<h1>Emails to teachers regarding competition info failed to send.
-          	  Please try again.</h1>"); 
+          	  Please try again.</h1>");
           }
         }
       }
@@ -821,16 +821,16 @@ class Scheduling_Algorithm {
   }
 
   /**
-   * This function will write the contents of a given scheduler object to a file. 
+   * This function will write the contents of a given scheduler object to a file.
    *
    * Once the schedule has been generated, ARIA will automatically write that schedule
    * to a file so that it can be referenced later (for sending teachers/parents emails
-   * and for document generation). 
+   * and for document generation).
    *
-   * NOTE: This code will place the generated file inside of 
+   * NOTE: This code will place the generated file inside of
    *
-   * @param     String  $title  The title for a given competition. 
-   * @param     Scheduler   $scheduler  The scheduler object for a given competition. 
+   * @param     String  $title  The title for a given competition.
+   * @param     Scheduler   $scheduler  The scheduler object for a given competition.
    *
    * @return    void
    *
@@ -838,29 +838,29 @@ class Scheduling_Algorithm {
    * @author KREW
    */
   private static function save_scheduler_to_file($title, $scheduler) {
-    $title = str_replace(' ', '_', $title); 
+    $title = str_replace(' ', '_', $title);
     $file_path = ARIA_FILE_UPLOAD_LOC . $title . ".txt";
     $scheduler_data = serialize($scheduler);
     $fp = fopen($file_path, 'w+');
     if ($fp) {
       fwrite($fp, $scheduler_data);
       fclose($fp);
-    } 
+    }
   }
 
   /**
    * This function will find all of the teachers in a given competition that are
-   * registered to be judges. 
+   * registered to be judges.
    *
    * This function will iterate through all of the teachers in the teacher master
-   * form of a given competition and check to see which teachers are registered 
+   * form of a given competition and check to see which teachers are registered
    * to judge. The info (first and last names of judges) will be consolidated into
-   * an array and returned to the caller. 
+   * an array and returned to the caller.
    *
    * @param   Integer   $teacher_master_form_id   The form id of the teacher master form.
    *
-   * @return  An array of teacher names that are judges. 
-   * 
+   * @return  An array of teacher names that are judges.
+   *
    * @since 1.0.0
    * @author KREW
    */
@@ -875,7 +875,7 @@ class Scheduling_Algorithm {
 
     // check to see which of the teachers are scheduled to judge for the competition
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
-    $judges = array(); 
+    $judges = array();
     foreach ($entries as $entry) {
       if (array_key_exists($field_mapping[strval('is_judging')], $entry)) {
         if ($entry[strval($field_mapping['is_judging'])] == 'Yes') {
@@ -887,22 +887,22 @@ class Scheduling_Algorithm {
       }
     }
 
-    return $judges;  
+    return $judges;
   }
 
   /**
    * This function will find all of the teachers in a given competition that have
-   * volunteered to be proctors. 
+   * volunteered to be proctors.
    *
    * This function will iterate through all of the teachers in the teacher master
-   * form of a given competition and check to see which teachers have volunteered 
-   * to be a proctor. The info (first and last names of judges) will be consolidated 
-   * into an array and returned to the caller. 
+   * form of a given competition and check to see which teachers have volunteered
+   * to be a proctor. The info (first and last names of judges) will be consolidated
+   * into an array and returned to the caller.
    *
    * @param   Integer   $teacher_master_form_id   The form id of the teacher master form.
    *
-   * @return  An array of teacher names that are proctors. 
-   * 
+   * @return  An array of teacher names that are proctors.
+   *
    * @since 1.0.0
    * @author KREW
    */
@@ -918,9 +918,9 @@ class Scheduling_Algorithm {
     // check to see which of the teachers are scheduled to judge for the competition
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
     $proctors = array();
-    $volunteer_index = 1; 
+    $volunteer_index = 1;
     foreach ($entries as $entry) {
-      $volunteer_index = 1; 
+      $volunteer_index = 1;
       $search_key = $field_mapping[strval('volunteer_preference')] . '.' . strval($volunteer_index);
       while (array_key_exists($search_key, $entry)) {
         if ($entry[$search_key] == 'Proctor sessions') {
@@ -935,6 +935,6 @@ class Scheduling_Algorithm {
       }
     }
 
-    return $proctors;  
+    return $proctors;
   }
 }

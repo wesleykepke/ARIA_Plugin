@@ -137,7 +137,7 @@ class ARIA_Music {
     }
     else {
       // publish this form so it can be used on the front end
-      ARIA_API::aria_publish_form(MUSIC_UPLOAD_FORM_NAME, $new_form_id, CHAIRMAN_PASS);
+      ARIA_API::aria_publish_form(MUSIC_UPLOAD_FORM_NAME, $new_form_id, CHAIRMAN_PASS, true);
 
       // create the form that is used to store the NNMTA music
       self::aria_create_nnmta_music_form();
@@ -196,7 +196,7 @@ class ARIA_Music {
      $nnmta_music_form->fields[] = $song_catalog_field;
      $nnmta_music_form->confirmation['type'] = 'message';
      $nnmta_music_form->confirmation['message'] = 'Successful';
-     
+
      // add the new form to the festival chairman's dashboard
      $nnmta_music_form_array = $nnmta_music_form->createFormArray();
      $nnmta_music_form_array['isMusicUploadForm'] = false;

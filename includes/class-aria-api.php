@@ -19,11 +19,11 @@ require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 $gf_active = is_plugin_active('gravityforms/gravityforms.php');
 $gf_paypal_active = is_plugin_active('gravityformspaypal/paypal.php');
 if (!$gf_active) {
-  deactivate_plugins('ARIA/aria.php'); 
+  deactivate_plugins('ARIA/aria.php');
   wp_die("Error: ARIA requires the 'Gravity Forms' plugin to be installed and enabled. Please enable the 'Gravity Forms' plugin and reactivate ARIA.");
 }
 else if (!$gf_paypal_active) {
-  deactivate_plugins('ARIA/aria.php'); 
+  deactivate_plugins('ARIA/aria.php');
   wp_die("Error: ARIA requires the 'Gravity Forms PayPal Standard Add-On' plugin to be installed and enabled. Please enable the 'Gravity Forms PayPal Standard Add-On' plugin and reactivate ARIA.");
 }
 
@@ -147,11 +147,11 @@ class ARIA_API {
 
   /**
    * This function will find the ID of the form used to generate competition
-   * documents and send emails. 
+   * documents and send emails.
    *
    * This function will iterate through all of the active form objects and
    * return the ID of the form that is used to generate competition documents
-   * and send teachers emails. If no such form exists, the function will 
+   * and send teachers emails. If no such form exists, the function will
    * return -1.
    *
    * @since 1.0.0
@@ -171,19 +171,19 @@ class ARIA_API {
   }
 
   /**
-   * This function will find the names of all active competitions. 
+   * This function will find the names of all active competitions.
    *
    * This function will iterate through all of the active competitions
-   * and return an array of all of the competition names. 
+   * and return an array of all of the competition names.
    *
    * @since 1.0.0
    * @author KREW
    */
   public static function aria_get_all_active_comps() {
-    // get all of the forms 
+    // get all of the forms
     $all_active_forms = GFAPI::get_forms(true, false);
     $field_mapping = self::aria_competition_field_id_array();
-    $comp_names = array();  
+    $comp_names = array();
 
     // for each of the forms, get the prepended title name
     foreach ($all_active_forms as $form) {
@@ -206,9 +206,9 @@ class ARIA_API {
           $comp_names[] = $prepended_name;
         }
       }
-    } 
+    }
 
-    return $comp_names; 
+    return $comp_names;
   }
 
   /**
@@ -351,16 +351,16 @@ class ARIA_API {
       'competition_2_country' => 25.6,
       'competition_has_master_class' => 26,
       'level_1_price' => 27,
-      'level_2_price' => 28, 
-      'level_3_price' => 29, 
-      'level_4_price' => 30, 
-      'level_5_price' => 31, 
-      'level_6_price' => 32, 
-      'level_7_price' => 33, 
-      'level_8_price' => 34, 
-      'level_9_price' => 35, 
-      'level_10_price' => 36, 
-      'level_11_price' => 37 
+      'level_2_price' => 28,
+      'level_3_price' => 29,
+      'level_4_price' => 30,
+      'level_5_price' => 31,
+      'level_6_price' => 32,
+      'level_7_price' => 33,
+      'level_8_price' => 34,
+      'level_9_price' => 35,
+      'level_10_price' => 36,
+      'level_11_price' => 37
     );
   }
 
@@ -615,12 +615,12 @@ class ARIA_API {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_publish_form($form_title, $form_id, $password = null){
+  public static function aria_publish_form($form_title, $form_id, $password = null, $private = false){
     // Set Parameters for the form
     $postarr = array(
       'post_title' => $form_title,
       'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
-      'post_status' => 'publish',
+      'post_status' => $private ? 'private' : publish,
       'post_type' => 'page',
       'post_password' => $password
     );
