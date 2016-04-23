@@ -97,7 +97,7 @@ class ARIA_Create_Competition {
     $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]));
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $field_mapping['competition_festival_chairman_email']);
     $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
@@ -142,7 +142,7 @@ class ARIA_Create_Competition {
     $teacher_public_form['scheduleStartHour'] = 12;
     $teacher_public_form['scheduleStartMinute'] = 0;
     $teacher_public_form['scheduleStartAmpm'] = 'am';
-    
+
     $teacher_public_form['scheduleEnd'] = $field_mapping['competition_teacher_reg_end'];
     $teacher_public_form['scheduleEndHour'] = 12;
     $teacher_public_form['scheduleEndMinute'] = 0;
@@ -1095,7 +1095,7 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_create_student_form($competition_entry, $teacher_names, $command_options_array) {
+  private static function aria_create_student_form($competition_entry, $teacher_names, $command_options_array, $competition_festival_chairman_email) {
     $create_comp_field_mapping = ARIA_API::aria_competition_field_id_array();
     $field_id_array = ARIA_API::aria_student_field_id_array();
     $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
@@ -1155,7 +1155,7 @@ class ARIA_Create_Competition {
     $piano_teachers_field->description = "Please select your teachers name";
     $piano_teachers_field->description .= " from the drop-down below. ";
     $piano_teachers_field->description .= "If your teacher is not listed, please ";
-    $piano_teachers_field->description .= "contact the festival chairman.";
+    $piano_teachers_field->description .= 'contact the festival chairman at '.$competition_festival_chairman_email;
     $piano_teachers_field->descriptionPlacement = 'above';
 
     // add all of the piano teachers that are competing in this competition
