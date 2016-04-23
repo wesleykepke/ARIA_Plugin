@@ -118,9 +118,11 @@ class ARIA_Teacher {
     $teacher_phone_field->isRequired = true;
     $form->fields[] = $teacher_phone_field;
 
-    // set confirmation
+    // set confirmation message
+    $successful_submission_message = "Congratulations! You have just successfully
+    added a new teacher to the competition.";
     $form->confirmation['type'] = 'message';
-    $form->confirmation['message'] = 'Successful';
+    $form->confirmation['message'] = $successful_submission_message;
 
     // Identify form as a teacher uploading form
     $form_array = $form->createFormArray();
@@ -153,19 +155,17 @@ class ARIA_Teacher {
   public static function aria_before_teacher_upload($form, $is_ajax) {
     // Only perform prepopulation if it's the teacher upload form
     if (!array_key_exists('isSingleTeacherUploadForm', $form)
-        || !$form['isSingleTeacherUploadForm']) {
+        || !$form['isSingleTeacherUploadconfirmationForm']) {
           return;
     }
 
     // Get all of the active competitions
-    $competition_field_mapping = ARIA_API::aria_competition_field_id_array();
-    $competition_form_id = ARIA_API::aria_get_create_competition_form_id();
-    $entries = GFAPI::get_entries($competition_form_id);
+    $all_active_competitions = ARIA_API::aria_get_all_active_comps();
     $competition_names = array();
-    foreach ($entries as $entry) {
+    foreach ($all_active_competitions as $competition) {
       $single_competition = array(
-        'text' => $entry[$competition_field_mapping['competition_name']],
-        'value' => $entry[$competition_field_mapping['competition_name']],
+        'text' => $competition,
+        'value' => $competition,
         'isSelected' => false
       );
       $competition_names[] = $single_competition;
@@ -199,8 +199,6 @@ class ARIA_Teacher {
       return $confirmation;
     }
 
-    //wp_die(print_r($entry));
-
     // find the form id of the associated competition's teacher master form
     $field_mapping = self::aria_teacher_upload_field_id_array();
     $title = $entry[$field_mapping['active_competitions']];
@@ -223,11 +221,10 @@ class ARIA_Teacher {
     if (is_wp_error($result)) {
       wp_die($result->get_error_message());
     }
-    else {
-      $confirmation = "Congratulations! You have just added a new teacher to ";
-      $confirmation .= "''" . $title . "'.";
-      return $confirmation;
-    }
+
+    $confirmation = "Congratulations! You have just added $first_name $last_name to ";
+    $confirmation .= "$title.";
+    return $confirmation;
   }
 
   /**
