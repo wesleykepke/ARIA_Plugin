@@ -620,7 +620,7 @@ class ARIA_API {
     $postarr = array(
       'post_title' => $form_title,
       'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
-      'post_status' => $private ? 'private' : publish,
+      'post_status' => $private ? 'private' : 'publish',
       'post_type' => 'page',
       'post_password' => $password
     );
