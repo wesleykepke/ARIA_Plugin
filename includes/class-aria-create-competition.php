@@ -44,7 +44,7 @@ class ARIA_Create_Competition {
 
     // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
-    
+
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
       ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
@@ -235,7 +235,7 @@ class ARIA_Create_Competition {
 
     // second location
     $location_field_2 = new GF_Field_Address();
- 
+
     $location_field_2->label = "Sunday Competition Location (If different from above)";
     $location_field_2->id = $field_mappings['competition_2_address'];
     $location_field_2->isRequired = false;
@@ -327,13 +327,13 @@ class ARIA_Create_Competition {
       // not sure how to handle this at the moment
 
     // number of command performances
-  
+
     $num_command_performance_field = new GF_Field_Number();
     $num_command_performance_field->label = "Number of Command Performance Performances";
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
-    
-    
+
+
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
     $command_perf_date_field->label = "Command Performance Date";
@@ -427,7 +427,7 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end_date_field;
     $form->fields[] = $teacher_volunteer_times_field;
     $form->fields[] = $teacher_csv_file_upload_field;
-    
+
     /*
     $form->fields[] = $num_traditional_sections_field;
     $form->fields[] = $num_master_sections_field;
@@ -1119,7 +1119,7 @@ class ARIA_Create_Competition {
     $piano_teachers_field->description = "Please select your teachers name";
     $piano_teachers_field->description .= " from the drop-down below. ";
     $piano_teachers_field->description .= "If your teacher is not listed, please ";
-    $piano_teachers_field->description .= 'contact the festival chairman at '.$competition_festival_chairman_email;
+    $piano_teachers_field->description .= 'contact the festival chairman at '.$competition_festival_chairman_email.'.';
     $piano_teachers_field->descriptionPlacement = 'above';
 
     // add all of the piano teachers that are competing in this competition
@@ -1256,9 +1256,9 @@ class ARIA_Create_Competition {
         $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
         if($price != 0)
         {
-          $product_field->choices[] = array('text' => $i, 
-                                            'value' => $i, 
-                                            'isSelected' => false, 
+          $product_field->choices[] = array('text' => $i,
+                                            'value' => $i,
+                                            'isSelected' => false,
                                             'price' => $price);
         }
     }
