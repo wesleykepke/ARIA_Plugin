@@ -53,7 +53,9 @@ class ARIA_Form_Hooks {
     // sort by teacher last name
     $search = array();
     $sorting = array( 'key' => $teacher_master_field_mapping['last_name'], 'direction' => 'ASC', 'is_numeric' => false );
-    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting);
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting, $paging, $total_count);
     $formatted_teacher_names = array();
 
 
