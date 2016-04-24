@@ -281,7 +281,7 @@ class ARIA_Create_Competition {
     $notification_email_field->description = "Please enter the email address you would like";
     $notification_email_field->description .= " notificiation emails to be sent to.";
     $notification_email_field->descriptionPlacement = "above";
-    $notification_email_field->isRequired = false;
+    $notification_email_field->isRequired = true;
     $conditionalRules = array();
     $conditionalRules[] = array(
       'fieldId' => $field_mappings['notification_enabled'],
