@@ -358,8 +358,11 @@ class ARIA_Form_Hooks {
       }
     }
 
+
     $teacher_master_entry[strval($teacher_master_field_ids['is_judging'])] =
       $entry[strval($teacher_public_field_ids['is_judging'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['schedule_with_students'])] =
+      $entry[strval($teacher_public_field_ids['schedule_with_students'])];
 
     // Update the teacher master form with the new information
     $result = GFAPI::update_entry($teacher_master_entry);

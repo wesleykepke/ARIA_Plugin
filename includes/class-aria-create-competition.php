@@ -798,7 +798,7 @@ class ARIA_Create_Competition {
       'logicType' => 'all',
       'rules' => $conditionalRules
     );
-    $teacher_form->fields[] = $volunteer_time_field;
+    $teacher_form->fields[] = $volunteer_with_students;
     $ariaFieldIds['schedule_with_students'] = $volunteer_with_students->id;
 
 
