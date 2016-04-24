@@ -169,7 +169,7 @@ class ARIA_Create_Competition {
     );
     if($entry[strval($field_mapping['notification_enabled'])] == 'Yes')
     {
-      'notification_email' => $entry[strval($field_mapping['notification_email'])]
+      'notification_email' => $entry[strval($field_mapping['notification_email'])];
     }
 
     // obtain form objects for each of the four forms
