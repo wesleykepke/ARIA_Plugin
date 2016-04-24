@@ -202,7 +202,7 @@ class ARIA_Music {
 
      // add the new form to the festival chairman's dashboard
      $nnmta_music_form_array = $nnmta_music_form->createFormArray();
-     $nnmta_music_form_array['isMusicUploadForm'] = false;
+     $nnmta_music_form_array['isMusicDatabaseForm'] = true;
      $new_form_id = GFAPI::add_form($nnmta_music_form_array);
 
      // make sure the new form was added without error
