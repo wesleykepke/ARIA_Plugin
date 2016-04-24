@@ -255,7 +255,7 @@ class ARIA_API {
     // parse the url and obtain the file path for the csv file
     $file_url = $entry[strval($field_id)];
     $file_url_atomic_strings = explode('/', $file_url);
-    $full_file_path = '/var/www/html/wp-content/uploads/testpath/'; // this may need to change
+    $full_file_path = ABSPATH . 'wp-content/uploads/testpath/'; // this may need to change
     $full_file_path .= $file_url_atomic_strings[count($file_url_atomic_strings) - 1];
     return $full_file_path;
   }
@@ -292,7 +292,7 @@ class ARIA_API {
     // parse the url and obtain the file path for the csv file
     $file_url = $entry[strval($field_id)];
     $file_url_atomic_strings = explode('/', $file_url);
-    $full_file_path = '/var/www/html/wp-content/uploads/testpath/'; // this may need to change
+    $full_file_path = ABSPATH . 'wp-content/uploads/testpath/'; // this may need to change
     $full_file_path .= $file_url_atomic_strings[count($file_url_atomic_strings) - 1];
     return $full_file_path;
 	}
