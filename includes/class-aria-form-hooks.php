@@ -90,7 +90,7 @@ class ARIA_Form_Hooks {
 
     $form_id = $entry['form_id'];
     $form = GFAPI::get_form($form_id);
-    
+
     // Only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
@@ -135,8 +135,6 @@ class ARIA_Form_Hooks {
         $teacher_hash);
 
     if ($teacher_entry) {
-      //wp_die('should be here');
-
       // Determine whether a student has been added or not (if it's an array)
       $students = $teacher_entry[strval($teacher_master_fields["students"])];
       $students = unserialize($students);
@@ -205,30 +203,39 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["hash"]) => $student_hash
     );
 
+    // add the newly created student to the competition master form
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);
     if (is_wp_error($student_result)) {
       wp_die(__LINE__.$student_result->get_error_message());
     }
 
+    // determine how many students have registered so far
+    $search_criteria = array();
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria,
+                                  $sorting, $paging, $total_count);
+
+    // consolidate information for emails
     $email_info = array();
     $email_info['teacher_hash'] = $teacher_hash;
     $email_info['teacher_name'] = $teacher_name;
     $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
-    $email_info['teacher_url'] = $related_forms['teacher_public_form_url'];
+    $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
+    $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
+    $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
     $email_info['student_hash'] = $student_hash;
     $email_info['student_name'] = $student_name;
-
+    $email_info['parent_name'] = $entry[strval($student_fields["parent_first_name"])] .
+    " " . $entry[strval($student_fields["parent_last_name"])];
     $comp_name = strpos($form['title'], 'Student Registration');
     $comp_name = substr($form['title'], 0, $comp_name - 1);
     $email_info['competition_name'] = $comp_name;
+    $email_info['num_participants'] = count($entries);
 
-/*
-    ARIA_Registration_Handler::aria_send_registration_emails($teacher_hash,
-      $related_forms['teacher_public_form_url'],
-      $teacher_entry[strval($teacher_master_fields["email"])], $student_hash);*/
-
+    // send emails to various parties (parents, teachers, festival chairman)
     ARIA_Registration_Handler::aria_send_registration_emails($email_info);
-
   }
 
   public static function aria_before_teacher_render($form, $is_ajax) {
@@ -389,7 +396,7 @@ class ARIA_Form_Hooks {
     }
     else
     {
-      // if student level == 11 
+      // if student level == 11
       $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
         $entry[strval($teacher_public_field_ids['alt_song_2_composer'])];
       $student_master_entry[strval($student_master_field_ids['song_2_selection'])] =
