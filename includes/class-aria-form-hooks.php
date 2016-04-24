@@ -60,7 +60,11 @@ class ARIA_Form_Hooks {
     foreach ($teacher_entries as $entry) {
       $single_teacher = array(
         'text' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
-        'value' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " .  $entry[strval($teacher_master_field_mapping['last_name'])],
+        'value' => serialize(array(
+          $entry[strval($teacher_master_field_mapping['first_name'])],
+          $entry[strval($teacher_master_field_mapping['last_name'])],
+          $entry[strval($teacher_master_field_mapping['teacher_hash'])]
+        )),
         'isSelected' => false
       );
       $formatted_teacher_names[] = $single_teacher;
@@ -107,16 +111,20 @@ class ARIA_Form_Hooks {
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_API::aria_master_student_field_id_array();
 
+    $teacher_name_and_hash = unserialize($entry[(string)$student_fields["teacher_name"]]);
+
+    $teacher_hash = '';
+
     // Hash for teacher (just has the teacher name)
     if (!empty($entry[$student_fields['not_listed_teacher_name']])) {
       // student entered a name that didn't appear in the drop-down menu
       $teacher_name = $entry[$student_fields['not_listed_teacher_name']];
-
+      $teacher_hash = hash("md5", $teacher_name);
     }
     else {
-      $teacher_name = $entry[(string)$student_fields["teacher_name"]];
+      $teacher_name = $teacher_name_and_hash[0] . ' ' . $teacher_name_and_hash[1];
+      $teacher_hash = $teacher_name_and_hash[2];
     }
-    $teacher_hash = hash("md5", $teacher_name);
 
     // Hash for student (student name and entry date)
     $student_name =

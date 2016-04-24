@@ -95,10 +95,10 @@ class ARIA_Create_Competition {
 
     // upload content of the teacher csv file into the teacher master form
     $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
-    $teacher_names = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
+    $teacher_names_and_hashes = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path, $teacher_master_form_id);
 
     // create the student and teacher forms
-    $student_form_id = self::aria_create_student_form($entry, $teacher_names, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_festival_chairman_email']], $entry[(string) $field_mapping['paypal_email']]);
+    $student_form_id = self::aria_create_student_form($entry, $teacher_names_and_hashes, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_festival_chairman_email']], $entry[(string) $field_mapping['paypal_email']]);
     $teacher_form_id = self::aria_create_teacher_form($entry, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]), $entry[(string) $field_mapping['competition_has_master_class']]);
     $student_form_url = ARIA_API::aria_publish_form("{$competition_name} Student Registration", $student_form_id);
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration", $teacher_form_id);
@@ -1050,12 +1050,12 @@ class ARIA_Create_Competition {
    * music competition.
    *
    * @param $competition_entry Entry Object The entry of the newly created music competition
-   * @param $teacher_names Array The array of teacher names in this competition
+   * @param $teacher_names_and_hashes Array The array of teacher names in this competition
    *
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_create_student_form($competition_entry, $teacher_names, $command_options_array, $competition_festival_chairman_email, $paypal_email) {
+  private static function aria_create_student_form($competition_entry, $teacher_names_and_hashes, $command_options_array, $competition_festival_chairman_email, $paypal_email) {
     $create_comp_field_mapping = ARIA_API::aria_competition_field_id_array();
     $field_id_array = ARIA_API::aria_student_field_id_array();
     $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
@@ -1122,14 +1122,14 @@ class ARIA_Create_Competition {
     $formatted_teacher_names = array();
 
     // alphabetize teachers
-    usort($teacher_names, function($a, $b) {
+    usort($teacher_names_and_hashes, function($a, $b) {
         return strcmp($a[1], $b[1]);
     });
 
-    foreach ($teacher_names as $key => $value) {
+    foreach ($teacher_names_and_hashes as $key => $value) {
       $single_teacher = array(
         'text' => $value[0] . ' ' . $value[1],
-        'value' => $value[0] . ' ' . $value[1],
+        'value' => serialize($value),
         'isSelected' => false
       );
       $formatted_teacher_names[] = $single_teacher;
