@@ -168,7 +168,7 @@ class TimeBlock {
   public function get_schedule_string() {
     $schedule = '';
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $schedule .= '<tr><th>';
+      $schedule .= '<tr><th contenteditable="true">';
       $schedule .= 'Section #';
       $schedule .= strval($i + 1) . ' -- ';
       $schedule .= $this->rooms[$i];

@@ -110,7 +110,8 @@ class ARIA_Create_Competition {
       'student_master_form_id' => $student_master_form_id,
       'teacher_master_form_id' => $teacher_master_form_id,
       'student_public_form_url' => $student_form_url,
-      'teacher_public_form_url' => $teacher_form_url
+      'teacher_public_form_url' => $teacher_form_url,
+      'festival_chairman_email' => $entry[strval($field_mapping['competition_festival_chairman_email'])]
     );
 
     // obtain form objects for each of the four forms
@@ -296,7 +297,10 @@ class ARIA_Create_Competition {
     $teacher_csv_file_upload_field->description .= ' this music competition.';
     $teacher_csv_file_upload_field->description .= ' Don\'t worry, you will have';
     $teacher_csv_file_upload_field->description .= ' the opportunity to add more';
-    $teacher_csv_file_upload_field->description .= ' teachers to this competition later.';
+    $teacher_csv_file_upload_field->description .= ' teachers to this competition later.</br>';
+    $teacher_csv_file_upload_field->description .= ' <b>The CSV file should be in the';
+    $teacher_csv_file_upload_field->description .= ' following format:</br>First Name, ';
+    $teacher_csv_file_upload_field->description .= ' Last Name, Phone, Email</b>';
     $teacher_csv_file_upload_field->descriptionPlacement = 'above';
 
 /*

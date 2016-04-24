@@ -52,7 +52,6 @@ class Scheduling_Algorithm {
     $num_judges_per_section = $entry[$scheduling_field_mapping['num_judges_per_section']];
     $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
     $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
-    $both_days_rooms = array_merge($saturday_rooms, $sunday_rooms);
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
@@ -211,6 +210,9 @@ class Scheduling_Algorithm {
 
     // automatically write the scheduler object to a file
     self::save_scheduler_to_file($title, $scheduler);
+
+    // test code
+    self::parse_scheduler_html($scheduler->get_schedule_string());
 
     // print the schedule to the festival chairman
     $confirmation = "<h4>Don't worry about saving your schedule. ARIA will automatically save the most"
@@ -936,5 +938,22 @@ class Scheduling_Algorithm {
     }
 
     return $proctors;
+  }
+
+  /**
+   * This function will parse the HTML produced by the scheduler.
+   *
+   * This function will take as input the HTML that is created by the scheduler
+   * and obtain information from it so that the associated scheduler object can
+   * be updated. 
+   *
+   * @param
+   * @param
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  private static function parse_scheduler_html($html) {
+    wp_die(print_r($html));
   }
 }

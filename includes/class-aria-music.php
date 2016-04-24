@@ -117,6 +117,9 @@ class ARIA_Music {
     $csv_file_upload = new GF_Field_FileUpload();
     $csv_file_upload->label = CSV_UPLOAD_FIELD_NAME;
     $csv_file_upload->id = 1;
+    $csv_file_upload->description = "<b>The CSV file should be in the following format:</br>";
+    $csv_file_upload->description .= "Song Level (1-11), Song Period (1-4), Song Name, Song Catalog Number</b>";
+    $csv_file_upload->descriptionPlacement = "above";
     $csv_file_upload->isRequired = true;
     $form->fields[] = $csv_file_upload;
 
