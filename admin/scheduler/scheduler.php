@@ -829,7 +829,8 @@ class Scheduling_Algorithm {
    * to a file so that it can be referenced later (for sending teachers/parents emails
    * and for document generation).
    *
-   * NOTE: This code will place the generated file inside of
+   * NOTE: This code will place the generated file inside of the ARIA_FILE_UPLOAD_LOC
+   * location. 
    *
    * @param     String  $title  The title for a given competition.
    * @param     Scheduler   $scheduler  The scheduler object for a given competition.
@@ -839,7 +840,7 @@ class Scheduling_Algorithm {
    * @since 1.0.0
    * @author KREW
    */
-  private static function save_scheduler_to_file($title, $scheduler) {
+  public static function save_scheduler_to_file($title, $scheduler) {
     $title = str_replace(' ', '_', $title);
     $file_path = ARIA_FILE_UPLOAD_LOC . $title . ".txt";
     $scheduler_data = serialize($scheduler);
