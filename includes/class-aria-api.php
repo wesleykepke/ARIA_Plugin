@@ -197,6 +197,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms(true, false);
     $field_mapping = self::aria_competition_field_id_array();
     $comp_names = array();
+    $competitions = array();
 
     // for each of the forms, get the prepended title name
     foreach ($all_active_forms as $form) {
@@ -205,7 +206,7 @@ class ARIA_API {
       $prepended_name = null;
 
       // only consider forms that are for registration
-      if (strpos($name, 'Student Registration') !== false) {
+      if (array_key_exists('isStudentPublicForm', $form)) {
         // iterate through all of the forms and obtain the title
         for ($i = 0; $i < (count($split_name) - 2); $i++) {
           $prepended_name .= $split_name[$i];
@@ -217,11 +218,15 @@ class ARIA_API {
         // add the name if we have not already processed it
         if (!in_array($prepended_name, $comp_names)) {
           $comp_names[] = $prepended_name;
+          $competitions[] = array(
+              'name' => $prepended_name,
+              'aria_relations' => $form['aria_relations']
+            );
         }
       }
     }
 
-    return $comp_names;
+    return $competitions;
   }
 
   /**
