@@ -388,8 +388,11 @@ class ARIA_Create_Competition {
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
 
+    // Pricing section break
     $section_break = new GF_Field_Section();
     $section_break->label = "Pricing";
+    $section_break->description = "Only enter prices for levels eligible to";
+    $section_break->description .= " participate in this competition.";
 
     // PayPal Email
     $paypal_email_field = new GF_Field_Email();
