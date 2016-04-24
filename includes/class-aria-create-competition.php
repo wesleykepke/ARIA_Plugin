@@ -777,6 +777,27 @@ class ARIA_Create_Competition {
       $ariaFieldIds["volunteer_time_option_{$i}"] = "{$volunteer_time_field->id}.{$i}";
     }
 
+    // teacher is judging
+    $volunteer_with_students = new GF_Field_Radio();
+    $volunteer_with_students->label = "Volunteer in student's section";
+    $volunteer_with_students->description = "Do you wish to be scheduled as a proctor or door";
+    $volunteer_with_students->description .= " monitor for a session in which one of your";
+    $volunteer_with_students->description .= " own students is playing?";
+    $volunteer_with_students->descriptionPlacement = 'above';
+    $volunteer_with_students->id = $field_id_arr['schedule_with_students'];
+    $volunteer_with_students->isRequired = false;
+    $volunteer_with_students->choices = array(
+      array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+      array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+    $volunteer_with_students->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $conditionalRules
+    );
+    $teacher_form->fields[] = $volunteer_time_field;
+    $ariaFieldIds['schedule_with_students'] = $volunteer_with_students->id;
+
 
     // student name
     $student_name_field = new GF_Field_Name();
@@ -941,67 +962,6 @@ class ARIA_Create_Competition {
     $teacher_form->fields[] = $alt_song_two_selection_field;
     $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection_field->id;
 
-/*
-    // Key (e.g. D Major, F Minor)
-    $alt_song_two_key_field = new GF_Field_Text();
-    $alt_song_two_key_field->label = "Song 2 Key";
-    $alt_song_two_key_field->id = $field_id_arr['alt_song_2_key'];
-    $alt_song_two_key_field->isRequired = false;
-    $alt_song_two_key_field->conditionalLogic = array(
-      'actionType' => 'show',
-      'logicType' => 'all',
-      'rules' => $is_11_rule
-    );
-    $alt_song_two_key_field->description = "e.g. D Major, F Minor";
-    $alt_song_two_key_field->descriptionPlacement = 'above';
-    $teacher_form->fields[] = $alt_song_two_key_field;
-    $ariaFieldIds['alt_song_two_key'] = $alt_song_two_key_field->id;
-
-    // Movement number, if applicable (e.g. 1st, 2nd, 3rd, 4th)
-    $alt_song_two_movement_num_field = new GF_Field_Text();
-    $alt_song_two_movement_num_field->label = "Song 2 Movement Number, if applicable";
-    $alt_song_two_movement_num_field->id = $field_id_arr['alt_song_2_movement_number'];
-    $alt_song_two_movement_num_field->isRequired = false;
-    $alt_song_two_movement_num_field->conditionalLogic = array(
-      'actionType' => 'show',
-      'logicType' => 'all',
-      'rules' => $is_11_rule
-    );
-    $alt_song_two_movement_num_field->description = "e.g. 1st, 2nd, 3rd, etc.";
-    $alt_song_two_movement_num_field->descriptionPlacement = 'above';
-    $teacher_form->fields[] = $alt_song_two_movement_num_field;
-    $ariaFieldIds['alt_song_two_movement_num'] = $alt_song_two_movement_num_field->id;
-
-    // Movement description, if applicable (e.g. Adante, Presto, Rondo Allegro Comodo)
-    $alt_song_two_movement_desc_field = new GF_Field_Text();
-    $alt_song_two_movement_desc_field->label = "Song 2 Movement Description, if applicable";
-    $alt_song_two_movement_desc_field->id = $field_id_arr['alt_song_2_movement_description'];
-    $alt_song_two_movement_desc_field->isRequired = false;
-    $alt_song_two_movement_desc_field->conditionalLogic = array(
-      'actionType' => 'show',
-      'logicType' => 'all',
-      'rules' => $is_11_rule
-    );
-    $alt_song_two_movement_desc_field->description = "e.g. Andante, Presto, Rondo Allegro Comodo, etc.";
-    $alt_song_two_movement_desc_field->descriptionPlacement = 'above';
-    $teacher_form->fields[] = $alt_song_two_movement_desc_field;
-    $ariaFieldIds['alt_song_two_movement_desc'] = $alt_song_two_movement_desc_field->id;
-
-    // Identifying number, if applicable (e.g. BWV, Opus, HOB, etc)
-    $alt_song_two_identifying_num_field = new GF_Field_Text();
-    $alt_song_two_identifying_num_field->label = "Song 2 Identifying Number, if applicable";
-    $alt_song_two_identifying_num_field->id = $field_id_arr['alt_song_2_identifying_number'];
-    $alt_song_two_identifying_num_field->isRequired = false;
-    $alt_song_two_identifying_num_field->conditionalLogic = array(
-      'actionType' => 'show',
-      'logicType' => 'all',
-      'rules' => $is_11_rule
-    );
-    $alt_song_two_identifying_num_field->description = "e.g. BWV, Opus, HOB, etc.";
-    $alt_song_two_identifying_num_field->descriptionPlacement = 'above';
-    $teacher_form->fields[] = $alt_song_two_identifying_num_field;
-    $ariaFieldIds['alt_song_two_identifying_num'] = $alt_song_two_identifying_num_field->id;
-*/
     // student's theory score
     $student_theory_score = new GF_Field_Number();
     $student_theory_score->label = "Theory Score (percentage)";
