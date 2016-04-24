@@ -374,7 +374,9 @@ class ARIA_API {
       'level_9_price' => 35,
       'level_10_price' => 36,
       'level_11_price' => 37,
-      'paypal_email' => 38
+      'paypal_email' => 38,
+      'notification_enabled' => 39,
+      'notification_email' => 40
 
     );
   }

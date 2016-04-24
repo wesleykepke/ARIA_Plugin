@@ -192,7 +192,7 @@ class ARIA_Create_Competition {
     $form->description .= ' fields in the form below in order to create a new';
     $form->description .= '  NNMTA music competition.';
 
-    // festival chairmans Email
+    // Festival Chairman Email
     $fc_email_field = new GF_Field_Email();
     $fc_email_field->label = "Festival Chairman's Email";
     $fc_email_field->id = $field_mappings['competition_festival_chairman_email'];
@@ -202,10 +202,38 @@ class ARIA_Create_Competition {
     $fc_email_field->descriptionPlacement = "above";
     $fc_email_field->isRequired = true;
 
+    // Notifications enabled
+    $notification_field = new GF_Field_Radio();
+    $notification_field->label = "Would you like to be notified when students register?";
+    $notification_field->id = $field_mappings['notification_enabled'];
+    $notification_field->isRequired = true;
+    $notification_field->choices = array(
+        array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+        array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+
+    // Notifications Email
+    $notification_email_field = new GF_Field_Email();
+    $notification_email_field->label = "Notification Email";
+    $notification_email_field->id = $field_mappings['notification_email'];
+    $notification_email_field->description = "Please enter the email address you would like";
+    $notification_email_field->description .= " notificiation emails to be sent to.";
+    $notification_email_field->descriptionPlacement = "above";
+    $notification_email_field->isRequired = false;
+    $conditionalRules = array();
+    $conditionalRules[] = array(
+      'fieldId' => $field_mappings['notification_enabled'],
+      'operator' => 'is',
+      'value' => 'Yes'
+    );
+    $notification_email_field->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $conditionalRules
+    );
+
     // name
     $name_field = new GF_Field_Text();
-    // !!! maybe this should be admin label and label should be like
-    // $name_field->label = 'competition_name';
     $name_field->label = "Competition Name";
     $name_field->id = $field_mappings['competition_name'];
     $name_field->isRequired = false;
@@ -434,16 +462,17 @@ class ARIA_Create_Competition {
     $form->fields[] = $beginning_time_buffer_field;
     $form->fields[] = $ending_time_buffer_field;
     $form->fields[] = $lunch_break_field;
-
     $form->fields[] = $num_judges_per_section_field;
     $form->fields[] = $judge_csv_file_upload_field;
     $form->fields[] = $command_perf_date_field;
     $form->fields[] = $command_performance_time_field;
     */
+
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
     $form->fields[] = $has_master_class;
-
+    $form->fields[] = $notification_field;
+    $form->fields[] = $notification_email_field;
     $form->fields[] = $section_break;
     $form->fields[] = $paypal_email_field;
     $form->fields = array_merge($form->fields, $pricing);
