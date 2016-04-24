@@ -416,8 +416,11 @@ class ARIA_Create_Competition {
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
 
+    // Pricing section break
     $section_break = new GF_Field_Section();
     $section_break->label = "Pricing";
+    $section_break->description = "Only enter prices for levels eligible to";
+    $section_break->description .= " participate in this competition.";
 
     // PayPal Email
     $paypal_email_field = new GF_Field_Email();
@@ -1232,10 +1235,13 @@ class ARIA_Create_Competition {
     $product_field->label = "Student Level Price";
     $product_field->id = $field_id_array['level_pricing'];
     $product_field->isRequired = false;
-    $product_field->basePrice = "$1.00";
-    $product_field->disableQuantity = true;
+    $product_field->size = "small";
+    $product_field->inputs = null;
     $product_field->inputType = "select";
     $product_field->enablePrice = true;
+    $product_field->basePrice = "$1.00";
+    $product_field->disableQuantity = true;
+    $product_field->displayAllCategories = false;
     $product_field->description = "Please enter your student's festival level.";
     $product_field->description .= " If you do not know this value, please do";
     $product_field->description .= " not submit this form until your child";
@@ -1249,8 +1255,8 @@ class ARIA_Create_Competition {
         $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
         if($price != 0)
         {
-          $product_field->choices[] = array('text' => $i,
-                                            'value' => $i,
+          $product_field->choices[] = array('text' => (string)$i,
+                                            'value' => (string)$i,
                                             'isSelected' => false,
                                             'price' => $price);
         }
