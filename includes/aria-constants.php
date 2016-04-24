@@ -30,6 +30,7 @@ define("DOC_GEN_FORM_NAME", "ARIA: Generate Competition Documents");
 define("CSV_UPLOAD_FIELD_NAME", "CSV Music File");
 define("CSV_TEACHER_FIELD_NAME", "CSV Teacher File");
 define("CSV_JUDGE_FIELD_NAME", "CSV Judge File");
+define("RESEND_TEACHER_EMAIL_FORM_NAME", "ARIA: Resend a Teacher Registration Link");
 define("STUDENT_REG", "Student Registration");
 define("STUDENT_MAS", "Student Master");
 define("TEACHER_REG", "Teacher Registration");

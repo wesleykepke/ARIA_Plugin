@@ -54,6 +54,19 @@ class ARIA_API {
     return $form_id;
   }
 
+  public static function aria_get_resend_email_form_id() {
+    $form_id = -1;
+    $all_active_forms = GFAPI::get_forms();
+
+    foreach ($all_active_forms as $form) {
+      if (array_key_exists ( 'isResendEmailForm' , $form)) {
+        $form_id = $form['id'];
+      }
+    }
+
+    return $form_id;
+  }
+
   /**
    * This function will find the ID of the form used to upload music teachers.
    *
