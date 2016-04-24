@@ -255,6 +255,7 @@ class ARIA_Registration_Handler {
 			'volunteer_time' => $volunteer_time_array,
 			'students' => rgar( $entries[0], (string) $field_ids['students'] ),
 			'is_judging' => rgar( $entries[0], (string) $field_ids['is_judging'] ),
+      'schedule_with_students' => rgar( $entries[0], (string) $field_ids['schedule_with_students'] ),
 			'teacher_hash' => rgar( $entries[0], (string) $field_ids['teacher_hash'])
 
 		);
@@ -392,6 +393,21 @@ class ARIA_Registration_Handler {
       }
     }
     $form['fields'][$preference_field]['choices'] = $choices;
+
+    // Prepopulate volunteer with students
+    $search_field = $teacher_public_fields['schedule_with_students'];
+    $schedule_with_field = self::aria_find_field_by_id($form['fields'], $search_field);
+    if($schedule_with_field != null && ($teacher_prepop_vals['schedule_with_students'] != "") ){
+      // loop through each choice
+          $choices = $form['fields'][$schedule_with_field]['choices'];
+      for( $i = 0; $i < count($form['fields'][$schedule_with_field]['choices']); $i++){
+        if($form['fields'][$schedule_with_field]['choices'][$i]['text'] == $teacher_prepop_vals['schedule_with_students']){
+          // set is selected
+          $choices[$i]['isSelected'] = true;
+        }
+      }
+          $form['fields'][$schedule_with_field]['choices'] = $choices;
+    }
 
 	  // Prepopulate student name
 	  $search_field = $teacher_public_fields['student_name'];

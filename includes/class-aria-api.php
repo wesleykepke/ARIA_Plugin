@@ -423,10 +423,11 @@ class ARIA_API {
       'alternate_theory' => 14,
       'competition_format' => 15,
       'timing_of_pieces' => 16,
-      'is_judging' => 17, // !!!DO WE WANT TO CHANGE THIS NUMBER
+      'is_judging' => 17, 
       'student_level' => 18,
       'alt_song_2_composer' => 19,
-      'alt_song_2_selection' => 20
+      'alt_song_2_selection' => 20,
+      'schedule_with_students' => 21
     );
     /*
     ,
@@ -568,7 +569,8 @@ class ARIA_API {
       'student_hash' => 6,
       'volunteer_preference' => 7,
       'volunteer_time' => 8,
-      'is_judging' => 9
+      'is_judging' => 9,
+      'schedule_with_students' => 10
     );
   }
 

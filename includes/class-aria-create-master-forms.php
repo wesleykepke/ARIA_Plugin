@@ -385,6 +385,26 @@ class ARIA_Create_Master_Forms {
     );
     $teacher_master_form->fields[] = $volunteer_time_field;
 
+        // teacher is judging
+    $volunteer_with_students = new GF_Field_Radio();
+    $volunteer_with_students->label = "Volunteer in student's section";
+    $volunteer_with_students->description = "Do you wish to be scheduled as a proctor or door";
+    $volunteer_with_students->description .= " monitor for a session in which one of your";
+    $volunteer_with_students->description .= " own students is playing?";
+    $volunteer_with_students->descriptionPlacement = 'above';
+    $volunteer_with_students->id = $field_id_array['schedule_with_students'];
+    $volunteer_with_students->isRequired = false;
+    $volunteer_with_students->choices = array(
+      array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+      array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+    $volunteer_with_students->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $conditionalRules
+    );
+    $teacher_master_form->fields[] = $volunteer_time_field;
+
     $teacher_master_form_array = $teacher_master_form->createFormArray();
     $teacher_master_form_array['isTeacherMasterForm'] = true;
 
