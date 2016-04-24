@@ -34,42 +34,74 @@ class ARIA_Registration_Handler {
   public static function aria_test_payment($entry, $action){
     wp_die($action['type']);
   }
+
 	/**
-	 * Function for sending emails.
+	 * Function for sending emails after student registration.
+   *
+   * This function is responsible for sending teachers, parents, and the
+   * festival chairman emails with specific information regarding the student
+   * who was just recently registered.
+   *
+   * @param $email_info Array   An associative array containing emails and url info.
+   *
+   * @return void
 	 */
   public static function aria_send_registration_emails($email_info) {
-    // this is going to need to iterate through a given teachers array
-    // of students and generate a url that has that specific teacher's hash
-    // and a hash for each of the students involved in the competition
-    // a sample url with 2 hashes might look like the following:
+    // a sample url for teacher registration with 2 hashes might look like the following:
     // wesley-bruh-teacher-registration-4/?teacher_hash=fredharris&student_hash=weskepke
     // note the & in between the two hash values
-
-    // or, this function can be called everytime a student submits their data:
 /*
     $teacher_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $teacher_link .= "?teacher_hash=" . $teacher_hash;
     $teacher_link .= "&student_hash=" . $student_hash;
 */
+
+    // generate the link to send to the teachers
     $send_url = $email_info['teacher_url'];
     $send_url .= "?teacher_hash=" . $email_info['teacher_hash'];
     $send_url .= "&student_hash=" . $email_info['student_hash'];
 
-    $message = "Hello " . $email_info['teacher_name'] . "!\n";
-    $message .= "Congratulations. Your student " . $email_info['student_name'];
-    $message .= " has registered for the NNMTA";
-    $message .= " music competition: " . $email_info['competition_name'];
-    $message .= ".\n Please click on the following link to finish";
-    $message .= " registering your student: " . $send_url;
-    $message .= "\n\nThank you, \nNNMTA Festival Chair";
+    // generate the message to send to the teachers
+    $message_teacher = "Hello " . $email_info['teacher_name'] . "!\n";
+    $message_teacher .= "Congratulations. Your student " . $email_info['student_name'];
+    $message_teacher .= " has registered for the NNMTA";
+    $message_teacher .= " music competition: " . $email_info['competition_name'];
+    $message_teacher .= ".\nPlease click on the following link to finish";
+    $message_teacher .= " registering your student: " . $send_url;
+    $message_teacher .= "\nYou will receive an email in a couple weeks regarding";
+    $message_teacher .= " when your student has been scheduled to perform.";
+    $message_teacher .= "\n\nThank you, \nNNMTA Festival Chair\n";
+    $message_teacher .= "(" . $email_info['festival_chairman_email'] . ")";
 
     $subject = "NNMTA " . $email_info['competition_name'] . " - Registration";
-wp_mail('ren825@gmail.com', $subject, $message);
-    if (!wp_mail((string)$email_info['teacher_email'], $subject, $message)) {
-      wp_mail('ren825@gmail.com', 'failed', 'it failed');
-      wp_die('Teacher registration email failed to send.');
+    if (!wp_mail((string)$email_info['teacher_email'], $subject, $message_teacher)) {
+      wp_die('Teacher email (for student registration) failed to send.');
     }
-    
+
+    // generate the message to send to the parents
+    $message_parent = "Hello " . $email_info['parent_name'] . "!\n";
+    $message_parent .= "Congratulations. Your child " . $email_info['student_name'];
+    $message_parent .= " has registered for the NNMTA";
+    $message_parent .= " music competition: " . $email_info['competition_name'];
+    $message_parent .= "\nYou will receive an email in a couple weeks regarding";
+    $message_parent .= " when your child has been scheduled to perform.";
+    $message_parent .= "\n\nThank you, \nNNMTA Festival Chair\n";
+    $message_parent .= "(" . $email_info['festival_chairman_email'] . ")";
+    if (!wp_mail($email_info['parent_email'], $subject, $message_parent)) {
+      wp_die('Parent email (for student registration) failed to send.');
+    }
+
+    // generate message to send to the festival chairman
+    $message_chairman = "Hello!\n";
+    $message_chairman .= "Congratulations. A student named " . $email_info['student_name'];
+    $message_chairman .= " has just registered for " . $email_info['competition_name'];
+    $message_chairman .= " and will have their registration completed by ";
+    $message_chairman .= $email_info['teacher_name'] . ".\n\n";
+    $message_chairman .= "As of this moment, there are " . strval($email_info['num_participants']);
+    $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
+    if (!wp_mail($email_info['festival_chairman_email'], $subject, $message_chairman)) {
+      wp_die('Festival chairman email (for student registration) failed to send.');
+    }
   }
 
 	/**
