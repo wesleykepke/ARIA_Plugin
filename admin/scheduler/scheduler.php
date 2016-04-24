@@ -944,14 +944,14 @@ class Scheduling_Algorithm {
    * This function will parse the HTML produced by the scheduler.
    *
    * This function will take as input the HTML that is created by the scheduler
-   * and obtain information from it so that the associated scheduler object can 
+   * and obtain information from it so that the associated scheduler object can
    * be updated. 
    *
    * @param
    * @param
    *
    * @since 1.0.0
-   * @author KREW 
+   * @author KREW
    */
   private static function parse_scheduler_html($html) {
     wp_die(print_r($html));
