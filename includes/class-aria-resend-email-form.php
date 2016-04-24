@@ -14,21 +14,21 @@ class ARIA_Resend_Email {
 
     $competition_name_select_field = new GF_Field_Select();
     $competition_name_select_field->label = "Competition";
-    $competition_name_select_field->id = $field_id_arr['competition_name'];
+    $competition_name_select_field->id = $field_mappings['competition_name'];
     $competition_name_select_field->isRequired = true;
     $competition_name_select_field->choices = array();
     $form->fields[] = $competition_name_select_field;
 
     $teacher_field = new GF_Field_Select();
     $teacher_field->label = "Teacher";
-    $teacher_field->id = $field_id_arr['teacher'];
+    $teacher_field->id = $field_mappings['teacher'];
     $teacher_field->isRequired = true;
     $teacher_field->choices = array();
     $form->fields[] = $teacher_field;
 
     $student_field = new GF_Field_Select();
     $student_field->label = "Student";
-    $student_field->id = $field_id_arr['student'];
+    $student_field->id = $field_mappings['student'];
     $student_field->isRequired = true;
     $student_field->choices = array();
     $form->fields[] = $student_field;
