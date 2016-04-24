@@ -46,7 +46,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] === CREATE_COMPETITION_FORM_NAME) {
+      if (array_key_exists('isCompetitionCreationForm', $form)) {
         $form_id = $form['id'];
       }
     }
@@ -59,7 +59,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if (array_key_exists ( 'isResendEmailForm' , $form)) {
+      if (array_key_exists('isResendEmailForm' , $form)) {
         $form_id = $form['id'];
       }
     }
@@ -82,7 +82,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] === TEACHER_UPLOAD_FORM_NAME) {
+      if (array_key_exists('isSingleTeacherUploadForm', $form)) {
         $form_id = $form['id'];
       }
     }
@@ -105,7 +105,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] === MUSIC_UPLOAD_FORM_NAME) {
+      if (array_key_exists('isMusicUploadForm', $form)) {
         $form_id = $form['id'];
       }
     }
@@ -127,7 +127,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] == NNMTA_MUSIC_DATABASE_NAME) {
+      if (array_key_exists('isMusicDatabaseForm', $form)) {
         $form_id = $form['id'];
       }
     }
@@ -150,7 +150,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] === SCHEDULER_FORM_NAME) {
+      if (array_key_exists('isScheduleForm', $form)) {
         $form_id = $form['id'];
       }
     }
@@ -175,7 +175,7 @@ class ARIA_API {
     $all_active_forms = GFAPI::get_forms();
 
     foreach ($all_active_forms as $form) {
-      if ($form['title'] === DOC_GEN_FORM_NAME) {
+      if (array_key_exists('isDocGenForm', $form)) {
         $form_id = $form['id'];
       }
     }
