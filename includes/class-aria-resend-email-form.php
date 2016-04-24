@@ -62,6 +62,36 @@ class ARIA_Resend_Email {
     }
   }
 
+  public static function aria_before_resend_form($form, $is_ajax) {
+    // Only perform prepopulation if it's the teacher upload form
+    if (!array_key_exists('isResendEmailForm', $form)
+        || !$form['isResendEmailForm']) {
+          return;
+    }
+
+    // Get all of the active competitions
+    $all_active_competitions = ARIA_API::aria_get_all_active_comps();
+
+    $competition_names = array();
+    foreach ($all_active_competitions as $competition) {
+      $single_competition = array(
+        'text' => $competition['name'],
+        'value' => $competition['aria_relations']['teacher_master_form_id'],
+        'isSelected' => false
+      );
+      $competition_names[] = $single_competition;
+      unset($single_competition);
+    }
+
+    $field_mapping = self::resend_teacher_field_id_array();
+    $search_field = $field_mapping['competition_name'];
+    $name_field = ARIA_API::aria_find_field_by_id($form['fields'], $search_field);
+    $form['fields'][$name_field]->choices = $competition_names;
+  }
+
+
+
+
   public static function resend_teacher_field_id_array() {
     return array (
       'competition_name' => 1,

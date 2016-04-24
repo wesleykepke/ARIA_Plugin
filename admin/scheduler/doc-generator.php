@@ -169,8 +169,8 @@ class Doc_Generator {
     $competition_names = array();
     foreach ($all_active_competitions as $competition) {
       $single_competition = array(
-        'text' => $competition,
-        'value' => $competition,
+        'text' => $competition['name'],
+        'value' => $competition['name'],
         'isSelected' => false
       );
       $competition_names[] = $single_competition;

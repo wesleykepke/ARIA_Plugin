@@ -126,9 +126,10 @@ class ARIA {
 		require_once("class-aria-create-competition.php");
 		require_once("class-aria-music.php");
 		require_once("class-aria-form-hooks.php");
-    require_once("class-aria-teacher-upload.php");
-    require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
-    require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
+	    require_once("class-aria-teacher-upload.php");
+	    require_once("class-aria-resend-email-form.php");
+	    require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
+	    require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
 
 		// Register all of the hooks needed by ARIA
 
@@ -204,6 +205,17 @@ class ARIA {
       'ARIA_Teacher',
       'aria_before_teacher_upload', 10, 4
     );
+
+    /*
+    The action registered for this hook updates the list of competitions that
+    can be selected for resending the URL
+    */
+    $this->loader->add_action(
+      'gform_enqueue_scripts',
+      'ARIA_Resend_Email',
+      'aria_before_resend_form', 10, 4
+    );
+
 
     /*
     The action registered for this hook is for adding a new teacher to a
