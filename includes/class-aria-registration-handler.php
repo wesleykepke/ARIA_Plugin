@@ -99,8 +99,8 @@ class ARIA_Registration_Handler {
     $message_chairman .= $email_info['teacher_name'] . ".\n\n";
     $message_chairman .= "As of this moment, there are " . strval($email_info['num_participants']);
     $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
-    if (!wp_mail($email_info['festival_chairman_email'], $subject, $message_chairman)) {
-      wp_die('Festival chairman email (for student registration) failed to send.');
+    if (!wp_mail((string)$email_info['teacher_email'], $subject, $message)) {
+      wp_die('Teacher registration email failed to send.');
     }
   }
 

@@ -360,7 +360,9 @@ class ARIA_API {
       'level_8_price' => 34,
       'level_9_price' => 35,
       'level_10_price' => 36,
-      'level_11_price' => 37
+      'level_11_price' => 37,
+      'paypal_email' => 38
+
     );
   }
 
@@ -620,7 +622,7 @@ class ARIA_API {
     $postarr = array(
       'post_title' => $form_title,
       'post_content' => "[gravityform id=\"{$form_id}\" title=\"true\" description=\"true\"]",
-      'post_status' => $private ? 'private' : publish,
+      'post_status' => $private ? 'private' : 'publish',
       'post_type' => 'page',
       'post_password' => $password
     );

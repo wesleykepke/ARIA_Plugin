@@ -125,7 +125,7 @@ class ARIA_Music {
 
     // add a custom confirmation
     $successful_submission_message = 'Congratulations! You have just successfully' .
-    ' uploaded new music to the NNMTA music database';
+    ' uploaded new music to the NNMTA music database.';
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
