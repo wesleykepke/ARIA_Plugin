@@ -44,7 +44,7 @@ class ARIA_Create_Competition {
 
     // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
-    
+
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
       ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
@@ -110,7 +110,8 @@ class ARIA_Create_Competition {
       'student_master_form_id' => $student_master_form_id,
       'teacher_master_form_id' => $teacher_master_form_id,
       'student_public_form_url' => $student_form_url,
-      'teacher_public_form_url' => $teacher_form_url
+      'teacher_public_form_url' => $teacher_form_url,
+      'festival_chairman_email' => $entry[strval($field_mapping['competition_festival_chairman_email'])]
     );
 
     // obtain form objects for each of the four forms
@@ -235,7 +236,7 @@ class ARIA_Create_Competition {
 
     // second location
     $location_field_2 = new GF_Field_Address();
- 
+
     $location_field_2->label = "Sunday Competition Location (If different from above)";
     $location_field_2->id = $field_mappings['competition_2_address'];
     $location_field_2->isRequired = false;
@@ -296,7 +297,10 @@ class ARIA_Create_Competition {
     $teacher_csv_file_upload_field->description .= ' this music competition.';
     $teacher_csv_file_upload_field->description .= ' Don\'t worry, you will have';
     $teacher_csv_file_upload_field->description .= ' the opportunity to add more';
-    $teacher_csv_file_upload_field->description .= ' teachers to this competition later.';
+    $teacher_csv_file_upload_field->description .= ' teachers to this competition later.</br>';
+    $teacher_csv_file_upload_field->description .= ' <b>The CSV file should be in the';
+    $teacher_csv_file_upload_field->description .= ' following format:</br>First Name, ';
+    $teacher_csv_file_upload_field->description .= ' Last Name, Phone, Email</b>';
     $teacher_csv_file_upload_field->descriptionPlacement = 'above';
 
 /*
@@ -327,13 +331,13 @@ class ARIA_Create_Competition {
       // not sure how to handle this at the moment
 
     // number of command performances
-  
+
     $num_command_performance_field = new GF_Field_Number();
     $num_command_performance_field->label = "Number of Command Performance Performances";
     $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
     $num_command_performance_field->isRequired = false;
-    
-    
+
+
     // date of command performance
     $command_perf_date_field = new GF_Field_Date();
     $command_perf_date_field->label = "Command Performance Date";
@@ -416,7 +420,7 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end_date_field;
     $form->fields[] = $teacher_volunteer_times_field;
     $form->fields[] = $teacher_csv_file_upload_field;
-    
+
     /*
     $form->fields[] = $num_traditional_sections_field;
     $form->fields[] = $num_master_sections_field;
@@ -1244,9 +1248,9 @@ class ARIA_Create_Competition {
         $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
         if($price != 0)
         {
-          $product_field->choices[] = array('text' => $i, 
-                                            'value' => $i, 
-                                            'isSelected' => false, 
+          $product_field->choices[] = array('text' => $i,
+                                            'value' => $i,
+                                            'isSelected' => false,
                                             'price' => $price);
         }
     }
