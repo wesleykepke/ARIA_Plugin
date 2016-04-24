@@ -167,6 +167,10 @@ class ARIA_Create_Competition {
       'teacher_public_form_url' => $teacher_form_url,
       'festival_chairman_email' => $entry[strval($field_mapping['competition_festival_chairman_email'])]
     );
+    if($entry[strval($field_mapping['notification_enabled'])] == 'Yes')
+    {
+      'notification_email' => $entry[strval($field_mapping['notification_email'])]
+    }
 
     // obtain form objects for each of the four forms
     $student_public_form = GFAPI::get_form($student_form_id);
@@ -855,7 +859,7 @@ class ARIA_Create_Competition {
       'logicType' => 'all',
       'rules' => $conditionalRules
     );
-    $teacher_form->fields[] = $volunteer_time_field;
+    $teacher_form->fields[] = $volunteer_with_students;
     $ariaFieldIds['schedule_with_students'] = $volunteer_with_students->id;
 
 

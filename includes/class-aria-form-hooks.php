@@ -230,7 +230,7 @@ class ARIA_Form_Hooks {
     $email_info['teacher_hash'] = $teacher_hash;
     $email_info['teacher_name'] = $teacher_name;
     $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
-    $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
+    $email_info['notification_email'] = $related_forms["notification_email"];
     $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
     $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
     $email_info['student_hash'] = $student_hash;
@@ -366,8 +366,11 @@ class ARIA_Form_Hooks {
       }
     }
 
+
     $teacher_master_entry[strval($teacher_master_field_ids['is_judging'])] =
       $entry[strval($teacher_public_field_ids['is_judging'])];
+    $teacher_master_entry[strval($teacher_master_field_ids['schedule_with_students'])] =
+      $entry[strval($teacher_public_field_ids['schedule_with_students'])];
 
     // Update the teacher master form with the new information
     $result = GFAPI::update_entry($teacher_master_entry);

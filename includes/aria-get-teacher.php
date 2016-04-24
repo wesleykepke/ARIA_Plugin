@@ -1,8 +1,7 @@
 <?php
 	//require_once("class-aria-create-competition.php");
-	require_once("class-aria-music.php");
 	$teacher_fields = aria_teacher_field_id_array();
-	$music_fields = ARIA_Music::aria_music_field_id_array();
+	$music_fields = aria_music_field_id_array();
 	$all_fields = array_merge( $teacher_fields, $music_fields );
 	echo json_encode($all_fields);
 
@@ -48,5 +47,14 @@
       'alt_song_2_identifying_number' => 24
     );
   }
-
+function aria_music_field_id_array() {
+    return array(
+      'song_name' => 4,
+      'song_composer' => 3,
+      'song_level' => 1,
+      'song_period' => 2,
+      'song_catalog' => 5
+    );
+  }
+  
 ?>

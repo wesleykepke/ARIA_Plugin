@@ -92,15 +92,20 @@ class ARIA_Registration_Handler {
     }
 
     // generate message to send to the festival chairman
-    $message_chairman = "Hello!\n";
-    $message_chairman .= "Congratulations. A student named " . $email_info['student_name'];
-    $message_chairman .= " has just registered for " . $email_info['competition_name'];
-    $message_chairman .= " and will have their registration completed by ";
-    $message_chairman .= $email_info['teacher_name'] . ".\n\n";
-    $message_chairman .= "As of this moment, there are " . strval($email_info['num_participants']);
-    $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
-    if (!wp_mail((string)$email_info['teacher_email'], $subject, $message)) {
-      wp_die('Teacher registration email failed to send.');
+    if(array_key_exists('notification_email', $email_info))
+    {
+      $message_chairman = "Hello!\n";
+      $message_chairman .= "Congratulations. A student named " . $email_info['student_name'];
+      $message_chairman .= " has just registered for " . $email_info['competition_name'];
+      $message_chairman .= " and will have their registration completed by ";
+      $message_chairman .= $email_info['teacher_name'] . ".\n\n";
+      $message_chairman .= "As of this moment, there are " . strval($email_info['num_participants']);
+      $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
+      $message_chairman .= ".\nSave this link to resend it to the teacher to finish";
+      $message_chairman .= " registering their student: " . $send_url;
+      if (!wp_mail((string)$email_info['notification_email'], $subject, $message)) {
+        wp_die('Teacher registration email failed to send.');
+      }
     }
   }
 

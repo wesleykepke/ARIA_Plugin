@@ -4,7 +4,6 @@ jQuery(document).ready(function($) {
 
 	//alert(window.location.href);
 
-
 	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";
@@ -15,6 +14,13 @@ jQuery(document).ready(function($) {
 	var public_key = "1ff591984b";
 	var private_key = "c4efb4676e0d6a6";
 
+	if( window.location.href.indexOf('nnmta.org') != -1)
+	{
+		host = "http://nnmta.org";
+		local_host = host;
+		public_key = "0035d1a323";
+		private_key ="f2d4546aab2c06a";
+	}
 
 	var form_name = $('.gform_title').text();
 
@@ -129,8 +135,8 @@ jQuery(document).ready(function($) {
 	});
 
 	// Disable teacher student field
-	$(input_id_arr['name']+'_3').prop("disabled", true);
-	$(input_id_arr['name']+'_6').prop("disabled", true);
+	//$(input_id_arr['name']+'_3').prop("disabled", true);
+	//$(input_id_arr['name']+'_6').prop("disabled", true);
 	$(input_id_arr['student_level']).prop("disabled", true);
 	$(input_id_arr['student_name']+'_3').prop("disabled", true);
 	$(input_id_arr['student_name']+'_6').prop("disabled", true);
