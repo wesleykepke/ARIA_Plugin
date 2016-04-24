@@ -2,15 +2,27 @@ jQuery(document).ready(function($) {
 //	alert("in public");
 	// ---- only load on specific page (if statement with student level?)
 
+	//alert(window.location.href);
+
+
+
 	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";
 	//var local_host = "http://192.168.245.140";
+
 	// aria
 	var host = "http://aria.cse.unr.edu";
 	var public_key = "1ff591984b";
 	var private_key = "c4efb4676e0d6a6";
 
+	if( window.location.href.indexOf('nnmta.org') != -1)
+	{
+		host = "http://nnmta.org";
+		local_host = host;
+		public_key = "0035d1a323";
+		private_key ="f2d4546aab2c06a";
+	}
 
 	var form_name = $('.gform_title').text();
 
@@ -19,7 +31,7 @@ jQuery(document).ready(function($) {
 	var current_form_id = current_form.split('_');
 	current_form_id = current_form_id[current_form_id.length -1];
 
-	// Student registration
+	///////// Student registration
 	if( form_name.indexOf( "Student Registration" ) != -1 ){
         var field_id_arr = get_student_ids();
 		var level_pay_field = '#input_' + current_form_id + '_' + field_id_arr['level_pricing'];
@@ -36,7 +48,7 @@ jQuery(document).ready(function($) {
 	}
 
 
-	// Teacher registration
+	////////// Teacher registration
 	if( form_name.indexOf( "Teacher Registration" ) != -1 ){
 
 
@@ -125,8 +137,8 @@ jQuery(document).ready(function($) {
 	});
 
 	// Disable teacher student field
-	$(input_id_arr['name']+'_3').prop("disabled", true);
-	$(input_id_arr['name']+'_6').prop("disabled", true);
+	//$(input_id_arr['name']+'_3').prop("disabled", true);
+	//$(input_id_arr['name']+'_6').prop("disabled", true);
 	$(input_id_arr['student_level']).prop("disabled", true);
 	$(input_id_arr['student_name']+'_3').prop("disabled", true);
 	$(input_id_arr['student_name']+'_6').prop("disabled", true);
@@ -456,8 +468,7 @@ jQuery(document).ready(function($) {
 	}
 
 	function toTitleCase( str ){
-		return str.replace( /\w\S*/g, function(txt){
-			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+		return str;
 	}
 
 	// Get test
