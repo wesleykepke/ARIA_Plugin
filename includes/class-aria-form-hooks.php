@@ -233,7 +233,7 @@ class ARIA_Form_Hooks {
     $email_info['teacher_name'] = $teacher_name;
     $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
     $email_info['notification_email'] = $related_forms["notification_email"];
-    $email_info['competition_festival_chairman_email'] = $related_forms["competition_festival_chairman_email"];
+    $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
     $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
     $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
     $email_info['student_hash'] = $student_hash;
