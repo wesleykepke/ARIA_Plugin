@@ -54,13 +54,13 @@ class ARIA_Create_Competition {
   /**
    * This function will save the content of a competition entry object to a file.
    *
-   * Using the entry object that is returned from the create competition form, 
+   * Using the entry object that is returned from the create competition form,
    * this function will serialize the entry object and save it to a file location
    * on the server so that it can be referenced in the event that the user removes
    * the create competition form on the WordPress dashboard.
    *
-   * @param   Entry Object  $entry  The entry object that is about to be serialized to file. 
-   * 
+   * @param   Entry Object  $entry  The entry object that is about to be serialized to file.
+   *
    * @since 1.0.0
    * @author KREW
    */
@@ -80,13 +80,13 @@ class ARIA_Create_Competition {
   /**
    * This function will read the content of a competition entry object from a file.
    *
-   * Using the entry object that is returned from the create competition form, 
+   * Using the entry object that is returned from the create competition form,
    * this function will serialize the entry object and save it to a file location
    * on the server so that it can be referenced in the event that the user removes
    * the create competition form on the WordPress dashboard.
    *
-   * @param   Entry Object  $entry  The entry object that is about to be serialized to file. 
-   * 
+   * @param   Entry Object  $entry  The entry object that is about to be serialized to file.
+   *
    * @since 1.0.0
    * @author KREW
    */
@@ -169,7 +169,7 @@ class ARIA_Create_Competition {
     );
     if($entry[strval($field_mapping['notification_enabled'])] == 'Yes')
     {
-      'notification_email' => $entry[strval($field_mapping['notification_email'])];
+      $related_forms['notification_email'] = $entry[strval($field_mapping['notification_email'])];
     }
 
     // obtain form objects for each of the four forms
@@ -219,7 +219,7 @@ class ARIA_Create_Competition {
     GFAPI::update_form($student_master_form);
     GFAPI::update_form($teacher_master_form);
 
-    // save the entry object to a file on the server in case it is deleted 
+    // save the entry object to a file on the server in case it is deleted
     self::aria_save_comp_to_file($entry);
 
     // change the confirmation message that the festival chairman sees

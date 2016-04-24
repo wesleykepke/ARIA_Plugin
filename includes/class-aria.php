@@ -188,7 +188,7 @@ class ARIA {
 
     /*
     The action registered for this hook is for adding doc. gen. and email
-    functionality. 
+    functionality.
     */
     $this->loader->add_action(
       'gform_confirmation',
@@ -229,7 +229,7 @@ class ARIA {
 
     /*
 	 * Payment testing
-    
+
 
     $this->loader->add_action(
     	'gform_paypal_fulfillment',
@@ -311,6 +311,9 @@ class ARIA {
     */
     $this->loader->add_filter('query_vars', 'ARIA_Form_Hooks',
       'aria_add_query_vars_filter', 10, 1);
+
+		$this->loader->add_filter( 'wp_mail_content_type', 'ARIA_API',
+			'set_content_type', 10, 1);
 	}
 
 	/**

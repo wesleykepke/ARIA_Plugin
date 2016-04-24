@@ -430,7 +430,7 @@ class ARIA_API {
       'alternate_theory' => 14,
       'competition_format' => 15,
       'timing_of_pieces' => 16,
-      'is_judging' => 17, 
+      'is_judging' => 17,
       'student_level' => 18,
       'alt_song_2_composer' => 19,
       'alt_song_2_selection' => 20,
@@ -831,5 +831,9 @@ class ARIA_API {
     }
 
     return $title;
+  }
+
+  public static function set_content_type( $content_type ) {
+    return 'text/html';
   }
 }
