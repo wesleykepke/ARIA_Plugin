@@ -4,8 +4,6 @@ jQuery(document).ready(function($) {
 
 	//alert(window.location.href);
 
-
-
 	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";

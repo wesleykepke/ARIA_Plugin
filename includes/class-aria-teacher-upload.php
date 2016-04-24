@@ -250,7 +250,7 @@ class ARIA_Teacher {
     if (($file_ptr = fopen($csv_file_path, "r")) !== FALSE) {
       while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
         $single_teacher = array();
-        $first_and_last_names = array();
+        $first_and_last_names_and_hash = array();
 
         // assign attributes to teacher from the csv file
         $single_teacher[strval($field_mappings['first_name'])] = $single_teacher_data[0];
@@ -261,14 +261,15 @@ class ARIA_Teacher {
           hash("md5", ($single_teacher_data[0] . ' ' . $single_teacher_data[1]));
 
         // find the first and last names for the teacher dropdown
-        $first_and_last_names[0] = $single_teacher_data[0];
-        $first_and_last_names[1] = $single_teacher_data[1];
-
+        $first_and_last_names_and_hash[0] = $single_teacher_data[0];
+        $first_and_last_names_and_hash[1] = $single_teacher_data[1];
+        $first_and_last_names_and_hash[2] = $single_teacher[strval($field_mappings['teacher_hash'])];
+        
         // add single teacher attributes into a cumulative list of teachers
         $all_teachers_master[] = $single_teacher;
-        $all_teachers_form_dropdown[] = $first_and_last_names;
+        $all_teachers_form_dropdown[] = $first_and_last_names_and_hash;
         unset($single_teacher);
-        unset($first_and_last_names);
+        unset($first_and_last_names_and_hash);
       }
 
       // add cumulative list of teachers to the corresponding teacher-master form
