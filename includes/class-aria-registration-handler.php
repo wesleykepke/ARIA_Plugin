@@ -128,6 +128,9 @@ class ARIA_Registration_Handler {
     $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
 
     // check to see if any of the entries in the student master have $student_hash
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
     $search_criteria = array(
       'field_filters' => array(
         'mode' => 'any',
@@ -138,7 +141,7 @@ class ARIA_Registration_Handler {
       )
     );
 
-    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria);
+    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria, $sorting, $paging, $total_count);
     if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $student_hash) {
      return $entries[0];
     }
@@ -166,6 +169,9 @@ class ARIA_Registration_Handler {
     $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
 
     // check to see if any of the entries in the teacher master have $teacher_hash
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
     $search_criteria = array(
 			'field_filters' => array(
 				'mode' => 'all',
@@ -176,7 +182,7 @@ class ARIA_Registration_Handler {
 			)
 		);
 
-    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria, $sorting, $paging, $total_count);
 
 
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
@@ -215,8 +221,10 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on teacher-master.
 	 */
 	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
-		 $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
-
+		$hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
 		 $search_criteria = array(
        'field_filters' => array(
          'mode' => 'any',
@@ -227,7 +235,7 @@ class ARIA_Registration_Handler {
        )
 		 );
 
-		 $entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria);
+		 $entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
 
 		 if (is_wp_error($entries)) {
  			wp_die($entries->get_error_message());
@@ -270,8 +278,10 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on student-master.
 	 */
 	 public static function aria_get_student_pre_populate($related_forms, $student_hash) {
-		 $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
-
+		$hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
 		 $search_criteria = array(
        'field_filters' => array(
          'mode' => 'any',
@@ -282,7 +292,7 @@ class ARIA_Registration_Handler {
        )
 		 );
 
-		 $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria);
+		 $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
 
 		 if (is_wp_error($entries)) {
  			wp_die($entries->get_error_message());
