@@ -260,7 +260,7 @@ class ARIA_Music {
    * @author KREW
    */
   public static function aria_modify_upload_path($path_info, $form_id){
-  	$path_info['path'] = ABSPATH . 'wp-content/uploads/testpath/';
+  	$path_info['path'] = ABSPATH . 'wp-content/uploads/';
   	return $path_info;
   }
 
