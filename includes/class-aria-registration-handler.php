@@ -62,16 +62,16 @@ class ARIA_Registration_Handler {
     $send_url .= "&student_hash=" . $email_info['student_hash'];
 
     // generate the message to send to the teachers
-    $message_teacher = "Hello " . $email_info['teacher_name'] . "!\n";
+    $message_teacher = "<html> Hello " . $email_info['teacher_name'] . "!<br />";
     $message_teacher .= "Congratulations. Your student " . $email_info['student_name'];
     $message_teacher .= " has registered for the NNMTA";
     $message_teacher .= " music competition: " . $email_info['competition_name'];
-    $message_teacher .= ".\nPlease click on the following link to finish";
-    $message_teacher .= " registering your student: " . $send_url;
-    $message_teacher .= "\nYou will receive an email in a couple weeks regarding";
+    $message_teacher .= ".<br />Please click on the following link to finish";
+    $message_teacher .= " registering your student: <a href=\"" . $send_url. "\">".$email_info['student_name']."</a>";
+    $message_teacher .= "<br />You will receive an email in a couple weeks regarding";
     $message_teacher .= " when your student has been scheduled to perform.";
-    $message_teacher .= "\n\nThank you, \nNNMTA Festival Chair\n";
-    $message_teacher .= "(" . $email_info['festival_chairman_email'] . ")";
+    $message_teacher .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
+    $message_teacher .= "(" . $email_info['festival_chairman_email'] . ")</html>";
 
     $subject = "NNMTA " . $email_info['competition_name'] . " - Registration";
     if (!wp_mail((string)$email_info['teacher_email'], $subject, $message_teacher)) {
@@ -79,14 +79,14 @@ class ARIA_Registration_Handler {
     }
 
     // generate the message to send to the parents
-    $message_parent = "Hello " . $email_info['parent_name'] . "!\n";
+    $message_parent = "<html>Hello " . $email_info['parent_name'] . "!<br />";
     $message_parent .= "Congratulations. Your child " . $email_info['student_name'];
     $message_parent .= " has registered for the NNMTA";
     $message_parent .= " music competition: " . $email_info['competition_name'];
-    $message_parent .= "\nYou will receive an email in a couple weeks regarding";
+    $message_parent .= "<br />You will receive an email in a couple weeks regarding";
     $message_parent .= " when your child has been scheduled to perform.";
-    $message_parent .= "\n\nThank you, \nNNMTA Festival Chair\n";
-    $message_parent .= "(" . $email_info['festival_chairman_email'] . ")";
+    $message_parent .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
+    $message_parent .= "(" . $email_info['festival_chairman_email'] . ")</html>";
     if (!wp_mail($email_info['parent_email'], $subject, $message_parent)) {
       wp_die('Parent email (for student registration) failed to send.');
     }
@@ -94,15 +94,15 @@ class ARIA_Registration_Handler {
     // generate message to send to the festival chairman
     if(array_key_exists('notification_email', $email_info))
     {
-      $message_chairman = "Hello!\n";
+      $message_chairman = "<html>Hello!<br />";
       $message_chairman .= "Congratulations. A student named " . $email_info['student_name'];
       $message_chairman .= " has just registered for " . $email_info['competition_name'];
       $message_chairman .= " and will have their registration completed by ";
-      $message_chairman .= $email_info['teacher_name'] . ".\n\n";
+      $message_chairman .= $email_info['teacher_name'] . ".<br /><br />";
       $message_chairman .= "As of this moment, there are " . strval($email_info['num_participants']);
       $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
-      $message_chairman .= ".\nSave this link to resend it to the teacher to finish";
-      $message_chairman .= " registering their student: " . $send_url;
+      $message_chairman .= ".<br />Save this link to resend it to the teacher to finish";
+      $message_chairman .= " registering their student: " . $send_url. " </html>";
       if (!wp_mail((string)$email_info['notification_email'], $subject, $message)) {
         wp_die('Teacher registration email failed to send.');
       }
