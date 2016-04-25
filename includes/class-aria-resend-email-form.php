@@ -76,7 +76,8 @@ class ARIA_Resend_Email {
     foreach ($all_active_competitions as $competition) {
       $single_competition = array(
         'text' => $competition['name'],
-        'value' => $competition['aria_relations']['teacher_master_form_id'],
+        'value' => $competition['name'] . '_' . $competition['aria_relations']['teacher_master_form_id'] . 
+                    '_' . $competition['aria_relations']['student_master_form_id'],
         'isSelected' => false
       );
       $competition_names[] = $single_competition;
