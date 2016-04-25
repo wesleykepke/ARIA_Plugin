@@ -382,7 +382,7 @@ class ARIA_Form_Hooks {
 		}
 
     // Locate the student entry in the student master.
-    $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($form["title"], $student_hash);
+    $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($related_forms['student_master_form_id'], $student_hash);
 
     // If the student doesn't exist, throw an error message
     if (!$student_master_entry) {
