@@ -82,7 +82,7 @@ class ARIA_Registration_Handler {
     $message_parent .= "Congratulations. ".$email_info['student_name'];
     $message_parent .= ", has registered for the NNMTA";
     $message_parent .= " music competition: " . $email_info['competition_name'];
-    $message_parent .= "<br />Once the event has been scheduled, you will receive an email with this student\'s scheduled performance time.";
+    $message_parent .= "<br />Once the event has been scheduled, you will receive an email with this student's scheduled performance time.";
     $message_parent .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
     $message_parent .= "(" . $email_info['festival_chairman_email'] . ")</html>";
     if (!wp_mail($email_info['parent_email'], $subject, $message_parent)) {
