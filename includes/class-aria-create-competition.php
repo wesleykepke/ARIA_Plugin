@@ -1070,7 +1070,9 @@ class ARIA_Create_Competition {
     // timing field
 
     $timing_of_pieces_field = new GF_Field_Select();
-    $timing_of_pieces_field->label = "Timing of Pieces (minutes)";
+    $timing_of_pieces_field->label = "Combined timing of Pieces (minutes)";
+    $timing_of_pieces_field->description = "Please round up to the nearest minute.";
+    $timing_of_pieces_field->descriptionPlacement = "above.";
     $timing_of_pieces_field->id = $field_id_arr['timing_of_pieces'];
     $timing_of_pieces_field->isRequired = true;
     $timing_choices = array();
