@@ -83,7 +83,7 @@ class ARIA_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
+		wp_enqueue_script("jquery");
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/aria-public.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script('cry1', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/hmac-sha1.js' );
 		wp_enqueue_script( 'cry2', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js' );

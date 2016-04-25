@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
 
 	if( window.location.href.indexOf('nnmta.org') != -1)
 	{
-		host = "http://nnmta.org";
+		host = "http://www.nnmta.org";
 		local_host = host;
 		public_key = "0035d1a323";
 		private_key ="f2d4546aab2c06a";
