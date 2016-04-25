@@ -103,7 +103,7 @@ class ARIA_Registration_Handler {
       $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
       $message_chairman .= ".<br />Save this link in case you need to resend it to the teacher to finish";
       $message_chairman .= " registering their student: " . $send_url. " </html>";
-      if (!wp_mail((string)$email_info['notification_email'], $subject, $message)) {
+      if (!wp_mail((string)$email_info['notification_email'], $subject, $message_chairman)) {
         wp_die('Teacher registration email failed to send.');
       }
     }
