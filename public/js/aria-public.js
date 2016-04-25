@@ -2,8 +2,6 @@ jQuery(document).ready(function($) {
 //	alert("in public");
 	// ---- only load on specific page (if statement with student level?)
 
-	//alert(window.location.href);
-
 	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";
@@ -26,9 +24,16 @@ jQuery(document).ready(function($) {
 
 	// get current  form id from current form
 	var current_form = $('.gform_fields').attr('id');
-	var current_form_id = current_form.split('_');
-	current_form_id = current_form_id[current_form_id.length -1];
-
+	var current_form_id = -1;
+	if( current_form )
+	{
+		current_form_id = current_form.split('_');
+		current_form_id = current_form_id[current_form_id.length -1];
+	}
+	if(!form_name)
+	{
+		form_name = "";
+	}
 	///////// Student registration
 	if( form_name.indexOf( "Student Registration" ) != -1 ){
         var field_id_arr = get_student_ids();
