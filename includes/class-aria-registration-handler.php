@@ -63,13 +63,12 @@ class ARIA_Registration_Handler {
 
     // generate the message to send to the teachers
     $message_teacher = "<html> Hello " . $email_info['teacher_name'] . "!<br />";
-    $message_teacher .= "Congratulations. Your student " . $email_info['student_name'];
+    $message_teacher .= "Congratulations. " . $email_info['student_name'];
     $message_teacher .= " has registered for the NNMTA";
-    $message_teacher .= " music competition: " . $email_info['competition_name'];
+    $message_teacher .= " event: " . $email_info['competition_name'];
     $message_teacher .= ".<br />Please click on the following link to finish";
     $message_teacher .= " registering your student: <a href=\"" . $send_url. "\">".$email_info['student_name']."</a>";
-    $message_teacher .= "<br />You will receive an email in a couple weeks regarding";
-    $message_teacher .= " when your student has been scheduled to perform.";
+    $message_teacher .= "<br />Once the event has been scheduled, you will receive an email with this student's scheduled performance time.";
     $message_teacher .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
     $message_teacher .= "(" . $email_info['festival_chairman_email'] . ")</html>";
 
@@ -80,11 +79,10 @@ class ARIA_Registration_Handler {
 
     // generate the message to send to the parents
     $message_parent = "<html>Hello " . $email_info['parent_name'] . "!<br />";
-    $message_parent .= "Congratulations. Your child " . $email_info['student_name'];
-    $message_parent .= " has registered for the NNMTA";
+    $message_parent .= "Congratulations. ".$email_info['student_name'];
+    $message_parent .= ", has registered for the NNMTA";
     $message_parent .= " music competition: " . $email_info['competition_name'];
-    $message_parent .= "<br />You will receive an email in a couple weeks regarding";
-    $message_parent .= " when your child has been scheduled to perform.";
+    $message_parent .= "<br />Once the event has been scheduled, you will receive an email with this student's scheduled performance time.";
     $message_parent .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
     $message_parent .= "(" . $email_info['festival_chairman_email'] . ")</html>";
     if (!wp_mail($email_info['parent_email'], $subject, $message_parent)) {
@@ -94,16 +92,16 @@ class ARIA_Registration_Handler {
     // generate message to send to the festival chairman
     if(array_key_exists('notification_email', $email_info))
     {
-      $message_chairman = "<html>Hello!<br />";
-      $message_chairman .= "Congratulations. A student named " . $email_info['student_name'];
+      $message_chairman = "<html>".$email_info['student_name'];
       $message_chairman .= " has just registered for " . $email_info['competition_name'];
-      $message_chairman .= " and will have their registration completed by ";
+      $message_chairman .= " and will have registration completed by ";
       $message_chairman .= $email_info['teacher_name'] . ".<br /><br />";
-      $message_chairman .= "As of this moment, there are " . strval($email_info['num_participants']);
+      $message_chairman .= "<br />Save this link in case you need to resend it to the teacher to finish";
+      $message_chairman .= " registering their student: " . $send_url;
+      $message_chairman .= "<br />As of this moment, there are " . strval($email_info['num_participants']);
       $message_chairman .= " students that have registered for " . $email_info['competition_name'] . ".";
-      $message_chairman .= ".<br />Save this link to resend it to the teacher to finish";
-      $message_chairman .= " registering their student: " . $send_url. " </html>";
-      if (!wp_mail((string)$email_info['notification_email'], $subject, $message)) {
+      $message_chairman .= " </html>";
+      if (!wp_mail((string)$email_info['notification_email'], $subject, $message_chairman)) {
         wp_die('Teacher registration email failed to send.');
       }
     }
@@ -128,6 +126,9 @@ class ARIA_Registration_Handler {
     $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
 
     // check to see if any of the entries in the student master have $student_hash
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
     $search_criteria = array(
       'field_filters' => array(
         'mode' => 'any',
@@ -138,7 +139,7 @@ class ARIA_Registration_Handler {
       )
     );
 
-    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria);
+    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria, $sorting, $paging, $total_count);
     if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $student_hash) {
      return $entries[0];
     }
@@ -166,6 +167,9 @@ class ARIA_Registration_Handler {
     $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
 
     // check to see if any of the entries in the teacher master have $teacher_hash
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
     $search_criteria = array(
 			'field_filters' => array(
 				'mode' => 'all',
@@ -176,7 +180,7 @@ class ARIA_Registration_Handler {
 			)
 		);
 
-    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria);
+    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria, $sorting, $paging, $total_count);
 
 
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
@@ -215,8 +219,10 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on teacher-master.
 	 */
 	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
-		 $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
-
+		$hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
 		 $search_criteria = array(
        'field_filters' => array(
          'mode' => 'any',
@@ -227,7 +233,7 @@ class ARIA_Registration_Handler {
        )
 		 );
 
-		 $entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria);
+		 $entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
 
 		 if (is_wp_error($entries)) {
  			wp_die($entries->get_error_message());
@@ -270,8 +276,10 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on student-master.
 	 */
 	 public static function aria_get_student_pre_populate($related_forms, $student_hash) {
-		 $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
-
+		$hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
 		 $search_criteria = array(
        'field_filters' => array(
          'mode' => 'any',
@@ -282,7 +290,7 @@ class ARIA_Registration_Handler {
        )
 		 );
 
-		 $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria);
+		 $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
 
 		 if (is_wp_error($entries)) {
  			wp_die($entries->get_error_message());

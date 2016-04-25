@@ -53,7 +53,9 @@ class ARIA_Form_Hooks {
     // sort by teacher last name
     $search = array();
     $sorting = array( 'key' => $teacher_master_field_mapping['last_name'], 'direction' => 'ASC', 'is_numeric' => false );
-    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting);
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting, $paging, $total_count);
     $formatted_teacher_names = array();
 
 
@@ -231,6 +233,7 @@ class ARIA_Form_Hooks {
     $email_info['teacher_name'] = $teacher_name;
     $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
     $email_info['notification_email'] = $related_forms["notification_email"];
+    $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
     $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
     $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
     $email_info['student_hash'] = $student_hash;
@@ -379,7 +382,7 @@ class ARIA_Form_Hooks {
 		}
 
     // Locate the student entry in the student master.
-    $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($form["title"], $student_hash);
+    $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($related_forms['student_master_form_id'], $student_hash);
 
     // If the student doesn't exist, throw an error message
     if (!$student_master_entry) {

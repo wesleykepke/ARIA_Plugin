@@ -403,7 +403,7 @@ class ARIA_Create_Master_Forms {
       'logicType' => 'all',
       'rules' => $conditionalRules
     );
-    $teacher_master_form->fields[] = $volunteer_time_field;
+    $teacher_master_form->fields[] = $volunteer_with_students;
 
     $teacher_master_form_array = $teacher_master_form->createFormArray();
     $teacher_master_form_array['isTeacherMasterForm'] = true;

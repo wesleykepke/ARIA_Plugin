@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
 
 	if( window.location.href.indexOf('nnmta.org') != -1)
 	{
-		host = "http://nnmta.org";
+		host = "http://www.nnmta.org";
 		local_host = host;
 		public_key = "0035d1a323";
 		private_key ="f2d4546aab2c06a";
@@ -153,6 +153,8 @@ jQuery(document).ready(function($) {
 	// Song 1 Selection
 
 	// user selects period
+	$(input_id_arr['song_1_period']).val(input_id_arr['song_1_period'] + ' option:first');
+	$(input_id_arr['song_2_period']).val(input_id_arr['song_2_period'] + ' option:first');
 	$(input_id_arr['song_1_period']).live("change", function() {
 		period_arr[ 'selected_val' ][1] = $(input_id_arr['song_1_period']).val();
 		period_arr[ 'selected_text' ][1] = $(input_id_arr['song_1_period'] + '  option:selected').text();
