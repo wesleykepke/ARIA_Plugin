@@ -882,7 +882,6 @@ class ARIA_Create_Competition {
     $student_level_field->isRequired = false;
     // !!! replace
     $student_level_field->choices = array(
-
       array('text' => '1', 'value' => '1', 'isSelected' => false),
       array('text' => '2', 'value' => '2', 'isSelected' => false),
       array('text' => '3', 'value' => '3', 'isSelected' => false),
@@ -1069,11 +1068,20 @@ class ARIA_Create_Competition {
     $ariaFieldIds['competition_format'] = $competition_format_field->id;
 
     // timing field
-    $timing_of_pieces_field = new GF_Field_Number();
-    $timing_of_pieces_field->label = "Timing of pieces (minutes)";
+    $timing_of_pieces_field = new GF_Field_Select();
+    $timing_of_pieces_field->label = "Timing of Pieces (minutes)";
     $timing_of_pieces_field->id = $field_id_arr['timing_of_pieces'];
     $timing_of_pieces_field->isRequired = true;
-    $timing_of_pieces_field->numberFormat = "decimal_dot";
+    $timing_choices = array();
+    for ($i = 1; $i <= 20; $i++) {
+      $single_choice = array(
+        'text' => strval($i),
+        'value' => strval($i),
+        'isSelected' => false
+      );
+      $timing_choices[] = $single_choice; 
+    }
+    $timing_of_pieces_field->choices = $timing_choices;
     $teacher_form->fields[] = $timing_of_pieces_field;
     $ariaFieldIds['timing_of_pieces'] = $timing_of_pieces_field->id;
 
