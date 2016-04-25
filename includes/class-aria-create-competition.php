@@ -196,8 +196,8 @@ class ARIA_Create_Competition {
     $student_public_form['scheduleEndMinute'] = 59;
     $student_public_form['scheduleEndAmpm'] = 'pm';
 
-    $student_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
-    $student_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
+    $student_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
 
     $teacher_public_form['scheduleForm'] = true;
     $teacher_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_teacher_reg_start']];
@@ -210,8 +210,8 @@ class ARIA_Create_Competition {
     $teacher_public_form['scheduleEndMinute'] = 59;
     $teacher_public_form['scheduleEndAmpm'] = 'pm';
 
-    $teacher_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
-    $teacher_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
+    $teacher_public_form['schedulePendingMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
 
     // update the related forms
     GFAPI::update_form($student_public_form);
