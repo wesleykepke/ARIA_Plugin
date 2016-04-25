@@ -68,7 +68,7 @@ class ARIA_Registration_Handler {
     $message_teacher .= " event: " . $email_info['competition_name'];
     $message_teacher .= ".<br />Please click on the following link to finish";
     $message_teacher .= " registering your student: <a href=\"" . $send_url. "\">".$email_info['student_name']."</a>";
-    $message_teacher .= "<br />Once the event has been scheduled, you will receive an email with this student\'s scheduled performance time.";
+    $message_teacher .= "<br />Once the event has been scheduled, you will receive an email with this student's scheduled performance time.";
     $message_teacher .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
     $message_teacher .= "(" . $email_info['festival_chairman_email'] . ")</html>";
 
