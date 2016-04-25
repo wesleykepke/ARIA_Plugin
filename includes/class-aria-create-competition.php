@@ -453,9 +453,9 @@ class ARIA_Create_Competition {
 
     // theory score required for special recognition
     $theory_score_field = new GF_Field_Select();
-    $theory_score_field->label = "Theory Score for Recognition (0-100)";
+    $theory_score_field->label = "Theory Score for Recognition (70-100)";
     $theory_choices = array();
-    for ($i = 0; $i <= 100; $i++) {
+    for ($i = 70; $i <= 100; $i++) {
       $single_theory_choice = array();
       $single_theory_choice['text'] = strval($i);
       $single_theory_choice['value'] = strval($i);
