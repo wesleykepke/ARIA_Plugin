@@ -1293,7 +1293,7 @@ class ARIA_Create_Competition {
     $ariaFieldIds['student_level'] = $student_level_field->id;
 
     $product_field = new GF_Field_Product();
-    $product_field->label = "Student Level Price";
+    $product_field->label = "Student Level";
     $product_field->id = $field_id_array['level_pricing'];
     $product_field->isRequired = true;
     $product_field->size = "small";
