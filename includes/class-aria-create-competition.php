@@ -196,8 +196,8 @@ class ARIA_Create_Competition {
     $student_public_form['scheduleEndMinute'] = 59;
     $student_public_form['scheduleEndAmpm'] = 'pm';
 
-    $student_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
-    $student_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_student_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
+    $student_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
 
     $teacher_public_form['scheduleForm'] = true;
     $teacher_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_teacher_reg_start']];
@@ -210,8 +210,8 @@ class ARIA_Create_Competition {
     $teacher_public_form['scheduleEndMinute'] = 59;
     $teacher_public_form['scheduleEndAmpm'] = 'pm';
 
-    $teacher_public_form['scheduleMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
-    $teacher_public_form['schedulePendingMessage'] = 'The registration for the ' . $competition_name . ' is not available before ' . $entry[(string) $field_mapping['competition_teacher_reg_start']] . ' or after ' . $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
+    $teacher_public_form['schedulePendingMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
 
     // update the related forms
     GFAPI::update_form($student_public_form);
@@ -480,7 +480,7 @@ class ARIA_Create_Competition {
     // Pricing section break
     $section_break = new GF_Field_Section();
     $section_break->label = "Pricing";
-    $section_break->description = "Only enter prices for levels eligible to";
+    $section_break->description = "Enter prices only for levels eligible to";
     $section_break->description .= " participate in this competition.";
 
     // PayPal Email
@@ -798,8 +798,8 @@ class ARIA_Create_Competition {
     $volunteer_preference_field->inputs = array();
     $volunteer_preference_field = self::aria_add_checkbox_input( $volunteer_preference_field, $volunteer_inputs );
     $volunteer_preference_field->description = "Please check at least two volunteer job"
-    ." preferences for this year's Festival. You will be notified by email of your"
-    ." volunteer assignments as Festival approaches.";
+    ." preferences for this year's event. You will be notified by email of your"
+    ." volunteer assignments as the event approaches.";
     $volunteer_preference_field->descriptionPlacement = 'above';
     $volunteer_preference_field->conditionalLogic = array(
 	'actionType' => 'show',
@@ -1054,7 +1054,7 @@ class ARIA_Create_Competition {
 
     // competition format
     $competition_format_field = new GF_Field_Radio();
-    $competition_format_field->label = "Format of Competition";
+    $competition_format_field->label = "Format of Event";
     $competition_format_field->id = $field_id_arr['competition_format'];
     $competition_format_field->isRequired = true;
     $competition_format_field->choices = array(
@@ -1293,7 +1293,7 @@ class ARIA_Create_Competition {
     $ariaFieldIds['student_level'] = $student_level_field->id;
 
     $product_field = new GF_Field_Product();
-    $product_field->label = "Student Level Price";
+    $product_field->label = "Student Level";
     $product_field->id = $field_id_array['level_pricing'];
     $product_field->isRequired = true;
     $product_field->size = "small";
