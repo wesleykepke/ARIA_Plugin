@@ -146,6 +146,8 @@ jQuery(document).ready(function($) {
 	// Song 1 Selection
 
 	// user selects period
+	$(input_id_arr['song_1_period']).val(input_id_arr['song_1_period'] + ' option:first');
+	$(input_id_arr['song_2_period']).val(input_id_arr['song_2_period'] + ' option:first');
 	$(input_id_arr['song_1_period']).live("change", function() {
 		period_arr[ 'selected_val' ][1] = $(input_id_arr['song_1_period']).val();
 		period_arr[ 'selected_text' ][1] = $(input_id_arr['song_1_period'] + '  option:selected').text();
