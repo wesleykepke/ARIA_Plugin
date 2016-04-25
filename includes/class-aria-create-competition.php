@@ -1031,7 +1031,7 @@ class ARIA_Create_Competition {
     $student_theory_score->id = $field_id_arr['theory_score'];
     $student_theory_score->isRequired = true;
     $student_theory_score->numberFormat = "decimal_dot";
-    $student_theory_score->rangeMin = 0;
+    $student_theory_score->rangeMin = 70;
     $student_theory_score->rangeMax = 100;
     $teacher_form->fields[] = $student_theory_score;
     $ariaFieldIds['theory_score'] = $student_theory_score->id;
@@ -1068,8 +1068,11 @@ class ARIA_Create_Competition {
     $ariaFieldIds['competition_format'] = $competition_format_field->id;
 
     // timing field
+
     $timing_of_pieces_field = new GF_Field_Select();
-    $timing_of_pieces_field->label = "Timing of Pieces (minutes)";
+    $timing_of_pieces_field->label = "Combined timing of Pieces (minutes)";
+    $timing_of_pieces_field->description = "Please round up to the nearest minute.";
+    $timing_of_pieces_field->descriptionPlacement = "above.";
     $timing_of_pieces_field->id = $field_id_arr['timing_of_pieces'];
     $timing_of_pieces_field->isRequired = true;
     $timing_choices = array();
