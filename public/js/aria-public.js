@@ -2,8 +2,6 @@ jQuery(document).ready(function($) {
 //	alert("in public");
 	// ---- only load on specific page (if statement with student level?)
 
-	//alert(window.location.href);
-
 	// Page load functions
 	//local
 	var local_host = "http://aria.cse.unr.edu";
