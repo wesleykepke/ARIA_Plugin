@@ -798,8 +798,8 @@ class ARIA_Create_Competition {
     $volunteer_preference_field->inputs = array();
     $volunteer_preference_field = self::aria_add_checkbox_input( $volunteer_preference_field, $volunteer_inputs );
     $volunteer_preference_field->description = "Please check at least two volunteer job"
-    ." preferences for this year's Festival. You will be notified by email of your"
-    ." volunteer assignments as Festival approaches.";
+    ." preferences for this year's event. You will be notified by email of your"
+    ." volunteer assignments as the event approaches.";
     $volunteer_preference_field->descriptionPlacement = 'above';
     $volunteer_preference_field->conditionalLogic = array(
 	'actionType' => 'show',
@@ -1054,7 +1054,7 @@ class ARIA_Create_Competition {
 
     // competition format
     $competition_format_field = new GF_Field_Radio();
-    $competition_format_field->label = "Format of Competition";
+    $competition_format_field->label = "Format of Event";
     $competition_format_field->id = $field_id_arr['competition_format'];
     $competition_format_field->isRequired = true;
     $competition_format_field->choices = array(
