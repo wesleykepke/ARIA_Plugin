@@ -51,7 +51,7 @@ class TimeBlock {
   private $sections;
 
   /**
-   * The start time of the current time block. 
+   * The start time of the current time block.
    *
    * @since 1.0.0
    * @access private
@@ -60,7 +60,7 @@ class TimeBlock {
   private $start_time;
 
   /**
-   * The day of the current time block. 
+   * The day of the current time block.
    *
    * @since 1.0.0
    * @access private
@@ -69,7 +69,7 @@ class TimeBlock {
   private $day;
 
   /**
-   * The array of room titles for the time blocks's sections. 
+   * The array of room titles for the time blocks's sections.
    *
    * @since 1.0.0
    * @access private
@@ -84,21 +84,21 @@ class TimeBlock {
    * @param	int 	$num_concurrent_sections 	The number of concurrent sections.
    * @param	int 	$time_block_duration 	The length of the concurrent sections.
    * @param int 	$song_threshold 	The amount of times a song can be played in this section.
-   * @param boolean 	$group_by_level 	True if single level only, false otherwise. 
+   * @param boolean 	$group_by_level 	True if single level only, false otherwise.
    * @param string  $start_time   The start time of the current time block.
    * @param string  $day  The day of the current time block.
-   * @param array   $rooms  The array of room names/numbers. 
+   * @param array   $rooms  The array of room names/numbers.
    */
   function __construct($num_concurrent_sections, $time_block_duration,
-                       $song_threshold, $group_by_level, $start_time, 
+                       $song_threshold, $group_by_level, $start_time,
                        $day, $rooms) {
     $this->num_concurrent_sections = $num_concurrent_sections;
     $this->sections = new SplFixedArray($num_concurrent_sections);
     $this->start_time = $start_time;
     $this->day = $day;
-    $this->rooms = $rooms;   
+    $this->rooms = $rooms;
     for ($i = 0; $i < $num_concurrent_sections; $i++) {
-      $this->sections[$i] = new Section($time_block_duration, $song_threshold, 
+      $this->sections[$i] = new Section($time_block_duration, $song_threshold,
                                         $group_by_level, $start_time, $day,
                                         $rooms[$i]);
     }
@@ -168,11 +168,10 @@ class TimeBlock {
   public function get_schedule_string() {
     $schedule = '';
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $schedule .= '<tr><th contenteditable="true">';
+      $schedule .= '<tr><th id="time-block-info">';
       $schedule .= 'Section #';
       $schedule .= strval($i + 1) . ' -- ';
-      $schedule .= $this->rooms[$i];
-      $schedule .= ', ' . $this->sections[$i]->get_section_info();
+      $schedule .= $this->sections[$i]->get_section_info();
       $schedule .= $this->sections[$i]->get_schedule_string();
       $schedule .= '</th></tr>';
     }
@@ -184,12 +183,12 @@ class TimeBlock {
    * and group them by teacher email.
    *
    * This function will accept a teacher's email as a parameter. Using this value,
-   * the timeblock will then iterate through all of it's sections and find all 
-   * of the students scheduled in the competition that had registered under the 
+   * the timeblock will then iterate through all of it's sections and find all
+   * of the students scheduled in the competition that had registered under the
    * teacher's email that was passed as a parameter.
    *
    * @param 	String	$teacher_email	The email of the teacher to group students by.
-   * @param	Array	$students	The array of students that registered under the teacher. 
+   * @param	Array	$students	The array of students that registered under the teacher.
    */
   public function group_all_students_by_teacher_email($teacher_email, &$students) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
@@ -199,55 +198,55 @@ class TimeBlock {
 
   /**
    * This function will consolidate all scheduling data into a format suitable for
-   * the document generator. 
+   * the document generator.
    *
    * This function will iterate through all section objects of a given timeblock
-   * object. For each section, all student data will be added in a format that is 
+   * object. For each section, all student data will be added in a format that is
    * compatible with that required by the document generator.
    *
-   * @param   Array   $doc_gen_section_daya An associative array of all student data in doc. gen. compatible form. 
+   * @param   Array   $doc_gen_section_daya An associative array of all student data in doc. gen. compatible form.
    */
   public function get_section_info_for_doc_gen(&$doc_gen_section_data) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $this->sections[$i]->get_section_info_for_doc_gen($doc_gen_section_data); 
-    } 
+      $this->sections[$i]->get_section_info_for_doc_gen($doc_gen_section_data);
+    }
   }
 
   /**
-   * This function will assign judges to the current competition. 
+   * This function will assign judges to the current competition.
    *
    * Using an array of names (for judges) that is passed as a parameter, this
    * function will assign the judges in the competition to the sections within
-   * each of the timeblocks. 
+   * each of the timeblocks.
    *
    * @param   Array   $judges   The array of judges in the current competition.
    * @param   Integer   $judge_count  An integer to help offset into $judges.
-   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.  
+   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.
    */
   public function assign_judges($judges, $judge_count, $num_judges_per_section) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       for ($j = 0; $j < $num_judges_per_section; $j++) {
         $this->sections[$i]->assign_judge($judges[$judge_count % count($judges)]);
-        $judge_count++; 
+        $judge_count++;
       }
-    }    
+    }
   }
 
   /**
-   * This function will assign proctors to the current competition. 
+   * This function will assign proctors to the current competition.
    *
    * Using an array of names (for proctors) that is passed as a parameter, this
    * function will assign the proctors in the competition to the sections within
-   * each of the timeblocks. 
+   * each of the timeblocks.
    *
    * @param   Array   $proctors   The array of proctors in the current competition.
-   * @param   Integer   $proctor_count  An integer to help offset into $proctors.   
+   * @param   Integer   $proctor_count  An integer to help offset into $proctors.
    */
   public function assign_proctors($proctors, $proctor_count) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->assign_proctor($proctors[$proctor_count % count($proctors)]);
-      $proctor_count++; 
-    }   
+      $proctor_count++;
+    }
   }
 
   /**
