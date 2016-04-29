@@ -88,7 +88,7 @@ class Scheduler {
    *
    * @param	int	$num_time_blocks_sat	The number of time blocks on saturday.
    * @param	int	$num_time_blocks_sun	The number of time blocks on sunday.
-   * @param Array   $both_start_times   The array of start times for both days. 
+   * @param Array   $both_start_times   The array of start times for both days.
    * @param	int	$time_block_duration	The amount of time allocated to each timeblock.
    * @param	int	$num_concurrent_sections_sat	The number of sections/timeblock on saturday.
    * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
@@ -139,31 +139,31 @@ class Scheduler {
     // preprocess the rooms for saturday
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
       if ($saturday_rooms != false && array_key_exists($i, $saturday_rooms)) {
-        $saturday_rooms[$i] = 'Room: ' . $saturday_rooms[$i];
+        $saturday_rooms[$i] = $saturday_rooms[$i];
       }
       else {
-        $saturday_rooms[$i] = 'Room: ' . strval($i + 1);
-      }   
+        $saturday_rooms[$i] = strval($i + 1);
+      }
     }
 
-    // preprocess the rooms for sunday 
+    // preprocess the rooms for sunday
     for ($i = 0; $i < $num_time_blocks_sun; $i++) {
       if ($sunday_rooms != false && array_key_exists($i, $sunday_rooms)) {
-        $sunday_rooms[$i] = 'Room: ' . $sunday_rooms[$i];
+        $sunday_rooms[$i] = $sunday_rooms[$i];
       }
       else {
-        $sunday_rooms[$i] = 'Room: ' . strval($i + 1);
-      }   
+        $sunday_rooms[$i] = strval($i + 1);
+      }
     }
 
-    $start_time_index = 0; 
+    $start_time_index = 0;
 
     // create the time blocks with their concurrent sections for saturday
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
       $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration,
-                                           $song_threshold, $group_by_level, 
-                                           $both_start_times[$start_time_index], 
+                                           $song_threshold, $group_by_level,
+                                           $both_start_times[$start_time_index],
                                            'Saturday', $saturday_rooms);
     }
 
@@ -181,7 +181,7 @@ class Scheduler {
     $this->days[SUN] = new SplFixedArray($num_time_blocks_sun);
     for ($i = 0; $i < $num_time_blocks_sun; $i++) {
       $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration,
-                                           $song_threshold, $group_by_level, 
+                                           $song_threshold, $group_by_level,
                                            $both_start_times[$start_time_index],
                                            'Sunday', $sunday_rooms);
     }
@@ -303,11 +303,12 @@ class Scheduler {
    * Since the schedule is best demonstrated using HTML tables and lists, this
    * function is responsible for creating the basic HTML structure. The creation
    * of the inner HTML will be abstracted away to the timeblocks and sections.
-   * 
+   *
    * @return	string	The generated HTML output
    */
   public function get_schedule_string() {
-    $schedule = '';
+    $schedule = '<div id="schedule"><div id="schedule-table">';
+    //$schedule = '<div id="schedule-table">';
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
@@ -340,6 +341,7 @@ class Scheduler {
       $schedule .= '</table>';
     }
 
+    $schedule .= "</div></div>";
     return $schedule;
   }
 
@@ -348,12 +350,12 @@ class Scheduler {
    * and group them by teacher email.
    *
    * This function will accept a teacher's email as a parameter. Using this value,
-   * the scheduler will then iterate through all of it's timeblocks and find all 
-   * of the students scheduled in the competition that had registered under the 
+   * the scheduler will then iterate through all of it's timeblocks and find all
+   * of the students scheduled in the competition that had registered under the
    * teacher's email that was passed as a parameter.
    *
    * @param 	String	$teacher_email	The email of the teacher to group students by.
-   * @param	Array	$students	The array of students that registered under the teacher. 
+   * @param	Array	$students	The array of students that registered under the teacher.
    */
   public function group_all_students_by_teacher_email($teacher_email, &$students) {
     for ($i = 0; $i < count($this->days); $i++) {
@@ -365,27 +367,27 @@ class Scheduler {
 
   /**
    * This function will consolidate all scheduling data into a format suitable for
-   * the document generator. 
+   * the document generator.
    *
-   * This function will iterate through all timeblock objects of all days of the 
+   * This function will iterate through all timeblock objects of all days of the
    * competition. For each timeblock, the associated sections will be parsed
    * and the data will come back returned in a format that is compatible with that
    * required by the document generator.
    *
-   * @return  An associative array of all student data in doc. gen. compatible form. 
+   * @return  An associative array of all student data in doc. gen. compatible form.
    */
   public function get_section_info_for_doc_gen() {
     $doc_gen_section_data = array();
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $this->days[$i][$j]->get_section_info_for_doc_gen($doc_gen_section_data); 
+        $this->days[$i][$j]->get_section_info_for_doc_gen($doc_gen_section_data);
       }
     }
-    return $doc_gen_section_data; 
+    return $doc_gen_section_data;
   }
 
   /**
-   * This function will assign judges to the current competition. 
+   * This function will assign judges to the current competition.
    *
    * Using an array of names (for judges) that is passed as a parameter, this
    * function will assign the judges in the competition to timeblocks, which
@@ -393,7 +395,7 @@ class Scheduler {
    * within the timeblocks.
    *
    * @param   Array   $judges   The array of judges in the current competition.
-   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.  
+   * @param   Int   $num_judges_per_section   The number of judges that should be assigned to a section.
    */
   public function assign_judges($judges, $num_judges_per_section) {
     $judge_count = 0;
@@ -401,18 +403,18 @@ class Scheduler {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         $this->days[$i][$j]->assign_judges($judges, $judge_count, $num_judges_per_section);
       }
-    }    
+    }
   }
 
   /**
-   * This function will assign proctors to the current competition. 
+   * This function will assign proctors to the current competition.
    *
    * Using an array of names (for proctors) that is passed as a parameter, this
    * function will assign the proctors in the competition to timeblocks, which
    * will then have the responsibility of assigning the proctors to the sections
    * within the timeblocks.
    *
-   * @param   Array   $proctors   The array of proctors in the current competition. 
+   * @param   Array   $proctors   The array of proctors in the current competition.
    */
   public function assign_proctors($proctors) {
     $proctor_count = 0;
@@ -420,7 +422,7 @@ class Scheduler {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         $this->days[$i][$j]->assign_proctors($proctors, $proctor_count);
       }
-    }    
+    }
   }
 
   /**

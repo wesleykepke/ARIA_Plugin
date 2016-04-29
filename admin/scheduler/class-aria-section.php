@@ -146,7 +146,7 @@ class Section {
   private $master_class_instructor_duration;
 
   /**
-   * The start time of the current time block. 
+   * The start time of the current time block.
    *
    * @since 1.0.0
    * @access private
@@ -155,7 +155,7 @@ class Section {
   private $start_time;
 
   /**
-   * The day of the current time block (and section). 
+   * The day of the current time block (and section).
    *
    * @since 1.0.0
    * @access private
@@ -164,35 +164,35 @@ class Section {
   private $day;
 
   /**
-   * The name/number of the section's room. 
+   * The name/number of the section's room.
    *
    * @since 1.0.0
    * @access private
-   * @var   string   $room   The name or number of the room. 
+   * @var   string   $room   The name or number of the room.
    */
   private $room;
 
   /**
-   * The judges of the current section. 
+   * The judges of the current section.
    *
    * @since 1.0.0
    * @access private
-   * @var   array   $judges   The name(s) of the judge(s). 
+   * @var   array   $judges   The name(s) of the judge(s).
    */
   private $judges;
 
   /**
-   * The proctor of the current section. 
+   * The proctor of the current section.
    *
    * @since 1.0.0
    * @access private
-   * @var   string   $proctor   The name of the proctor.  
+   * @var   string   $proctor   The name of the proctor.
    */
   private $proctor;
 
 
   /**
-   * The constructor used to instantiate a new section object. 
+   * The constructor used to instantiate a new section object.
    *
    * @since 1.0.0
    * @param int   $section_time_limit  The length of the concurrent sections.
@@ -200,7 +200,7 @@ class Section {
    * @param boolean   $group_by_level   True if single level only, false otherwise
    * @param string   $start_time   The start time of the current time block.
    * @param string  $day  The day of the current time block.
-   * @param string  $room   The name/number of the room for the current section.  
+   * @param string  $room   The name/number of the room for the current section.
    */
   function __construct($section_time_limit = DEFAULT_SECTION_TIME,
                        $song_threshold = NO_SONG_THRESHOLD,
@@ -224,7 +224,7 @@ class Section {
     $this->day = $day;
     $this->room = $room;
     $this->judges = array();
-    $this->proctor = null;   
+    $this->proctor = null;
   }
 
   /**
@@ -249,10 +249,10 @@ class Section {
   }
 
   /**
-   * The function used to add judges to the section. 
+   * The function used to add judges to the section.
    *
    * @param  $judge  String  The name of the judge to add to the competition.
-   * 
+   *
    * @return void
    */
   public function assign_judge($judge) {
@@ -260,10 +260,10 @@ class Section {
   }
 
   /**
-   * The function used to add proctors to the section. 
+   * The function used to add proctors to the section.
    *
    * @param  $proctor  String  The name of the proctor to add to the competition.
-   * 
+   *
    * @return void
    */
   public function assign_proctor($proctor) {
@@ -359,7 +359,7 @@ class Section {
 
     // add student to this section
     $student->set_start_time($this->start_time);
-    $student->set_day($this->day); 
+    $student->set_day($this->day);
     $student->set_room($this->room);
     $this->students[] = $student;
     if ($this->type === SECTION_MASTER) {
@@ -441,25 +441,25 @@ class Section {
           for ($j = 0; $j < count($value); $j++) {
             $schedule .= '<li>';
             $schedule .= $value[$j];
-            $schedule .= '</li>';   
+            $schedule .= '</li>';
           }
         }
         else {
           $schedule .= '<li>';
           $schedule .= $key . ': ' . $value;
-          $schedule .= '</li>';  
+          $schedule .= '</li>';
         }
-      } 
+      }
       $schedule .= '</ul></td></tr>';
     }
 
-    return $schedule; 
+    return $schedule;
   }
 
   /**
    * This function will return a plethora of information regarding the current section.
    *
-   * This function returns a formatted string that lists all of the information about a 
+   * This function returns a formatted string that lists all of the information about a
    * given section. This info is primarily used as a label for the different sections in
    * the scheduler output.
    *
@@ -472,11 +472,14 @@ class Section {
     }
 
     // get start time of the section
-    $section_info = 'Start Time: ' . $this->start_time . ', ';
+    $section_info = 'Start Time: <span id="section-start" contenteditable="true">' . $this->start_time . '</span>' . ', ';
+
+    // get the room number of the section
+    $section_info .= 'Room: <span id="section-room" contenteditable="true">' . $this->room . '</span>' . ', ';
 
     // determine number of students per section
     $section_info .= 'Number of Students: ' . strval(count($this->students)) . ', ';
-    
+
     // determine the judge(s) of the section
     if (count($this->judges) > 1) {
       $section_info .= 'Judge(s): ';
@@ -491,18 +494,18 @@ class Section {
       }
     }
     else {
-      $section_info .= 'Judge: ';
-      $section_info .= $this->judges[0] . ', ';
+      $section_info .= 'Judge: <span id="section-judges" contenteditable="true">';
+      $section_info .= $this->judges[0] . ',' . '</span> ';
     }
 
     // determine the proctor of the section
-    $section_info .= "Proctor: $this->proctor, ";
+    $section_info .= 'Proctor: <span contenteditable="true">' . $this->proctor . '</span>';
 
     // get all skill levels in section
     $skill_levels = array();
     foreach ($this->students as $student) {
       if (!in_array($student->get_skill_level(), $skill_levels)) {
-        $skill_levels[] = $student->get_skill_level(); 
+        $skill_levels[] = $student->get_skill_level();
       }
     }
 
@@ -538,27 +541,27 @@ class Section {
    * and group them by teacher email.
    *
    * This function will accept a teacher's email as a parameter. Using this value,
-   * the section will then iterate through all of it's students and find all 
-   * of the students scheduled in the competition that had registered under the 
+   * the section will then iterate through all of it's students and find all
+   * of the students scheduled in the competition that had registered under the
    * teacher's email that was passed as a parameter.
    *
    * @param 	String	$teacher_email	The email of the teacher to group students by.
-   * @param	Array	$students	The array of students that registered under the teacher. 
+   * @param	Array	$students	The array of students that registered under the teacher.
    */
   public function group_all_students_by_teacher_email($teacher_email, &$students) {
     for ($i = 0; $i < count($this->students); $i++) {
       if ($this->students[$i]->get_teacher_email() == $teacher_email) {
-        $students[] = $this->students[$i];  
-      } 
+        $students[] = $this->students[$i];
+      }
     }
   }
 
   /**
    * This function will consolidate all scheduling data into a format suitable for
-   * the document generator. 
+   * the document generator.
    *
    * This function will iterate through all student objects of a given section
-   * object. For each section, all student data will be added in a format that is 
+   * object. For each section, all student data will be added in a format that is
    * compatible with that required by the document generator.
    *
    * @param   Array   $doc_gen_section_daya An associative array of all student data in doc. gen. compatible form.
@@ -566,10 +569,10 @@ class Section {
   public function get_section_info_for_doc_gen(&$doc_gen_section_data) {
     // not sure about this if statement
     if (self::is_empty()) {
-      return; 
+      return;
     }
 
-    // add the base information (of section info)    
+    // add the base information (of section info)
     $doc_gen_single_section_data = array();
     $doc_gen_single_section_data['section_name'] = $this->room;
 
@@ -589,12 +592,12 @@ class Section {
     $doc_gen_single_section_data['proctor'] = "Don't have this data..";
     $doc_gen_single_section_data['monitor'] = "Don't have this data..";
 
-    // for each student registered in the section, get their data 
-    $doc_gen_single_section_data['students'] = array(); 
+    // for each student registered in the section, get their data
+    $doc_gen_single_section_data['students'] = array();
     for ($i = 0; $i < count($this->students); $i++) {
       $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();
     }
-    $doc_gen_section_data[] = $doc_gen_single_section_data; 
+    $doc_gen_section_data[] = $doc_gen_single_section_data;
   }
 
   /**

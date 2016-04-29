@@ -212,11 +212,13 @@ class Scheduling_Algorithm {
     self::save_scheduler_to_file($title, $scheduler);
 
     // test code
-    self::parse_scheduler_html($scheduler->get_schedule_string());
+    //self::parse_scheduler_html($scheduler->get_schedule_string());
 
     // print the schedule to the festival chairman
-    $confirmation = "<h4>Don't worry about saving your schedule. ARIA will automatically save the most"
-    . " recently generated schedule so you can return to it later for document generation.</h4><br>";
+    $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $title . '</b></h1>';
+    $confirmation .= "<h4>Don't worry about saving your schedule. ARIA will automatically save the most"
+    . " recently generated schedule so you can return to it later for document generation.</h4>";
+    $confirmation .= '<button type="button" onclick="sendScheduleToServer()">Save schedule!</button><br>';
     $confirmation .= $scheduler->get_schedule_string();
     return $confirmation;
   }
@@ -299,7 +301,6 @@ class Scheduling_Algorithm {
     " of each timeblock on Saturday (9:00 AM, 9:30 AM, 1:30 PM, etc.).";
     $sat_start_times->descriptionPlacement = "above";
     $form->fields[] = $sat_start_times;
-
 
     // start times of timeblocks on Sunday
     $sun_start_times = new GF_Field_List();
@@ -420,7 +421,7 @@ class Scheduling_Algorithm {
 
     // add a default submission message for the schedule competition form
     $successful_submission_message = 'Congratulations! You have just';
-    $successful_submission_message .= ' successfully scheduled a competition.';
+    $successful_submission_message .= ' successfully scheduled a competition for:';
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
@@ -830,7 +831,7 @@ class Scheduling_Algorithm {
    * and for document generation).
    *
    * NOTE: This code will place the generated file inside of the ARIA_FILE_UPLOAD_LOC
-   * location. 
+   * location.
    *
    * @param     String  $title  The title for a given competition.
    * @param     Scheduler   $scheduler  The scheduler object for a given competition.
@@ -946,7 +947,7 @@ class Scheduling_Algorithm {
    *
    * This function will take as input the HTML that is created by the scheduler
    * and obtain information from it so that the associated scheduler object can
-   * be updated. 
+   * be updated.
    *
    * @param
    * @param
@@ -954,7 +955,7 @@ class Scheduling_Algorithm {
    * @since 1.0.0
    * @author KREW
    */
-  private static function parse_scheduler_html($html) {
-    wp_die(print_r($html));
+  public static function parse_scheduler_html($html) {
+    echo '<br>random string<br>';
   }
 }

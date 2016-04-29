@@ -1,24 +1,26 @@
+var local_host = "http://aria.cse.unr.edu";
+//var local_host = "http://192.168.245.140";
+
+// aria
+var host = "http://aria.cse.unr.edu";
+var public_key = "1ff591984b";
+var private_key = "c4efb4676e0d6a6";
+
+if( window.location.href.indexOf('nnmta.org') != -1)
+{
+  host = "http://www.nnmta.org";
+  local_host = host;
+  public_key = "0035d1a323";
+  private_key ="f2d4546aab2c06a";
+}
+
 jQuery(document).ready(function($) {
 //  alert("in public");
   // ---- only load on specific page (if statement with student level?)
 
   // Page load functions
   //local
-  var local_host = "http://aria.cse.unr.edu";
-  //var local_host = "http://192.168.245.140";
 
-  // aria
-  var host = "http://aria.cse.unr.edu";
-  var public_key = "1ff591984b";
-  var private_key = "c4efb4676e0d6a6";
-
-  if( window.location.href.indexOf('nnmta.org') != -1)
-  {
-    host = "http://www.nnmta.org";
-    local_host = host;
-    public_key = "0035d1a323";
-    private_key ="f2d4546aab2c06a";
-  }
 
   var form_name = $('.gform_title').text();
 
@@ -575,3 +577,39 @@ jQuery(document).ready(function($) {
     return returnedValue;
   }// end of get music form id function
 });
+
+function sendScheduleToServer() {
+  var comp_name = document.getElementById("comp-name-bold").innerHTML;
+  var scheduler = document.getElementById("schedule");
+  var myUrl = host + "/wp-content/plugins/ARIA/admin/scheduler/scheduler-client.php";
+  var taggedSectionInfos = scheduler.getElementsByTagName("th");
+  var sections = [];
+  for (var i = 0; i < taggedSectionInfos.length; i++) {
+    var sectionInfo = taggedSectionInfos[i];
+    var sectionDescriptiveInfo = sectionInfo.getElementsByTagName("span");
+    sectionInfo = sectionInfo.innerHTML;
+    var jsonSectionInfo = {};
+
+    if (sectionInfo.indexOf("Section") > -1) {
+      jsonSectionInfo.editableSectionData = [];
+      for (var j = 0; j < sectionDescriptiveInfo.length; j++) {
+        jsonSectionInfo.editableSectionData.push(sectionDescriptiveInfo[j].innerHTML);
+        //console.log(">>>>>>", sectionDescriptiveInfo[j].innerHTML);
+      }
+      sections.push(jsonSectionInfo);
+    }
+  }
+
+  //console.log(sections);
+  data = {
+    comp_name: comp_name,
+    comp_sections: sections
+  };
+
+  console.log(data);
+/*
+  jQuery.post(myUrl, data, function(response) {
+    console.log(response);
+  });
+*/
+}// end of send schedule to server function
