@@ -593,19 +593,35 @@ function sendScheduleToServer() {
     // obtain all the information that the user can modify from the schedule
     var singleTaggedSectionInfo = taggedSectionInfos[i];
     var modifiableSectionInfo = singleTaggedSectionInfo.getElementsByTagName("span");
+
+
+
     if (singleTaggedSectionInfo.innerHTML.indexOf("Section") > -1) {
-      console.log('>>>here', modifiableSectionInfo.length);
+      console.log(i,
+                  singleTaggedSectionInfo.innerHTML,
+                  "\n",
+                  modifiableSectionInfo,
+                  modifiableSectionInfo.length);
 
       // configure the aforementioned modifiable data into JSON
       var jsonSectionInfo = {};
       jsonSectionInfo.data = [];
-      for (var j = 0; j < modifiableSectionInfo.length; j++) {
-        jsonSectionInfo.data.push(modifiableSectionInfo[j].innerHTML);
-      }
-      if (modifiableSectionInfo.length == 0) {
-        jsonSectionInfo.push("Empty");
+
+      // if students are registered for a section,
+      if (modifiableSectionInfo.length > 0) {
+        console.log("STUDENTS IN SECTION");
+        for (var j = 0; j < modifiableSectionInfo.length; j++) {
+          jsonSectionInfo.data.push(modifiableSectionInfo[j].innerHTML);
+        }
       }
 
+      // if no students are regitered for a section, add a dummy value
+      else {
+        console.log("NO STUDENTS IN SECTION");
+        jsonSectionInfo.data.push("EMPTY");
+      }
+
+      // add section data to array of accumulating sections
       formattedSectionInfos.push(jsonSectionInfo);
     }
   }
@@ -616,7 +632,7 @@ function sendScheduleToServer() {
     modifiableData: formattedSectionInfos
   };
 
-  console.log("modifiableData length", data.modifiableData);
+  //console.log("modifiableData length", data.modifiableData);
 
   // send the data to the server
   jQuery.post(myUrl, data, function(response) {
