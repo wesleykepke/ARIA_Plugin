@@ -59,8 +59,8 @@ class Doc_Generator {
     }
 
     // use the scheduler object to prepare the format(s) required for doc. generation
-    //$comp_sections = $scheduler->get_section_info_for_doc_gen();
-    //wp_die(print_r($comp_sections));
+    $comp_sections = $scheduler->get_section_info_for_doc_gen();
+    wp_die(print_r($comp_sections));
 
     // send all participating teachers emails regarding when their students are playing
     // and their volunteer information
