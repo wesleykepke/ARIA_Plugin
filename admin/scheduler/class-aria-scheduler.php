@@ -10,9 +10,14 @@
  * @subpackage ARIA/admin
  */
 
+/*
 require_once(ARIA_ROOT . "/includes/aria-constants.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-time-block.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
+*/
+
+require_once("class-aria-time-block.php");
+require_once("class-aria-student.php");
 
 /**
  * The scheduler object used for scheduling.
@@ -421,6 +426,31 @@ class Scheduler {
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         $this->days[$i][$j]->assign_proctors($proctors, $proctor_count);
+      }
+    }
+  }
+
+  /**
+   * This function will update the sections with new information.
+   *
+   * Once the festival chairman has created a schedule for a competition and has
+   * specified who will be the proctor, judge, etc. of a section, that information
+   * will need to be added back into the scheduler. This function is responsible
+   * for accepting that new information and helping place it in the right place
+   * within a scheduler object.
+   *
+   * @param   Array   $modifiable_data The array of new section information.
+   */
+  public function update_section_data($modifiable_data) {
+    $modifiable_data_index = 0;
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $new_timeblock_data = array();
+        for ($k = 0; $k < $this->days[$i][$j]->get_num_concurrent_sections(); $k++) {
+          $new_timeblock_data[] = $modifiable_data[$modifiable_data_index]['data'];
+          $modifiable_data_index++;
+        }
+        $this->days[$i][$j]->update_section_data($new_timeblock_data);
       }
     }
   }

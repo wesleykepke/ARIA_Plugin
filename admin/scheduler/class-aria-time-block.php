@@ -10,8 +10,12 @@
  * @subpackage ARIA/admin
  */
 
+/*
 require_once(ARIA_ROOT . "/includes/class-aria-api.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-section.php");
+*/
+
+require_once("class-aria-section.php");
 
 /**
  * The time block object used for scheduling.
@@ -102,6 +106,15 @@ class TimeBlock {
                                         $group_by_level, $start_time, $day,
                                         $rooms[$i]);
     }
+  }
+
+  /**
+   * This function will return the number of concurrent sections in the current timeblock.
+   *
+   * @return Integer designating the number of concurrent sections within the timeblock.
+   */
+  public function get_num_concurrent_sections() {
+    return $this->num_concurrent_sections;
   }
 
   /**
@@ -246,6 +259,23 @@ class TimeBlock {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->assign_proctor($proctors[$proctor_count % count($proctors)]);
       $proctor_count++;
+    }
+  }
+
+  /**
+   * This function will update the sections with new information.
+   *
+   * Once the festival chairman has created a schedule for a competition and has
+   * specified who will be the proctor, judge, etc. of a section, that information
+   * will need to be added back into the scheduler. This function is responsible
+   * for accepting that new information and helping place it in the right place
+   * within a scheduler object.
+   *
+   * @param   Array   $new_section_data   The array of new section information.
+   */
+  public function update_section_data($new_section_data) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->update_section_data($new_section_data[$i]);
     }
   }
 

@@ -579,37 +579,63 @@ jQuery(document).ready(function($) {
 });
 
 function sendScheduleToServer() {
-  var comp_name = document.getElementById("comp-name-bold").innerHTML;
-  var scheduler = document.getElementById("schedule");
-  var myUrl = host + "/wp-content/plugins/ARIA/admin/scheduler/scheduler-client.php";
-  var taggedSectionInfos = scheduler.getElementsByTagName("th");
-  var sections = [];
-  for (var i = 0; i < taggedSectionInfos.length; i++) {
-    var sectionInfo = taggedSectionInfos[i];
-    var sectionDescriptiveInfo = sectionInfo.getElementsByTagName("span");
-    sectionInfo = sectionInfo.innerHTML;
-    var jsonSectionInfo = {};
+  // get necessary content from HTML
+  var compName = document.getElementById("comp-name-bold").innerHTML;
+  var schedule = document.getElementById("schedule");
+  var taggedSectionInfos = schedule.getElementsByTagName("th");
+  var formattedSectionInfos = [];
 
-    if (sectionInfo.indexOf("Section") > -1) {
-      jsonSectionInfo.editableSectionData = [];
-      for (var j = 0; j < sectionDescriptiveInfo.length; j++) {
-        jsonSectionInfo.editableSectionData.push(sectionDescriptiveInfo[j].innerHTML);
-        //console.log(">>>>>>", sectionDescriptiveInfo[j].innerHTML);
+  // define location of PHP script
+  var myUrl = host + "/wp-content/plugins/ARIA/admin/scheduler/scheduler-client.php";
+
+  // iterate through all of the tags with the information we want
+  for (var i = 0; i < taggedSectionInfos.length; i++) {
+    // obtain all the information that the user can modify from the schedule
+    var singleTaggedSectionInfo = taggedSectionInfos[i];
+    var modifiableSectionInfo = singleTaggedSectionInfo.getElementsByTagName("span");
+
+
+
+    if (singleTaggedSectionInfo.innerHTML.indexOf("Section") > -1) {
+      console.log(i,
+                  singleTaggedSectionInfo.innerHTML,
+                  "\n",
+                  modifiableSectionInfo,
+                  modifiableSectionInfo.length);
+
+      // configure the aforementioned modifiable data into JSON
+      var jsonSectionInfo = {};
+      jsonSectionInfo.data = [];
+
+      // if students are registered for a section,
+      if (modifiableSectionInfo.length > 0) {
+        console.log("STUDENTS IN SECTION");
+        for (var j = 0; j < modifiableSectionInfo.length; j++) {
+          jsonSectionInfo.data.push(modifiableSectionInfo[j].innerHTML);
+        }
       }
-      sections.push(jsonSectionInfo);
+
+      // if no students are regitered for a section, add a dummy value
+      else {
+        console.log("NO STUDENTS IN SECTION");
+        jsonSectionInfo.data.push("EMPTY");
+      }
+
+      // add section data to array of accumulating sections
+      formattedSectionInfos.push(jsonSectionInfo);
     }
   }
 
-  //console.log(sections);
+  // consolidate all data into a single JSON object
   data = {
-    comp_name: comp_name,
-    comp_sections: sections
+    compName: compName,
+    modifiableData: formattedSectionInfos
   };
 
-  console.log(data);
-/*
+  //console.log("modifiableData length", data.modifiableData);
+
+  // send the data to the server
   jQuery.post(myUrl, data, function(response) {
     console.log(response);
   });
-*/
 }// end of send schedule to server function

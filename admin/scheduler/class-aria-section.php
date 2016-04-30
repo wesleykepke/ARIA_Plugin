@@ -10,8 +10,8 @@
  * @subpackage ARIA/admin
  */
 
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
+require_once("class-aria-scheduler.php");
+require_once("class-aria-student.php");
 
 /**
  * The section object used for scheduling.
@@ -499,7 +499,7 @@ class Section {
     }
 
     // determine the proctor of the section
-    $section_info .= 'Proctor: <span contenteditable="true">' . $this->proctor . '</span>';
+    $section_info .= 'Proctor: <span id="section-proctors" contenteditable="true">' . $this->proctor . '</span>';
 
     // get all skill levels in section
     $skill_levels = array();
@@ -589,7 +589,7 @@ class Section {
       $doc_gen_single_section_data['judge'] = $this->judges[0];
     }
 
-    $doc_gen_single_section_data['proctor'] = "Don't have this data..";
+    $doc_gen_single_section_data['proctor'] = $this->proctor;
     $doc_gen_single_section_data['monitor'] = "Don't have this data..";
 
     // for each student registered in the section, get their data
@@ -598,6 +598,44 @@ class Section {
       $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();
     }
     $doc_gen_section_data[] = $doc_gen_single_section_data;
+  }
+
+  /**
+   * This function will update the sections with new information.
+   *
+   * Once the festival chairman has created a schedule for a competition and has
+   * specified who will be the proctor, judge, etc. of a section, that information
+   * will need to be added back into the scheduler. This function is responsible
+   * for accepting that new information and helping place it in the right place
+   * within a scheduler object.
+   *
+   * @param   Array   $new_section_data   The array of new section information.
+   */
+  public function update_section_data($new_section_data) {
+    // variables to help offset into the incoming array
+    $section_time = 0;
+    $section_room = 1;
+    $section_judges = 2;
+    $section_proctor = 3;
+
+    // assign the new data to the current section object
+    if (!is_null($new_section_data)) {
+      if (array_key_exists($section_time, $new_section_data)) {
+        $this->start_time = $new_section_data[$section_time];
+      }
+
+      if (array_key_exists($section_room, $new_section_data)) {
+        $this->room = $new_section_data[$section_room];
+      }
+
+      if (array_key_exists($section_judges, $new_section_data)) {
+        $this->judges = $new_section_data[$section_judges];
+      }
+
+      if (array_key_exists($section_proctor, $new_section_data)) {
+        $this->proctor = $new_section_data[$section_proctor];
+      }
+    }
   }
 
   /**
