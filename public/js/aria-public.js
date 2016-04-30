@@ -37,7 +37,7 @@ jQuery(document).ready(function($) {
     form_name = "";
   }
 
-  if( form_name.indexOf("Resend a Teacher Registration Link") )
+  if( form_name.indexOf("Resend a Teacher Registration Link") != -1)
   {
     var input_prefix = '#input_' + current_form_id + '_';
     var competition_field = input_prefix + '1';
@@ -301,7 +301,7 @@ jQuery(document).ready(function($) {
         url = host + "/gravityformsapi/" + route;
     url += "/?api_key=" + public_key;
     url += "&signature=" + sig + "&expires=" + future_unixtime;
-
+    url += "?paging[page_size]=500";
     //NOTE: key in search is just field ID not formID.fieldID
     // search for entry[levelID] == level
     var returnedValue;
@@ -315,7 +315,7 @@ jQuery(document).ready(function($) {
           for(key in result['response'])
           {
             // !!! base off stored name instead of hard coded
-            if( result['response'][key]['title'] == "NNMTA Music Database" ){
+            if( result['response'][key]['title'] == "NNMTA: Music Database"){
               test = result['response'][key]['id'];
             }
           }
