@@ -499,7 +499,7 @@ class Section {
     }
 
     // determine the proctor of the section
-    $section_info .= 'Proctor: <span contenteditable="true">' . $this->proctor . '</span>';
+    $section_info .= 'Proctor: <span id="section-proctors" contenteditable="true">' . $this->proctor . '</span>';
 
     // get all skill levels in section
     $skill_levels = array();
@@ -589,7 +589,7 @@ class Section {
       $doc_gen_single_section_data['judge'] = $this->judges[0];
     }
 
-    $doc_gen_single_section_data['proctor'] = "Don't have this data..";
+    $doc_gen_single_section_data['proctor'] = $this->proctor;
     $doc_gen_single_section_data['monitor'] = "Don't have this data..";
 
     // for each student registered in the section, get their data
