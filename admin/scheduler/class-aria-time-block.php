@@ -183,7 +183,7 @@ class TimeBlock {
   public function get_schedule_string($day) {
     $schedule = '';
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $schedule .= '<tr><th id="time-block-info">';
+      $schedule .= '<tr><th id="section-info" class="section">';
       $schedule .= 'Section #';
       $schedule .= strval($i + 1);
       $schedule .= $this->sections[$i]->get_section_info();
@@ -279,6 +279,50 @@ class TimeBlock {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->update_section_data($new_section_data[$i]);
     }
+  }
+
+  /**
+   * This function will update the current timeblock object with the new sections
+   * that students are participating under.
+   *
+   * This function will accept as input an array of student objects. Next, this
+   * function will iterate through all of it's concurrent sections and update
+   * those sections with all of the new students that will be participating in
+   * that section.
+   *
+   * @param   Array   $student_data   The array of student objects to update the timeblock.
+   */
+  public function update_section_students($student_data) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      if (!$this->sections[$i]->is_empty()) {
+        $this->sections[$i]->update_section_students($student_data[$i]);
+      }
+    }
+  }
+
+  /**
+   * This function will search through the current timeblock object and locate
+   * the student entry.
+   *
+   * Given an array of student information (name, skill level, song #1, and song #2),
+   * this function will iterate through the given timeblock object and return the
+   * student object that the incoming information associates with (if this student
+   * object exists within the current timeblock).
+   *
+   * @param   $student_to_find  Array   Contains name, skill level, and both songs
+   *
+   * @return  Student Object  The actual student object that the information associates with.
+   */
+  public function find_student_entry($student_to_find) {
+    $student_object = null;
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $student_object = $this->sections[$i]->find_student_entry($student_to_find);
+      if (!is_null($student_object)) {
+        return $student_object;
+      }
+    }
+
+    return $student_object;
   }
 
   /**

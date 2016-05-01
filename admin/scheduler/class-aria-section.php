@@ -190,7 +190,6 @@ class Section {
    */
   private $proctor;
 
-
   /**
    * The constructor used to instantiate a new section object.
    *
@@ -515,26 +514,6 @@ class Section {
     // determine number of students per section
     $section_info .= '<li>Number of Students: ' . strval(count($this->students)) . '</li>';
 
-    // determine the judge(s) of the section
-    /*
-    if (count($this->judges) > 1) {
-      $section_info .= 'Judge(s): ';
-      for ($i = 0; $i < count($this->judges); $i++) {
-        $section_info .= $this->judges[$i];
-        if ($i + 1 != count($this->judges)) {
-          $section_info .= ', ';
-        }
-        else {
-          $section_info .= ' ';
-        }
-      }
-    }
-    else {
-      $section_info .= 'Judge: <span id="section-judges" contenteditable="true">';
-      $section_info .= $this->judges[0] . ',' . '</span> ';
-    }
-    */
-
     // get all skill levels in section
     $skill_levels = array();
     foreach ($this->students as $student) {
@@ -622,6 +601,7 @@ class Section {
     // for each student registered in the section, get their data
     $doc_gen_single_section_data['students'] = array();
     for ($i = 0; $i < count($this->students); $i++) {
+      wp_die(print_r($this->students));
       $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();
     }
     $doc_gen_section_data[] = $doc_gen_single_section_data;
@@ -639,6 +619,11 @@ class Section {
    * @param   Array   $new_section_data   The array of new section information.
    */
   public function update_section_data($new_section_data) {
+    // check if the section is EMPTY (from aria-public.js)
+    if ($new_section_data[0] == "EMPTY") {
+      return;
+    }
+
     // variables to help offset into the incoming array
     $section_time = 0;
     $section_room = 1;
@@ -668,6 +653,88 @@ class Section {
         $this->door_guard = $new_section_data[$section_door_guard];
       }
     }
+  }
+
+  /**
+   * This function will update the current section object with the new list of
+   * students that will be participating in the section.
+   *
+   * This function will accept as input an array of student objects. Next, this
+   * function will replace all of the students in the current section with the
+   * new list of students.
+   *
+   * @param   Array   $student_data   The array of student objects to update the section.
+   */
+  public function update_section_students($student_data) {
+    // update the list of students that are in the current section
+    unset($this->students);
+    $this->students = array();
+    for ($i = 0; $i < count($student_data); $i++) {
+      $this->students[] = $student_data[$i];
+    }
+
+//echo "Just added new students.\n";
+//echo print_r($this->students);
+
+    // update the other information associated with the section
+    $this->current_time = 0;
+    for ($i = 0; $i < count($this->students); $i++) {
+      $this->current_time += $this->students[$i]->get_total_play_time;
+    }
+  }
+
+  /**
+   * This function will search through the current section object and locate
+   * the student entry.
+   *
+   * Given an array of student information (name, skill level, song #1, and song #2),
+   * this function will iterate through the given section object and return the
+   * student object that the incoming information associates with (if this student
+   * object exists within the current section).
+   *
+   * @param   $student_to_find  Array   Contains name, skill level, and both songs
+   *
+   * @return  Student Object  The actual student object that the information associates with.
+   */
+  public function find_student_entry($student_to_find) {
+    // named variables to help offset into student object
+    $name = 0;
+    $skill_level = 1;
+    $song_1 = 2;
+    $song_2 = 3;
+
+    // search through all students in the given section
+    $student_object = null;
+    for ($i = 0; $i < count($this->students); $i++) {
+      $single_student = $this->students[$i];
+      //echo ($single_student->get_name()) . "\n";
+      $matching_names = ($student_to_find[$name] == $single_student->get_name());
+      $matching_skill_levels = ($student_to_find[$skill_level] == $single_student->get_skill_level());
+      $matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
+      $matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
+
+      if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
+        //echo "Yay! Found $student_to_find[$name]\n";
+        return $single_student;
+      }
+
+      /*
+
+      $single_student_songs = $single_student->get_songs();
+      $matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
+      $matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
+
+      // if all of the information matches, return that student
+      if ($matching_names && $matching_skill_levels &&
+          $matching_song1 && $matching_song2) {
+            //echo "found student";
+        return $student_object;
+      }
+      */
+    }
+
+    // if the student doesn't exist in the section, return NULL
+    return $student_object;
   }
 
   /**
