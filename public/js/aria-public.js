@@ -591,25 +591,27 @@ function sendScheduleToServer() {
   var compName = document.getElementById("comp-name-bold").innerHTML;
   var schedule = document.getElementById("schedule");
   var taggedSectionInfos = schedule.getElementsByTagName("th");
+  var taggedStudentInfos = schedule.getElementsByClassName("student-info");
   var formattedSectionInfos = [];
+  var formattedStudentInfos = [];
 
   // define location of PHP script
   var myUrl = host + "/wp-content/plugins/ARIA/admin/scheduler/scheduler-client.php";
 
-  // iterate through all of the tags with the information we want
+  // iterate through all of the tags with the section information we want
   for (var i = 0; i < taggedSectionInfos.length; i++) {
     // obtain all the information that the user can modify from the schedule
     var singleTaggedSectionInfo = taggedSectionInfos[i];
     var modifiableSectionInfo = singleTaggedSectionInfo.getElementsByTagName("span");
 
-
-
     if (singleTaggedSectionInfo.innerHTML.indexOf("Section") > -1) {
+      /*
       console.log(i,
                   singleTaggedSectionInfo.innerHTML,
                   "\n",
                   modifiableSectionInfo,
                   modifiableSectionInfo.length);
+      */
 
       // configure the aforementioned modifiable data into JSON
       var jsonSectionInfo = {};
@@ -617,7 +619,7 @@ function sendScheduleToServer() {
 
       // if students are registered for a section,
       if (modifiableSectionInfo.length > 0) {
-        console.log("STUDENTS IN SECTION");
+        //console.log("STUDENTS IN SECTION");
         for (var j = 0; j < modifiableSectionInfo.length; j++) {
           jsonSectionInfo.data.push(modifiableSectionInfo[j].innerHTML);
         }
@@ -625,7 +627,7 @@ function sendScheduleToServer() {
 
       // if no students are regitered for a section, add a dummy value
       else {
-        console.log("NO STUDENTS IN SECTION");
+        //console.log("NO STUDENTS IN SECTION");
         jsonSectionInfo.data.push("EMPTY");
       }
 
@@ -634,16 +636,74 @@ function sendScheduleToServer() {
     }
   }
 
+  // iterate through all of the tags with the student information we want
+  for (var i = 0; i < taggedStudentInfos.length; i++) {
+    var singleTaggedStudentInfo = taggedStudentInfos[i];
+    var individualPiecesOfStudentInfo = singleTaggedStudentInfo.getElementsByTagName("li");
+    var jsonStudentInfo = {};
+    jsonStudentInfo.data = [];
+    for (var j = 0; j < individualPiecesOfStudentInfo.length; j++) {
+      // find the name of the student
+      if (individualPiecesOfStudentInfo[j].innerHTML.indexOf("Student Name:") > -1) {
+        var nameStart = "Student Name: ".length;
+        var name = individualPiecesOfStudentInfo[j].innerHTML.slice(
+          nameStart,
+          individualPiecesOfStudentInfo[j].innerHTML.length
+        );
+
+        jsonStudentInfo.data.push(name);
+      }
+
+      // find the skill level of the student
+      if (individualPiecesOfStudentInfo[j].innerHTML.indexOf("Student Skill Level:") > -1) {
+        var skillLevelStart = "Student Skill Level: ".length;
+        var skillLevel = individualPiecesOfStudentInfo[j].innerHTML.slice(
+          skillLevelStart,
+          individualPiecesOfStudentInfo[j].innerHTML.length
+        );
+
+        jsonStudentInfo.data.push(skillLevel);
+      }
+
+      // find the fist song of the student
+      if (individualPiecesOfStudentInfo[j].innerHTML.indexOf("Song #1:") > -1) {
+        var song1Start = "Song #1: ".length;
+        var song1 = individualPiecesOfStudentInfo[j].innerHTML.slice(
+          song1Start,
+          individualPiecesOfStudentInfo[j].innerHTML.length
+        );
+
+        jsonStudentInfo.data.push(song1);
+      }
+
+      // find the second song of the student
+      if (individualPiecesOfStudentInfo[j].innerHTML.indexOf("Song #2:") > -1) {
+        var song2Start = "Song #2: ".length;
+        var song2 = individualPiecesOfStudentInfo[j].innerHTML.slice(
+          song2Start,
+          individualPiecesOfStudentInfo[j].innerHTML.length
+        );
+
+        jsonStudentInfo.data.push(song2);
+      }
+    }
+
+    formattedStudentInfos.push(jsonStudentInfo);
+  }
+
+  //console.log(formattedStudentInfos);
+
   // consolidate all data into a single JSON object
   data = {
     compName: compName,
     modifiableData: formattedSectionInfos
+    studentData: formattedStudentInfos
   };
 
   //console.log("modifiableData length", data.modifiableData);
 
   // send the data to the server
   jQuery.post(myUrl, data, function(response) {
-    console.log(response);
+    //console.log(response);
   });
 }// end of send schedule to server function
