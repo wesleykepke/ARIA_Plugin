@@ -601,7 +601,7 @@ class Section {
     // for each student registered in the section, get their data
     $doc_gen_single_section_data['students'] = array();
     for ($i = 0; $i < count($this->students); $i++) {
-      wp_die(print_r($this->students));
+      //wp_die(print_r($this->students));
       $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();
     }
     $doc_gen_section_data[] = $doc_gen_single_section_data;
