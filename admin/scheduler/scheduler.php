@@ -49,7 +49,6 @@ class Scheduling_Algorithm {
     $song_threshold = $entry[$scheduling_field_mapping['song_threshold']];
     $group_by_level = $entry[$scheduling_field_mapping['group_by_level']];
     $master_class_instructor_duration = $entry[$scheduling_field_mapping['master_class_instructor_duration']];
-    $num_judges_per_section = $entry[$scheduling_field_mapping['num_judges_per_section']];
     $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
     $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
 
@@ -202,11 +201,12 @@ class Scheduling_Algorithm {
     }
 
     // assign the judges for the competition
+    /*
     $judges = self::determine_judges($related_form_ids['teacher_master_form_id']);
     $proctors = self::determine_proctors($related_form_ids['teacher_master_form_id']);
-    //wp_die(print_r($proctors));
     $scheduler->assign_judges($judges, $num_judges_per_section);
     $scheduler->assign_proctors($proctors);
+    */
 
     // automatically write the scheduler object to a file
     self::save_scheduler_to_file($title, $scheduler);
@@ -216,9 +216,13 @@ class Scheduling_Algorithm {
 
     // print the schedule to the festival chairman
     $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $title . '</b></h1>';
-    $confirmation .= "<h4>Don't worry about saving your schedule. ARIA will automatically save the most"
-    . " recently generated schedule so you can return to it later for document generation.</h4>";
-    $confirmation .= '<button type="button" onclick="sendScheduleToServer()">Save schedule!</button><br>';
+    $confirmation .= "<h4>Congratulations! You have just successfully generated a schedule.<br>
+    After you make modifications to the schedule (adding judges, proctors, etc.),
+    <b>you must click the 'Save Schedule' button</b>, otherwise, your changes will be lost. The
+    information you supply here will be used for document generation.<br>
+    For each section below, you can modify the start time, the room, the judge(s),
+    the proctor(s), and the door guard.</h4>";
+    $confirmation .= '<button type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
     $confirmation .= $scheduler->get_schedule_string();
     return $confirmation;
   }
@@ -391,14 +395,6 @@ class Scheduling_Algorithm {
     $master_class_instructor_duration->descriptionPlacement = "above";
     $form->fields[] = $master_class_instructor_duration;
 
-    // number of judges per section
-    $num_judges_per_section = new GF_Field_Number();
-    $num_judges_per_section->label = "Number of Judges per Section";
-    $num_judges_per_section->id = $field_mapping['num_judges_per_section'];
-    $num_judges_per_section->description = "How many judges should be assigned to a section?";
-    $num_judges_per_section->descriptionPlacement = "above";
-    $form->fields[] = $num_judges_per_section;
-
     // custom room names for saturday
     $saturday_rooms = new GF_Field_List();
     $saturday_rooms->label = "Saturday Room Names/Numbers";
@@ -420,8 +416,7 @@ class Scheduling_Algorithm {
     $form->fields[] = $sunday_rooms;
 
     // add a default submission message for the schedule competition form
-    $successful_submission_message = 'Congratulations! You have just';
-    $successful_submission_message .= ' successfully scheduled a competition for:';
+    $successful_submission_message = '';
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
@@ -465,9 +460,8 @@ class Scheduling_Algorithm {
       'song_threshold' => 11,
       'group_by_level' => 12,
       'master_class_instructor_duration' => 13,
-      'num_judges_per_section' => 14,
-      'saturday_rooms' => 15,
-      'sunday_rooms' => 16
+      'saturday_rooms' => 14,
+      'sunday_rooms' => 15
     );
   }
 
@@ -940,22 +934,5 @@ class Scheduling_Algorithm {
     }
 
     return $proctors;
-  }
-
-  /**
-   * This function will parse the HTML produced by the scheduler.
-   *
-   * This function will take as input the HTML that is created by the scheduler
-   * and obtain information from it so that the associated scheduler object can
-   * be updated.
-   *
-   * @param
-   * @param
-   *
-   * @since 1.0.0
-   * @author KREW
-   */
-  public static function parse_scheduler_html($html) {
-    echo '<br>random string<br>';
   }
 }

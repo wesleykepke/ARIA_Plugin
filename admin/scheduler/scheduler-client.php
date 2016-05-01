@@ -28,6 +28,9 @@ function parse_scheduler_html() {
     // iterate through the scheduler object and update the information with the new data
     $scheduler->update_section_data($_POST['modifiableData']);
 
+    // iterate through the scheduler object and update the student sections
+    $scheduler->update_section_students($_POST['studentData']);
+
     // write the scheduler object back out to file
     $scheduler_data = serialize($scheduler);
     $fp = fopen($file_path, 'w+');

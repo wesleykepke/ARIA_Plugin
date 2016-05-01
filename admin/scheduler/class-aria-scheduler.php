@@ -313,7 +313,6 @@ class Scheduler {
    */
   public function get_schedule_string() {
     $schedule = '<div id="schedule"><div id="schedule-table">';
-    //$schedule = '<div id="schedule-table">';
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
@@ -323,7 +322,7 @@ class Scheduler {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
             $schedule .= 'Timeblock # ' . strval($j + 1);
-            $schedule .= $this->days[$i][$j]->get_schedule_string();
+            $schedule .= $this->days[$i][$j]->get_schedule_string(SAT);
             $schedule .= '</th></tr>';
             $schedule .= '</td></tr>';
           }
@@ -336,7 +335,7 @@ class Scheduler {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
             $schedule .= 'Timeblock # ' . strval($j + 1);
-            $schedule .= $this->days[$i][$j]->get_schedule_string();
+            $schedule .= $this->days[$i][$j]->get_schedule_string(SUN);
             $schedule .= '</th></tr>';
             $schedule .= '</td></tr>';
           }
@@ -453,6 +452,88 @@ class Scheduler {
         $this->days[$i][$j]->update_section_data($new_timeblock_data);
       }
     }
+  }
+
+  /**
+   * This function will update the current scheduler object with the new sections
+   * that students are participating under.
+   *
+   * This function will accept as input an array of student information (one element
+   * of the array contains all students that are performing in that section)
+   * that will contain students from the schedule (name, skill level, and the songs that
+   * they are playing). Using that information the function will search through
+   * the current scheduler object and locate the associated student entry. Using
+   * that student entry (and all of the information that comes with it), the function
+   * will place that student in their new location in the competition.
+   *
+   * @param   Array   $student_data   The array of student information to use in the search process.
+   */
+  public function update_section_students($student_data) {
+    // create a new 2D array containing the student entry objects
+    $new_section_data = array();
+    for ($i = 0; $i < count($student_data); $i++) {
+      $new_section_data[$i] = array();
+      for ($j = 0; $j < count($student_data[$i]); $j++) {
+        $student = $this->find_student_entry($student_data[$i][$j]);
+        if (!is_null($student)) {
+          $new_section_data[$i][] = $student;
+        }
+      }
+
+      // if the section is empty, add "EMPTY" to identify it as empty
+      if ($student_data[$i] == "EMPTY") {
+        $new_section_data[$i][] = "EMPTY";
+      }
+    }
+
+// this is working
+//echo "New section data\n";
+//echo print_r($new_section_data);
+
+    // iterate through all sections of the scheduler and update the students
+    // that are assigned to each section
+    $section_index = 0;
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        if ($new_section_data[$i] != "EMPTY") {
+          $new_timeblock_students = array();
+          for ($k = 0; $k < $this->days[$i][$j]->get_num_concurrent_sections(); $k++) {
+            $new_timeblock_students[] = $new_section_data[$section_index];
+            $section_index++;
+          }
+          $this->days[$i][$j]->update_section_students($new_timeblock_students);
+        }
+      }
+    }
+
+    //echo "All students were added.";
+    //echo print_r($this->days);
+  }
+
+  /**
+   * This function will search through the current scheduler object and locate
+   * the student entry.
+   *
+   * Given an array of student information (name, skill level, song #1, and song #2),
+   * this function will iterate through the given scheduler object and return the
+   * student object that the incoming information associates with.
+   *
+   * @param   $student_to_find  Array   Contains name, skill level, and both songs
+   *
+   * @return  Student Object  The actual student object that the information associates with.
+   */
+  private function find_student_entry($student_to_find) {
+    $student_object = null;
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $student_object = $this->days[$i][$j]->find_student_entry($student_to_find);
+        if (!is_null($student_object)) {
+          return $student_object;
+        }
+      }
+    }
+
+    return $student_object;
   }
 
   /**

@@ -13,6 +13,7 @@
 require_once(ARIA_ROOT . "/includes/class-aria-api.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
 require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
+//require_once("lib/PHPRtfLite/lib/PHPRtfLite.php");
 
 class Doc_Generator {
 
@@ -60,6 +61,7 @@ class Doc_Generator {
 
     // use the scheduler object to prepare the format(s) required for doc. generation
     $comp_sections = $scheduler->get_section_info_for_doc_gen();
+    //wp_die("Printing competition sections!</br>");
     wp_die(print_r($comp_sections));
 
     // send all participating teachers emails regarding when their students are playing
@@ -73,7 +75,7 @@ class Doc_Generator {
     // are performing
 
 
-    wp_die(print_r($scheduler));
+    //print_r($scheduler);
     //wp_die();
   }
 
@@ -183,4 +185,9 @@ class Doc_Generator {
     $name_field = ARIA_API::aria_find_field_by_id($form['fields'], $search_field);
     $form['fields'][$name_field]->choices = $competition_names;
   }
+
+  /**
+   *
+   */
+
 }

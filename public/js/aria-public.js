@@ -63,6 +63,14 @@ jQuery(document).ready(function($) {
       }
     });*/
   }
+
+  // rearranging students in scheduler
+  $(function() {
+    $( "#sortable1, #sortable2" ).sortable({
+      connectWith: ".connectedSortable"
+    }).disableSelection();
+  });
+
   ///////// Student registration
   if( form_name.indexOf( "Student Registration" ) != -1 ){
         var field_id_arr = get_student_ids();
@@ -583,25 +591,99 @@ function sendScheduleToServer() {
   var compName = document.getElementById("comp-name-bold").innerHTML;
   var schedule = document.getElementById("schedule");
   var taggedSectionInfos = schedule.getElementsByTagName("th");
+  var taggedTimeBlocks = schedule.getElementsByClassName("section");
   var formattedSectionInfos = [];
+  var formattedStudentInfos = [];
 
-  // define location of PHP script
+    // define location of PHP script
   var myUrl = host + "/wp-content/plugins/ARIA/admin/scheduler/scheduler-client.php";
 
-  // iterate through all of the tags with the information we want
+  // iterate though all of the time blocks in the schedule
+  for (var i = 0; i < taggedTimeBlocks.length; i++) {
+    // iterate through all of the students in a given time block
+    var singleTimeBlock = taggedTimeBlocks[i];
+    var listOfStudents = singleTimeBlock.getElementsByClassName("student-info");
+    var listOfStudentsArray = [];
+    for (var j = 0; j < listOfStudents.length; j++) {
+      // iterate through all of that student's data
+      var singleStudent = listOfStudents[j];
+      var singleStudentData = [];
+      var singleStudentAttributes = singleStudent.getElementsByTagName("li");
+      for (var k = 0; k < singleStudentAttributes.length; k++) {
+        // find the name of the student
+        if (singleStudentAttributes[k].innerHTML.indexOf("Student Name:") > -1) {
+          var nameStart = "Student Name: ".length;
+          var name = singleStudentAttributes[k].innerHTML.slice(
+            nameStart,
+            singleStudentAttributes[k].innerHTML.length
+          );
+
+          singleStudentData.push(name);
+        }
+
+        // find the skill level of the student
+        if (singleStudentAttributes[k].innerHTML.indexOf("Student Skill Level:") > -1) {
+          var skillLevelStart = "Student Skill Level: ".length;
+          var skillLevel = singleStudentAttributes[k].innerHTML.slice(
+            skillLevelStart,
+            singleStudentAttributes[k].innerHTML.length
+          );
+
+          singleStudentData.push(skillLevel);
+        }
+
+        // find the student's first song
+        if (singleStudentAttributes[k].innerHTML.indexOf("Song #1:") > -1) {
+          var song1Start = "Song #1: ".length;
+          var song1 = singleStudentAttributes[k].innerHTML.slice(
+            song1Start,
+            singleStudentAttributes[k].innerHTML.length
+          );
+
+          singleStudentData.push(song1);
+        }
+
+        // find the student's second song
+        if (singleStudentAttributes[k].innerHTML.indexOf("Song #2:") > -1) {
+          var song2Start = "Song #2: ".length;
+          var song2 = singleStudentAttributes[k].innerHTML.slice(
+            song2Start,
+            singleStudentAttributes[k].innerHTML.length
+          );
+
+          singleStudentData.push(song2);
+        }
+      }
+
+      // add the student's data (in JSON format) to list of students in section
+      listOfStudentsArray.push(singleStudentData);
+    }
+
+    // add the data of all students in a section to the accumulating list of
+    // students per section (if there are students in the section)
+    if (listOfStudents.length > 0) {
+      formattedStudentInfos.push(listOfStudentsArray);
+    }
+    else {
+      // send "EMPTY" if there are no students in the section
+      formattedStudentInfos.push("EMPTY");
+    }
+  }
+
+  // iterate through all of the tags with the section information we want
   for (var i = 0; i < taggedSectionInfos.length; i++) {
     // obtain all the information that the user can modify from the schedule
     var singleTaggedSectionInfo = taggedSectionInfos[i];
     var modifiableSectionInfo = singleTaggedSectionInfo.getElementsByTagName("span");
 
-
-
     if (singleTaggedSectionInfo.innerHTML.indexOf("Section") > -1) {
+      /*
       console.log(i,
                   singleTaggedSectionInfo.innerHTML,
                   "\n",
                   modifiableSectionInfo,
                   modifiableSectionInfo.length);
+      */
 
       // configure the aforementioned modifiable data into JSON
       var jsonSectionInfo = {};
@@ -609,7 +691,7 @@ function sendScheduleToServer() {
 
       // if students are registered for a section,
       if (modifiableSectionInfo.length > 0) {
-        console.log("STUDENTS IN SECTION");
+        //console.log("STUDENTS IN SECTION");
         for (var j = 0; j < modifiableSectionInfo.length; j++) {
           jsonSectionInfo.data.push(modifiableSectionInfo[j].innerHTML);
         }
@@ -617,7 +699,7 @@ function sendScheduleToServer() {
 
       // if no students are regitered for a section, add a dummy value
       else {
-        console.log("NO STUDENTS IN SECTION");
+        //console.log("NO STUDENTS IN SECTION");
         jsonSectionInfo.data.push("EMPTY");
       }
 
@@ -626,13 +708,16 @@ function sendScheduleToServer() {
     }
   }
 
+  //console.log(formattedStudentInfos);
+
   // consolidate all data into a single JSON object
   data = {
     compName: compName,
-    modifiableData: formattedSectionInfos
+    modifiableData: formattedSectionInfos,
+    studentData: formattedStudentInfos
   };
 
-  //console.log("modifiableData length", data.modifiableData);
+  //console.log("Data being sent to server", data);
 
   // send the data to the server
   jQuery.post(myUrl, data, function(response) {

@@ -126,7 +126,7 @@ class Student {
   private $parent_email;
 
   /**
-   * The start time of the current time block. 
+   * The start time of the current time block.
    *
    * @since 1.0.0
    * @access private
@@ -135,7 +135,7 @@ class Student {
   private $start_time;
 
   /**
-   * The day of the current time block. 
+   * The day of the current time block.
    *
    * @since 1.0.0
    * @access private
@@ -144,7 +144,7 @@ class Student {
   private $day;
 
   /**
-   * The name of the student's teacher.  
+   * The name of the student's teacher.
    *
    * @since 1.0.0
    * @access private
@@ -153,11 +153,11 @@ class Student {
   private $teacher_name;
 
   /**
-   * The room where the student is performing.  
+   * The room where the student is performing.
    *
    * @since 1.0.0
    * @access private
-   * @var   string   $room   The room name/number. 
+   * @var   string   $room   The room name/number.
    */
   private $room;
 
@@ -187,8 +187,8 @@ class Student {
     $this->parent_email = $parent_email;
     $this->start_time = null;
     $this->day = null;
-    $this->room = null;  
-    $this->teacher_name = $teacher_name; 
+    $this->room = null;
+    $this->teacher_name = $teacher_name;
   }
 
   /**
@@ -219,7 +219,7 @@ class Student {
 
   /**
    * The function will set the start time of the when the student is registered
-   * to perform. 
+   * to perform.
    *
    * @since 1.0.0
    * @param string   $start_time   The start time of the current time block.
@@ -230,7 +230,7 @@ class Student {
 
   /**
    * The function will set the day of the when the student is registered
-   * to perform. 
+   * to perform.
    *
    * @since 1.0.0
    * @param string   $start_time   The start time of the current time block.
@@ -241,7 +241,7 @@ class Student {
 
   /**
    * The function will set the room of the where the student is registered
-   * to perform. 
+   * to perform.
    *
    * @since 1.0.0
    * @param string   $room  The room of where the student is playing.
@@ -259,6 +259,16 @@ class Student {
    */
   public function get_type() {
     return $this->type;
+  }
+
+  /**
+   * The function will return the name of the student.
+   *
+   * @since 1.0.0
+   * @return string Represents name of student.
+   */
+  public function get_name() {
+    return $this->first_name . ' ' . $this->last_name;
   }
 
   /**
@@ -327,13 +337,13 @@ class Student {
    *
    * Using the information that is stored for each student, this function
    * will construct and return a sentence that describes all of the stored
-   * information about a student for an upcoming competition. 
+   * information about a student for an upcoming competition.
    *
    * @since 1.0.0
-   * @return string Represents the student's competition information. 
+   * @return string Represents the student's competition information.
    */
   public function get_info_for_email() {
-    // process the student's songs 
+    // process the student's songs
     $songs = null;
     if (count($this->songs) > 2) {
       for ($i = 0; $i < count($this->songs); $i++) {
@@ -346,7 +356,7 @@ class Student {
       }
     }
     else if (count($this->songs) == 2) {
-      $songs = $this->songs[0] . ' by ' . $this->composers[0] . ' and ' 
+      $songs = $this->songs[0] . ' by ' . $this->composers[0] . ' and '
       . $this->songs[1] . ' by ' . $this->composers[1];
     }
 
@@ -411,17 +421,17 @@ class Student {
       'Student Play Time' => $this->play_time . ' minutes',
       'Song #1' => $this->songs[0],
       'Song #2' => $this->songs[1]
-    );http://php.net/manual/en/function.floatval.php
+    );
   }
 
-  /**http://php.net/manual/en/function.floatval.php
-   * This function will consolidate all scheduling data (of students) into a format 
-   * suitable for the document generator. 
+  /**
+   * This function will consolidate all scheduling data (of students) into a format
+   * suitable for the document generator.
    *
-   * This function will prepare all data for a single student that is required of the 
-   * document generator. 
+   * This function will prepare all data for a single student that is required of the
+   * document generator.
    *
-   * @return   Array   An associative array of all student data in doc. gen. compatible form. 
+   * @return   Array   An associative array of all student data in doc. gen. compatible form.
    */
   public function get_section_info_for_doc_gen() {
     return array(
@@ -435,7 +445,7 @@ class Student {
       'song_two' => array(
         'composer' => $this->composers[1],
         'song' => $this->songs[1]
-      )  
+      )
     );
   }
 
