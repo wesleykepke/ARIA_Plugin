@@ -13,6 +13,7 @@
 require_once(ARIA_ROOT . "/includes/class-aria-api.php");
 require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
 require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
+//require_once("lib/PHPRtfLite/lib/PHPRtfLite.php");
 
 class Doc_Generator {
 
@@ -64,16 +65,15 @@ class Doc_Generator {
 
     // send all participating teachers emails regarding when their students are playing
     // and their volunteer information
-    /*
     Scheduling_Algorithm::send_teachers_competition_info($related_forms['teacher_master_form_id'],
     	                                                   $scheduler,
     	                                                   $entry[strval($field_mapping['active_competitions'])]);
-*/
+
     // send all associated parents emails regarding when/where their child/children
     // are performing
 
 
-    wp_die(print_r($scheduler));
+    //print_r($scheduler);
     //wp_die();
   }
 
@@ -183,4 +183,9 @@ class Doc_Generator {
     $name_field = ARIA_API::aria_find_field_by_id($form['fields'], $search_field);
     $form['fields'][$name_field]->choices = $competition_names;
   }
+
+  /**
+   *
+   */
+
 }

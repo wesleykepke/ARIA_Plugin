@@ -176,16 +176,18 @@ class TimeBlock {
    * function is responsible for adding onto the previously created HTML. The
    * creation of the inner HTML will be abstracted away to the section objects.
    *
+   * @param   Integer   $day  The integer constant for a given day
+   *
    * @return	string	The generated HTML output
    */
-  public function get_schedule_string() {
+  public function get_schedule_string($day) {
     $schedule = '';
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $schedule .= '<tr><th id="time-block-info">';
       $schedule .= 'Section #';
-      $schedule .= strval($i + 1) . ' -- ';
+      $schedule .= strval($i + 1);
       $schedule .= $this->sections[$i]->get_section_info();
-      $schedule .= $this->sections[$i]->get_schedule_string();
+      $schedule .= $this->sections[$i]->get_schedule_string($day);
       $schedule .= '</th></tr>';
     }
     return $schedule;

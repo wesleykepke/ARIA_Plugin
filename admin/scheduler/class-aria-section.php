@@ -223,8 +223,12 @@ class Section {
     $this->start_time = $start_time;
     $this->day = $day;
     $this->room = $room;
-    $this->judges = array();
-    $this->proctor = null;
+    //$this->judges = array();
+    $this->judges = "";
+    $this->proctor = "";
+    $this->door_guard = "";
+    $this->music_runner = "";
+    $this->door_guard = "";
   }
 
   /**
@@ -427,13 +431,29 @@ class Section {
   }
 
   /**
+   * This function will print the student and their info in HTML.
    *
+   * This function will consoliate all information about a student and convert
+   * it to an HTML format so it can be displayed for the festival chairman to see.
+   *
+   * @param   Integer   $day  The integer constant for a given day
    */
-  public function get_schedule_string() {
+  public function get_schedule_string($day) {
     $schedule = '';
+
+    switch ($day) {
+      case SAT:
+        $schedule .= '<ul id="sortable1" class="connectedSortable">';
+      break;
+
+      case SUN:
+          $schedule .= '<ul id="sortable2" class="connectedSortable">';
+      break;
+    }
+
     for ($i = 0; $i < count($this->students); $i++) {
       $student_info = $this->students[$i]->get_schedule_string();
-      $schedule .= '<tr><td>Student #';
+      $schedule .= '<li class="ui-state-default">Student #';
       $schedule .= strval($i + 1);
       $schedule .= '<ul>';
       foreach ($student_info as $key => $value) {
@@ -450,9 +470,10 @@ class Section {
           $schedule .= '</li>';
         }
       }
-      $schedule .= '</ul></td></tr>';
+      $schedule .= '</ul></li>';
     }
 
+    $schedule .= '</ul>';
     return $schedule;
   }
 
@@ -468,19 +489,34 @@ class Section {
   public function get_section_info() {
     // first, determine if there is section info
     if (self::is_empty()) {
-      return 'Section is Empty';
+      return '<ul><li>Section is Empty</li></ul>';
     }
 
+    //return "wassup";
+
+    // start the list of section information
+    $section_info = "<ul>";
+
     // get start time of the section
-    $section_info = 'Start Time: <span id="section-start" contenteditable="true">' . $this->start_time . '</span>' . ', ';
+    $section_info .= '<li>Start Time: <span id="section-start" contenteditable="true">' . $this->start_time . '</span></li>';
 
     // get the room number of the section
-    $section_info .= 'Room: <span id="section-room" contenteditable="true">' . $this->room . '</span>' . ', ';
+    $section_info .= '<li>Room: <span id="section-room" contenteditable="true">' . $this->room . '</span></li>';
+
+    // create a placeholder for judges in this section
+    $section_info .= '<li>Judge(s): <span id="section-judges" contenteditable="true">' . 'TYPE IN JUDGE(S)' . '</span></li>';
+
+    // create a placeholder for proctors in this section
+    $section_info .= '<li>Proctor(s): <span id="section-proctors" contenteditable="true">' . 'TYPE IN PROCTOR(S)' . '</span></li>';
+
+    // create a placeholder for the door guard of this section
+    $section_info .= '<li>Door Guard: <span id="section-door-guard" contenteditable="true">' . 'TYPE IN DOOR GUARD' . '</span></li>';
 
     // determine number of students per section
-    $section_info .= 'Number of Students: ' . strval(count($this->students)) . ', ';
+    $section_info .= '<li>Number of Students: ' . strval(count($this->students)) . '</li>';
 
     // determine the judge(s) of the section
+    /*
     if (count($this->judges) > 1) {
       $section_info .= 'Judge(s): ';
       for ($i = 0; $i < count($this->judges); $i++) {
@@ -497,9 +533,7 @@ class Section {
       $section_info .= 'Judge: <span id="section-judges" contenteditable="true">';
       $section_info .= $this->judges[0] . ',' . '</span> ';
     }
-
-    // determine the proctor of the section
-    $section_info .= 'Proctor: <span id="section-proctors" contenteditable="true">' . $this->proctor . '</span>';
+    */
 
     // get all skill levels in section
     $skill_levels = array();
@@ -510,29 +544,34 @@ class Section {
     }
 
     if (count($skill_levels) === 1) {
-      $section_info .= 'Student Skill Level: ' . strval($skill_levels[0]) . ', ';
+      $section_info .= '<li>Student Skill Level: ' . strval($skill_levels[0]) . '</li>';
     }
     else {
-      $section_info .= 'Student Skill Levels: ';
+      $section_info .= '<li>Student Skill Levels: ';
       for ($i = 0; $i < count($skill_levels); $i++) {
-        $section_info .= strval($skill_levels[$i]) . ', ';
+        $section_info .= strval($skill_levels[$i]);
+        if (($i + 1) != count($skill_levels)) {
+          $section_info .= ', ';
+        }
       }
+      $section_info .= '</li>';
     }
 
     // determine the type of the section
-    $section_info .= 'Section Type: ';
+    $section_info .= '<li>Section Type: ';
     switch ($this->type) {
       case SECTION_OTHER:
-        $section_info .= "Traditional/Non-Competitive/Command, ";
+        $section_info .= "Traditional/Non-Competitive/Command</li>";
       break;
 
       case SECTION_MASTER:
-        $section_info .= "Masterclass, ";
+        $section_info .= "Masterclass</li>";
       break;
     }
 
     // include the total play time
-    $section_info .= 'Total Play Time: ' . $this->current_time . ' minutes';
+    $section_info .= '<li>Total Play Time: ' . $this->current_time . ' minutes</li>';
+    $section_info .= "</ul>";
     return $section_info;
   }
 
@@ -572,25 +611,13 @@ class Section {
       return;
     }
 
-    // add the base information (of section info)
+    // add all of the section's information
     $doc_gen_single_section_data = array();
     $doc_gen_single_section_data['section_name'] = $this->room;
-
-    // adjust formatting for more than one judge
-    if (count($this->judges) > 1) {
-      for ($i = 0; $i < count($this->judges); $i++) {
-        $doc_gen_single_section_data['judge'] .= $this->judges[$i];
-        if ($i + 1 != count($this->judges)) {
-          $doc_gen_single_section_data['judge'] .= ', ';
-        }
-      }
-    }
-    else {
-      $doc_gen_single_section_data['judge'] = $this->judges[0];
-    }
+    $doc_gen_single_section_data['judge'] = $this->judges;
 
     $doc_gen_single_section_data['proctor'] = $this->proctor;
-    $doc_gen_single_section_data['monitor'] = "Don't have this data..";
+    $doc_gen_single_section_data['monitor'] = $this->door_guard;
 
     // for each student registered in the section, get their data
     $doc_gen_single_section_data['students'] = array();
@@ -617,6 +644,7 @@ class Section {
     $section_room = 1;
     $section_judges = 2;
     $section_proctor = 3;
+    $section_door_guard = 4;
 
     // assign the new data to the current section object
     if (!is_null($new_section_data)) {
@@ -634,6 +662,10 @@ class Section {
 
       if (array_key_exists($section_proctor, $new_section_data)) {
         $this->proctor = $new_section_data[$section_proctor];
+      }
+
+      if (array_key_exists($section_door_guard, $new_section_data)) {
+        $this->door_guard = $new_section_data[$section_door_guard];
       }
     }
   }

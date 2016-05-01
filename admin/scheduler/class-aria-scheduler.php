@@ -313,7 +313,6 @@ class Scheduler {
    */
   public function get_schedule_string() {
     $schedule = '<div id="schedule"><div id="schedule-table">';
-    //$schedule = '<div id="schedule-table">';
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
@@ -323,7 +322,7 @@ class Scheduler {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
             $schedule .= 'Timeblock # ' . strval($j + 1);
-            $schedule .= $this->days[$i][$j]->get_schedule_string();
+            $schedule .= $this->days[$i][$j]->get_schedule_string(SAT);
             $schedule .= '</th></tr>';
             $schedule .= '</td></tr>';
           }
@@ -336,7 +335,7 @@ class Scheduler {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
             $schedule .= 'Timeblock # ' . strval($j + 1);
-            $schedule .= $this->days[$i][$j]->get_schedule_string();
+            $schedule .= $this->days[$i][$j]->get_schedule_string(SUN);
             $schedule .= '</th></tr>';
             $schedule .= '</td></tr>';
           }
