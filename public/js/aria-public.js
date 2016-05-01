@@ -63,6 +63,14 @@ jQuery(document).ready(function($) {
       }
     });*/
   }
+
+  // rearranging students in scheduler
+  $(function() {
+    $( "#sortable1, #sortable2" ).sortable({
+      connectWith: ".connectedSortable"
+    }).disableSelection();
+  });
+
   ///////// Student registration
   if( form_name.indexOf( "Student Registration" ) != -1 ){
         var field_id_arr = get_student_ids();
