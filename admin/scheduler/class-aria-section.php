@@ -455,7 +455,7 @@ class Section {
       $student_info = $this->students[$i]->get_schedule_string();
       $schedule .= '<li class="ui-state-default">Student #';
       $schedule .= strval($i + 1);
-      $schedule .= '<ul>';
+      $schedule .= '<ul class="student-info">';
       foreach ($student_info as $key => $value) {
         if (is_array($value)) {
           for ($j = 0; $j < count($value); $j++) {

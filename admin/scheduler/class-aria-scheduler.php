@@ -455,6 +455,36 @@ class Scheduler {
   }
 
   /**
+   * This function will update the current scheduler object with the new location
+   * of students.
+   *
+   * This function will accept as input an array of student information (one element
+   * per student) that will contain their name, skill level, and the songs that
+   * they are playing. Using that information the function will search through
+   * the current scheduler object and locate the associated student entry. Using
+   * that student entry (and all of the information that comes with it)
+   *
+   * @param   Array   $student_data   The array of student information to use in the search process.
+   */
+  public function update_section_students() {
+
+  }
+
+  /**
+   * This function will search through the current scheduler object and locate
+   * the student entry.
+   *
+   * Given a first name, last name, a skill level, a play time, and the student's
+   * songs, this function will iterate through the given scheduler object and
+   * return the student object that the incoming information associates with.
+   *
+   *
+   */
+  public function find_student_entry() {
+
+  }
+
+  /**
    * The destructor used when a scheduler object is destroyed.
    *
    * @since 1.0.0
