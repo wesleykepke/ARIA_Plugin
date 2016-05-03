@@ -31,6 +31,9 @@ function parse_scheduler_html() {
     // iterate through the scheduler object and update the student sections
     $scheduler->update_section_students($_POST['studentData']);
 
+    // get the new HTML to display to the user
+    $new_html = $scheduler->get_schedule_string(true);
+
     // write the scheduler object back out to file
     $scheduler_data = serialize($scheduler);
     $fp = fopen($file_path, 'w+');
@@ -38,6 +41,8 @@ function parse_scheduler_html() {
       fwrite($fp, $scheduler_data);
       fclose($fp);
     }
+
+    echo $new_html;
   }
 }
 
