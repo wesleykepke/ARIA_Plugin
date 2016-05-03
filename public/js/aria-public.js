@@ -586,10 +586,16 @@ jQuery(document).ready(function($) {
   }// end of get music form id function
 });
 
+// This function inserts newNode after referenceNode
+function insertAfter(referenceNode, newNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
 function sendScheduleToServer() {
   // get necessary content from HTML
   var compName = document.getElementById("comp-name-bold").innerHTML;
   var schedule = document.getElementById("schedule");
+  var scheduleTable = document.getElementById("schedule-table");
   var taggedSectionInfos = schedule.getElementsByTagName("th");
   var taggedTimeBlocks = schedule.getElementsByClassName("section");
   var formattedSectionInfos = [];
@@ -721,6 +727,16 @@ function sendScheduleToServer() {
 
   // send the data to the server
   jQuery.post(myUrl, data, function(response) {
+
+
     console.log(response);
-  });
+    document.getElementById("schedule").innerHTML = '';
+    document.getElementById("schedule").innerHTML = response;
+    // rearranging students in scheduler
+    (function ($) {
+        $( "#sortable1, #sortable2" ).sortable({
+            connectWith: ".connectedSortable"
+          }).disableSelection();
+      })(jQuery);
+    });
 }// end of send schedule to server function
