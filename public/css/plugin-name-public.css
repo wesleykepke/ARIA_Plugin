@@ -2,3 +2,16 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+#sortable1, #sortable2 {
+  border: 2px solid;
+  list-style-type: none;
+  padding: 0px;
+}
+
+.ui-state-default {
+  border: 1px solid;
+}
+
+.student-info {
+  list-style-type: none;
+}
