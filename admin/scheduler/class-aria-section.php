@@ -488,7 +488,8 @@ class Section {
   public function get_section_info() {
     // first, determine if there is section info
     if (self::is_empty()) {
-      return '<ul><li>Section is Empty</li></ul>';
+      //return '<ul><li>Section is Empty</li></ul>';
+      return '';
     }
 
     //return "wassup";

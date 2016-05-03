@@ -309,10 +309,17 @@ class Scheduler {
    * function is responsible for creating the basic HTML structure. The creation
    * of the inner HTML will be abstracted away to the timeblocks and sections.
    *
+   * @param   $forRerendering   Boolean   Determines if this HTML is for rerendering purposes.
+   *
    * @return	string	The generated HTML output
    */
-  public function get_schedule_string() {
-    $schedule = '<div id="schedule"><div id="schedule-table">';
+  public function get_schedule_string($forRerendering) {
+    if ($forRerendering) {
+      $schedule = '<div id="schedule-table">';
+    }
+    else {
+      $schedule = '<div id="schedule"><div id="schedule-table">';
+    }
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
@@ -345,7 +352,13 @@ class Scheduler {
       $schedule .= '</table>';
     }
 
-    $schedule .= "</div></div>";
+    if ($forRerendering) {
+      $schedule .= "</div>";
+    }
+    else {
+      $schedule .= "</div></div>";
+    }
+
     return $schedule;
   }
 

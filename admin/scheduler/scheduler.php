@@ -222,8 +222,8 @@ class Scheduling_Algorithm {
     information you supply here will be used for document generation.<br>
     For each section below, you can modify the start time, the room, the judge(s),
     the proctor(s), and the door guard.</h4>";
-    $confirmation .= '<button type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
-    $confirmation .= $scheduler->get_schedule_string();
+    $confirmation .= '<button id="saveScheduleButton" type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
+    $confirmation .= $scheduler->get_schedule_string(false);
     return $confirmation;
   }
 
