@@ -674,13 +674,10 @@ class Section {
       $this->students[] = $student_data[$i];
     }
 
-//echo "Just added new students.\n";
-//echo print_r($this->students);
-
     // update the other information associated with the section
     $this->current_time = 0;
     for ($i = 0; $i < count($this->students); $i++) {
-      $this->current_time += $this->students[$i]->get_total_play_time;
+      $this->current_time += $this->students[$i]->get_total_play_time();
     }
   }
 
