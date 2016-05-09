@@ -14,6 +14,12 @@ require_once(ABSPATH . "wp-content/plugins/ARIA/includes/class-aria-api.php");
 require_once(ABSPATH . "wp-content/plugins/ARIA/admin/scheduler/class-aria-scheduler.php");
 require_once(ABSPATH . "wp-content/plugins/ARIA/admin/scheduler/scheduler.php");
 require_once(ABSPATH . "wp-content/plugins/ARIA/admin/scheduler/PHPRtfLite/lib/PHPRtfLite.php");
+const USE_HTML_TAGS = true;
+
+/*
+$dir = dirname(__FILE__);
+require_once($dir . "/PHPRtfLite/lib/PHPRtfLite.php");
+*/
 
 class Doc_Generator {
 
@@ -62,7 +68,9 @@ class Doc_Generator {
 
     // use the scheduler object to prepare the format(s) required for doc. generation
     $event_sections = $scheduler->get_section_info_for_doc_gen();
+    //wp_die(print_r($event_sections));
     //self::rtf_activation_func($non_formatted_title, $event_sections);
+    self::create_announcing_sheets($non_formatted_title, $event_sections);
 
     // send all participating teachers emails regarding when their students are playing
     // and their volunteer information
@@ -75,8 +83,6 @@ class Doc_Generator {
     // are performing
 
 
-    //print_r($scheduler);
-    //wp_die();
     $confirmation = "Congratulations! You have just generated documents for $non_formatted_title.";
     return $confirmation;
   }
@@ -190,76 +196,6 @@ class Doc_Generator {
   }
 
   /**
-   * This function will create all of the competition documents.
-   *
-   *
-   * @param   $event_name  String  The name of the competition to generate docs for.
-   * @param   $event_sections  Array   The list of sections to use for doc gen.
-   *
-   * @since 1.0.0
-   * @author KREW
-   */
-  private static function rtf_activation_func($event_name, $event_sections) {
-    echo "rtf_activation_func\n";
-    echo "Event name: " . $event_name . "<br>";
-    wp_die(print_r($event_sections));
-    // registers PHPRtfLite autoloader (spl)
-    /*
-    PHPRtfLite::registerAutoloader();
-    if (!file_exists(ABSPATH . "/wp_content/uploads/")) {
-      mkdir(ABSPATH . "/wp_content/uploads/", 0777, true);
-    }
-*/
-  }
-
-  /**
-   * This function will define the styling used for the generated documents.
-   */
-  private static function aria_styles($rtf) {
-   // Initialize return value
-   $styles = array();
-
-   $font_face = 'Georgia';
-   $foreground = '#000000';
-   $background = '#FFFFFF';
-
-   // h1
-   $h1 = new PHPRtfLite_Font(18, $font_face, $foreground, $background);
-   $h1->setBold();
-   $styles['h1'] = $h1;
-
-   $h1ParFormat = new PHPRtfLite_ParFormat(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
-   $styles['h1ParFormat'] = $h1ParFormat;
-
-   // h2
-   $h2 = new PHPRtfLite_Font(13, $font_face, $foreground, $background);
-   $h2->setBold();
-   $styles['h2'] = $h2;
-
-   $h2ParFormat = new PHPRtfLite_ParFormat(PHPRtfLite_ParFormat::TEXT_ALIGN_LEFT);
-   $styles['h2ParFormat'] = $h2ParFormat;
-
-   // h3
-   $h3 = new PHPRtfLite_Font(12, $font_face, $foreground, $background);
-   $h3->setBold();
-   $styles['h3'] = $h3;
-
-   // p
-   $p = new PHPRtfLite_Font(11, $font_face, $foreground, $background);
-   $styles['p'] = $p;
-
-   $styles['underlined_border'] = new PHPRtfLite_Border(
-     $rtf,                                       // PHPRtfLite instance
-     null, // left border: 2pt, green color
-     null, // top border: 1pt, yellow color
-     null, // right border: 2pt, red color
-     new PHPRtfLite_Border_Format(1, '#000000')  // bottom border: 1pt, blue color
-   );
-
-   return $styles;
- }
-
-  /**
    * This function will create all of the announcing sheets for a competition.
    *
    *
@@ -273,12 +209,19 @@ class Doc_Generator {
     // registers PHPRtfLite autoloader (spl)
     PHPRtfLite::registerAutoloader();
 
+    /*
+    echo "inside create_announcing_sheets<br>";
+    echo($event_name);
+    echo "<br>";
+    wp_die(print_r($event_sections));
+    */
+
     // rtf document instance
     $rtf = new PHPRtfLite();
     $rtf->setMargins(1.25, 1.25, 1.25, 1.25);
 
     // Set Fonts
-    $styles = aria_styles($rtf);
+    $styles = self::aria_styles($rtf);
     foreach($event_sections as $event_section) {
       // Add section
       $body = $rtf->addSection();
@@ -331,7 +274,7 @@ class Doc_Generator {
     }
 
     // save rtf document as $event_name.rtf in the uploads folder
-    $file_name = ABSPATH.'/wp-content/uploads'.strtolower(str_replace(' ', '_', $event_name)).'_'.'_announcing_sheet_'.time().'.rtf';
+    $file_name = ABSPATH.'/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet_'.time().'.rtf';
     $rtf->save($file_name);
 
     // download the file
@@ -346,5 +289,61 @@ class Doc_Generator {
       readfile($file_name);
       exit;
     }
+  }
+
+  /**
+   * This function will define the styling used for the generated documents.
+   *
+   * For each of the RTF documents that is generated, there needs to be an
+   * accompanying style. This function is responsible for defining that styles
+   * for each form that will be created.
+   *
+   * @param   $rtf
+   *
+   * @author KREW
+   * @since 1.0.0
+   */
+  private static function aria_styles($rtf) {
+   // Initialize return value
+   $styles = array();
+
+   $font_face = 'Georgia';
+   $foreground = '#000000';
+   $background = '#FFFFFF';
+
+   // h1
+   $h1 = new PHPRtfLite_Font(18, $font_face, $foreground, $background);
+   $h1->setBold();
+   $styles['h1'] = $h1;
+
+   $h1ParFormat = new PHPRtfLite_ParFormat(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
+   $styles['h1ParFormat'] = $h1ParFormat;
+
+   // h2
+   $h2 = new PHPRtfLite_Font(13, $font_face, $foreground, $background);
+   $h2->setBold();
+   $styles['h2'] = $h2;
+
+   $h2ParFormat = new PHPRtfLite_ParFormat(PHPRtfLite_ParFormat::TEXT_ALIGN_LEFT);
+   $styles['h2ParFormat'] = $h2ParFormat;
+
+   // h3
+   $h3 = new PHPRtfLite_Font(12, $font_face, $foreground, $background);
+   $h3->setBold();
+   $styles['h3'] = $h3;
+
+   // p
+   $p = new PHPRtfLite_Font(11, $font_face, $foreground, $background);
+   $styles['p'] = $p;
+
+   $styles['underlined_border'] = new PHPRtfLite_Border(
+     $rtf,                                       // PHPRtfLite instance
+     null, // left border: 2pt, green color
+     null, // top border: 1pt, yellow color
+     null, // right border: 2pt, red color
+     new PHPRtfLite_Border_Format(1, '#000000')  // bottom border: 1pt, blue color
+   );
+
+   return $styles;
   }
 }
