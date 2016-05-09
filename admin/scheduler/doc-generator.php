@@ -68,9 +68,8 @@ class Doc_Generator {
 
     // use the scheduler object to prepare the format(s) required for doc. generation
     $event_sections = $scheduler->get_section_info_for_doc_gen();
-    //wp_die(print_r($event_sections));
-    //self::rtf_activation_func($non_formatted_title, $event_sections);
-    self::create_announcing_sheets($non_formatted_title, $event_sections);
+    self::generate_documents($non_formatted_title, $title, $event_sections);
+
 
     // send all participating teachers emails regarding when their students are playing
     // and their volunteer information
@@ -85,6 +84,13 @@ class Doc_Generator {
 
     $confirmation = "Congratulations! You have just generated documents for $non_formatted_title.";
     return $confirmation;
+  }
+
+  private static function generate_documents($non_formatted_title, $title, $event_sections) {
+    $files = array();
+    $files[] = self::create_announcing_sheets($non_formatted_title, $event_sections);
+    $files[] = self::create_adjudication_forms($non_formatted_title, $event_sections);
+    self::download_documents($title, $files);
   }
 
   /**
@@ -104,6 +110,11 @@ class Doc_Generator {
 
     $field_mapping = self::doc_gen_field_id_array();
     $form = new GF_Form(DOC_GEN_FORM_NAME, "");
+    $form->description = "<h4>Please select from the drop-down menu the competition
+    that you would like to generate documents for. Once you click on 'Submit',
+    all competition documents will automatically begin downloading. Also, all
+    of the teachers and parents will be emailed with information about when their
+    students/children will be participating.</h4>";
 
     // drop-down menu of active competitions
     $active_competitions_field = new GF_Field_Select();
@@ -198,7 +209,6 @@ class Doc_Generator {
   /**
    * This function will create all of the announcing sheets for a competition.
    *
-   *
    * @param   $event_name  String  The name of the competition to generate docs for.
    * @param   $event_sections  Array   The list of sections to use for doc gen.
    *
@@ -208,13 +218,6 @@ class Doc_Generator {
   private static function create_announcing_sheets($event_name, $event_sections) {
     // registers PHPRtfLite autoloader (spl)
     PHPRtfLite::registerAutoloader();
-
-    /*
-    echo "inside create_announcing_sheets<br>";
-    echo($event_name);
-    echo "<br>";
-    wp_die(print_r($event_sections));
-    */
 
     // rtf document instance
     $rtf = new PHPRtfLite();
@@ -273,22 +276,159 @@ class Doc_Generator {
       }
     }
 
-    // save rtf document as $event_name.rtf in the uploads folder
-    $file_name = ABSPATH.'/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet_'.time().'.rtf';
+    // save rtf document and download it from browser
+    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet_'.time().'.rtf';
     $rtf->save($file_name);
+    return $file_name;
+  }
 
-    // download the file
-    if (file_exists($file_name)) {
-      header('Content-Description: File Transfer');
-      header('Content-Type: application/octet-stream');
-      header('Content-Disposition: attachment; filename="'.basename($file_name).'"');
-      header('Expires: 0');
-      header('Cache-Control: must-revalidate');
-      header('Pragma: public');
-      header('Content-Length: ' . filesize($file_name));
-      readfile($file_name);
-      exit;
+  /**
+   * This function will create all of the adjudication forms for a competition.
+   *
+   * @param   $event_name  String  The name of the competition to generate docs for.
+   * @param   $event_sections  Array   The list of sections to use for doc gen.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  private static function create_adjudication_forms($event_name, $event_sections) {
+    // registers PHPRtfLite autoloader (spl)
+    PHPRtfLite::registerAutoloader();
+
+    // rtf document instance
+    $rtf = new PHPRtfLite();
+    $rtf->setMargins(1.25, 1.25, 1.25, 1.25);
+
+    // Get styles
+    $styles = self::aria_styles($rtf);
+
+    foreach($event_sections as $event_section) {
+      $sections = $event_section['section_name'];
+      foreach($event_section['students'] as $student) {
+        // Add section
+        $body = $rtf->addSection();
+
+        $title_table = $body->addTable();
+        $title_table->setVerticalAlignmentForCellRange(
+          PHPRtfLite_Table_Cell::VERTICAL_ALIGN_BOTTOM,
+          1, // startRow
+          1 // startColumn,
+        );
+
+        // Scaffold Title Table
+        $title_table->addRow(0.5); // Title
+        $title_table->addRow(0.5); // Blank
+        $title_table->addRow(0.5); // Name
+        $title_table->addRow(0.5); // Teacher
+        $title_table->addRow(0.5); // Level
+        $title_table->addRow(0.5); // Rating
+        $title_table->addColumnsList(array(10, 2, 6.5));
+        $title_table->mergeCellRange(1, 2, 1, 3);
+
+        // Title Row
+        $title_table->writeToCell(1,1, $event_name, $styles['h2']);
+        $title_table->writeToCell(1,2, $event_section['section_name'], $styles['h2']);
+
+        // Information Rows
+        $title_table->writeToCell(5,1, 'For a Superior or Superior with Distinction Rating,', $styles['p']);
+        $title_table->writeToCell(6,1, 'indicate the piece to be played in the Command Performance.', $styles['p']);
+        $title_table->writeToCell(3,2, 'Performer: ', $styles['p']);
+        $title_table->writeToCell(3,3, $student['name'], $styles['p']);
+        $title_table->writeToCell(4,2, 'Teacher: ', $styles['p']);
+        $title_table->writeToCell(4,3, $student['teacher'], $styles['p']);
+        $title_table->writeToCell(5,2, 'Level: ', $styles['p']);
+        $title_table->writeToCell(5,3, $student['level'], $styles['p']);
+        $title_table->writeToCell(6,2, 'Rating: ', $styles['p']);
+        $title_table->getCell(6,2)->setBorder($styles['underlined_border']);
+        $title_table->getCell(6,3)->setBorder($styles['underlined_border']);
+
+        $title_table->setBorderForCellRange($styles['underlined_border'], 1, 1, 1, 2);
+
+        $songs_table = $body->addTable();
+        $songs_table->setVerticalAlignmentForCellRange(
+          PHPRtfLite_Table_Cell::VERTICAL_ALIGN_BOTTOM,
+          1, // startRow
+          1 // startColumn,
+        );
+
+        // Scaffold Songs Table
+        $songs_table->addRow(0.5); // Song 1
+        $songs_table->addRow(8.25); // Song 1
+        $songs_table->addRow(0.5); // Song 2
+        $songs_table->addRow(8.25); // Song 2
+        $songs_table->addRow(4.5); // Comments
+        $songs_table->addRow(0.5); // Judge Name
+        $songs_table->addColumnsList(array(10, 8.5));
+
+        // Songs
+        $songs_table->writeToCell(1,1, '__ '.$student['song_one']['composer'], $styles['h3']);
+        $songs_table->writeToCell(1,2, $student['song_one']['song'], $styles['h3']);
+        $songs_table->writeToCell(3,1, '__ '.$student['song_two']['composer'], $styles['h3']);
+        $songs_table->writeToCell(3,2, $student['song_two']['song'], $styles['h3']);
+        $songs_table->writeToCell(5,1, 'General Comments:', $styles['h3']);
+        $songs_table->writeToCell(6,1, 'Judge:', $styles['h3']);
+        $songs_table->writeToCell(6,2, 'Signature:', $styles['h3']);
+        $songs_table->setBorderForCellRange($styles['underlined_border'], 6, 1, 6, 2);
+      }
     }
+
+    // save rtf document and download it from browser
+    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_adjudication_forms_'.time().'.rtf';
+    $rtf->save($file_name);
+    return $file_name;
+  }
+
+  /**
+   * This function will allow the files to be downloaded from the website.
+   *
+   * When the festival chairman clicks 'Submit', there will be a multitude of
+   * files that are downloaded from ARIA. This function makes that download
+   * process possible.
+   *
+   * @param   $file_name  String  The name of the file to be downloaded.
+   *
+   * @author KREW
+   * @since 1.0.0
+   */
+  private static function download_documents($event_name, $files) {
+    /*
+    echo "Event name: $event_name <br>";
+    echo "Files: <br>";
+    wp_die(print_r($files));
+    */
+
+    /*
+    $zip = new ZipArchive();
+    $zip_name = $event_name . time() . ".zip";
+    $zip->open($zip_name,  ZipArchive::CREATE);
+    foreach ($files as $file_name) {
+      if (file_exists($file_name)) {
+        $zip->addFile($file_name);
+      }
+    }
+
+    $zip->close();
+    */
+
+    foreach ($files as $file_name) {
+      // download the file
+      if (file_exists($file_name)) {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="'.basename($file_name).'"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($file_name));
+        readfile($file_name);
+        exit;
+      }
+      else {
+        wp_die("Inside download_document: no such file exists.");
+      }
+    }
+
+    wp_die();
   }
 
   /**
