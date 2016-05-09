@@ -10,10 +10,16 @@
  * @subpackage ARIA/admin
  */
 
-require_once(ARIA_ROOT . "/includes/class-aria-api.php");
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-scheduler.php");
-require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
-//require_once("lib/PHPRtfLite/lib/PHPRtfLite.php");
+require_once(ABSPATH . "wp-content/plugins/ARIA/includes/class-aria-api.php");
+require_once(ABSPATH . "wp-content/plugins/ARIA/admin/scheduler/class-aria-scheduler.php");
+require_once(ABSPATH . "wp-content/plugins/ARIA/admin/scheduler/scheduler.php");
+require_once(ABSPATH . "wp-content/plugins/ARIA/admin/scheduler/PHPRtfLite/lib/PHPRtfLite.php");
+const USE_HTML_TAGS = true;
+
+/*
+$dir = dirname(__FILE__);
+require_once($dir . "/PHPRtfLite/lib/PHPRtfLite.php");
+*/
 
 class Doc_Generator {
 
@@ -47,6 +53,7 @@ class Doc_Generator {
     $related_forms = ARIA_API::aria_find_related_forms_ids($title);
 
     // locate that serialized version of the scheduler object
+    $non_formatted_title = $title;
     $title = str_replace(' ', '_', $title);
     $file_path = ARIA_FILE_UPLOAD_LOC . $title . ".txt";
     if (file_exists($file_path)) {
@@ -60,9 +67,10 @@ class Doc_Generator {
     }
 
     // use the scheduler object to prepare the format(s) required for doc. generation
-    $comp_sections = $scheduler->get_section_info_for_doc_gen();
-    //wp_die("Printing competition sections!</br>");
-    wp_die(print_r($comp_sections));
+    $event_sections = $scheduler->get_section_info_for_doc_gen();
+    //wp_die(print_r($event_sections));
+    //self::rtf_activation_func($non_formatted_title, $event_sections);
+    self::create_announcing_sheets($non_formatted_title, $event_sections);
 
     // send all participating teachers emails regarding when their students are playing
     // and their volunteer information
@@ -75,14 +83,15 @@ class Doc_Generator {
     // are performing
 
 
-    //print_r($scheduler);
-    //wp_die();
+    $confirmation = "Congratulations! You have just generated documents for $non_formatted_title.";
+    return $confirmation;
   }
 
   /**
-   * This function handles processing after the festival chairman has elected to
-   * generate documents for a given competition.
+   * This function creates the document generation page.
    *
+   * This function is responsible for creating and initializing all of the fields
+   * that are required in the page for document generation.
    *
    * @since 1.0.0
    * @author KREW
@@ -187,7 +196,154 @@ class Doc_Generator {
   }
 
   /**
+   * This function will create all of the announcing sheets for a competition.
    *
+   *
+   * @param   $event_name  String  The name of the competition to generate docs for.
+   * @param   $event_sections  Array   The list of sections to use for doc gen.
+   *
+   * @since 1.0.0
+   * @author KREW
    */
+  private static function create_announcing_sheets($event_name, $event_sections) {
+    // registers PHPRtfLite autoloader (spl)
+    PHPRtfLite::registerAutoloader();
 
+    /*
+    echo "inside create_announcing_sheets<br>";
+    echo($event_name);
+    echo "<br>";
+    wp_die(print_r($event_sections));
+    */
+
+    // rtf document instance
+    $rtf = new PHPRtfLite();
+    $rtf->setMargins(1.25, 1.25, 1.25, 1.25);
+
+    // Set Fonts
+    $styles = self::aria_styles($rtf);
+    foreach($event_sections as $event_section) {
+      // Add section
+      $body = $rtf->addSection();
+
+      // Title
+      $body->writeText($event_name.'<br>', $styles['h1'], $styles['h1ParFormat'], USE_HTML_TAGS);
+      $body->writeText('Announcing Sheet<br><br>', $styles['h2'], $styles['h1ParFormat'], USE_HTML_TAGS);
+
+      //Body
+      $title_table = $body->addTable();
+      $title_table->addRow(0.5); // Section_Name
+      $title_table->addRow(0.5); // Blank
+      $title_table->addRow(0.5); // Judge
+      $title_table->addRow(0.5); // Proctor
+      $title_table->addRow(0.5); // Monitor
+      $title_table->addRow(0.5); // Blank
+      $title_table->addRow(0.5); // Section Order
+      $title_table->addColumnsList(array(6, 12.5));
+      $title_table->mergeCellRange(1, 1, 1, 2);
+
+      $title_table->writeToCell(1, 1, $event_section['section_name'], $styles['h2']);
+      $title_table->writeToCell(3, 1, 'Judge:', $styles['p']);
+      $title_table->writeToCell(3, 2, $event_section['judge'], $styles['p']);
+      $title_table->writeToCell(4, 1, 'Proctor:', $styles['p']);
+      $title_table->writeToCell(4, 2, $event_section['proctor'], $styles['p']);
+      $title_table->writeToCell(5, 1, 'Door Monitor:', $styles['p']);
+      $title_table->writeToCell(5, 2, $event_section['monitor'], $styles['p']);
+      $title_table->writeToCell(7, 1, 'Session Order:', $styles['h2']);
+
+      $students_table = $body->addTable();
+      $students_table->addColumnsList(array(1, 5, 12.5));
+
+      $student_counter = 0;
+      foreach($event_section['students'] as $student) {
+        $students_table->addRow(0.5); // Student Name
+        $students_table->addRow(0.5); // Blank
+        $students_table->addRow(0.5); // Song 1
+        $students_table->addRow(0.5); // Song 2
+        $students_table->addRow(0.5); // Blank
+
+        $students_table->mergeCellRange(5*$student_counter + 1, 1, 5*$student_counter + 1, 3);
+        $students_table->writeToCell(5*$student_counter + 1, 1, $student['name'], $styles['h3']);
+        $students_table->writeToCell(5*$student_counter + 3, 2, $student['song_one']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_one']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 2, $student['song_two']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 3, $student['song_two']['song'], $styles['p']);
+
+        $student_counter++;;
+      }
+    }
+
+    // save rtf document as $event_name.rtf in the uploads folder
+    $file_name = ABSPATH.'/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet_'.time().'.rtf';
+    $rtf->save($file_name);
+
+    // download the file
+    if (file_exists($file_name)) {
+      header('Content-Description: File Transfer');
+      header('Content-Type: application/octet-stream');
+      header('Content-Disposition: attachment; filename="'.basename($file_name).'"');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate');
+      header('Pragma: public');
+      header('Content-Length: ' . filesize($file_name));
+      readfile($file_name);
+      exit;
+    }
+  }
+
+  /**
+   * This function will define the styling used for the generated documents.
+   *
+   * For each of the RTF documents that is generated, there needs to be an
+   * accompanying style. This function is responsible for defining that styles
+   * for each form that will be created.
+   *
+   * @param   $rtf
+   *
+   * @author KREW
+   * @since 1.0.0
+   */
+  private static function aria_styles($rtf) {
+   // Initialize return value
+   $styles = array();
+
+   $font_face = 'Georgia';
+   $foreground = '#000000';
+   $background = '#FFFFFF';
+
+   // h1
+   $h1 = new PHPRtfLite_Font(18, $font_face, $foreground, $background);
+   $h1->setBold();
+   $styles['h1'] = $h1;
+
+   $h1ParFormat = new PHPRtfLite_ParFormat(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
+   $styles['h1ParFormat'] = $h1ParFormat;
+
+   // h2
+   $h2 = new PHPRtfLite_Font(13, $font_face, $foreground, $background);
+   $h2->setBold();
+   $styles['h2'] = $h2;
+
+   $h2ParFormat = new PHPRtfLite_ParFormat(PHPRtfLite_ParFormat::TEXT_ALIGN_LEFT);
+   $styles['h2ParFormat'] = $h2ParFormat;
+
+   // h3
+   $h3 = new PHPRtfLite_Font(12, $font_face, $foreground, $background);
+   $h3->setBold();
+   $styles['h3'] = $h3;
+
+   // p
+   $p = new PHPRtfLite_Font(11, $font_face, $foreground, $background);
+   $styles['p'] = $p;
+
+   $styles['underlined_border'] = new PHPRtfLite_Border(
+     $rtf,                                       // PHPRtfLite instance
+     null, // left border: 2pt, green color
+     null, // top border: 1pt, yellow color
+     null, // right border: 2pt, red color
+     new PHPRtfLite_Border_Format(1, '#000000')  // bottom border: 1pt, blue color
+   );
+
+   return $styles;
+  }
 }
