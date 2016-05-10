@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
           }).disableSelection();
 
   })(jQuery);
-}
+});
 
 // This function inserts newNode after referenceNode
 function insertAfter(referenceNode, newNode) {

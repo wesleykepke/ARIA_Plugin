@@ -106,5 +106,5 @@ function resend_link_init(current_form_id)
           });
     return returnedValue;
   }// end of get music form id function
-});
+
 
