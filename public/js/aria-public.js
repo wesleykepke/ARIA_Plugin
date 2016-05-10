@@ -31,7 +31,7 @@ jQuery(document).ready(function($) {
 
   if( form_name.indexOf("Resend a Teacher Registration Link") != -1)
   {
-    resend_link_init(current_form_id);
+    resend_link_init(current_form_id, host);
   }
 
   ///////// Student registration
