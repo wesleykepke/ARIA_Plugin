@@ -621,7 +621,7 @@ class ARIA_API {
     }
 
     if (is_null($email)) {
-      wp_die('could not find email');
+      wp_die("Could not find a teacher email for: $teacher_name.");
     }
     return $email;
   }
