@@ -517,12 +517,20 @@ class Section {
 
     // get all skill levels in section
     $skill_levels = array();
+    $section_types = array();
     foreach ($this->students as $student) {
+      // skill levels
       if (!in_array($student->get_skill_level(), $skill_levels)) {
         $skill_levels[] = $student->get_skill_level();
       }
+
+      // student types 
+      if (!in_array($student->get_type(), $section_types)) {
+        $section_types[] = $student->get_type(); 
+      } 
     }
 
+    // skill levels
     if (count($skill_levels) === 1) {
       $section_info .= '<li>Student Skill Level: ' . strval($skill_levels[0]) . '</li>';
     }
@@ -537,18 +545,47 @@ class Section {
       $section_info .= '</li>';
     }
 
-    // determine the type of the section
-    $section_info .= '<li>Section Type: ';
-    switch ($this->type) {
-      case SECTION_OTHER:
-        $section_info .= "Traditional/Non-Competitive/Command</li>";
-      break;
+    // student types
+    if (count($section_types) === 1) {
+      $section_info .= "<li>Section Type: ";
+      switch ($section_types[0]) {
+        case SECTION_TRADITIONAL:
+          $section_info .= "Traditional</li>";
+        break;
 
-      case SECTION_MASTER:
-        $section_info .= "Masterclass</li>";
-      break;
+        case SECTION_MASTER:
+          $section_info .= "Masterclass</li>";
+        break;
+
+        case SECTION_NON_COMP:
+          $section_info .= "Non-competitive</li>";
+        break; 
+      }
     }
+    else {
+      $section_info .= '<li>Section Types: ';
+      for ($i = 0; $i < count($section_types); $i++) {
+        switch ($section_types[$i]) {
+          case SECTION_TRADITIONAL:
+            $section_info .= "Traditional</li>";
+          break;
 
+          case SECTION_MASTER:
+            $section_info .= "Masterclass</li>";
+          break;
+
+          case SECTION_NON_COMP:
+            $section_info .= "Non-Competitive</li>";
+          break; 
+        }         
+
+        if (($i + 1) != count($section_types)) {
+          $section_info .= ', ';
+        }
+      }
+      $section_info .= '</li>';
+    }
+    
     // include the total play time
     $section_info .= '<li>Total Play Time: ' . $this->current_time . ' minutes</li>';
     $section_info .= "</ul>";

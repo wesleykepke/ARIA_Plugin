@@ -395,7 +395,7 @@ class Doc_Generator {
     echo "Event name: $event_name <br>";
     echo "Files: <br>";
     wp_die(print_r($files));
-    */
+
 
     /*
     $zip = new ZipArchive();
@@ -410,6 +410,7 @@ class Doc_Generator {
     $zip->close();
     */
 
+/*
     foreach ($files as $file_name) {
       // download the file
       if (file_exists($file_name)) {
@@ -429,6 +430,7 @@ class Doc_Generator {
     }
 
     wp_die();
+*/
   }
 
   /**

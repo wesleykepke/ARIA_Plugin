@@ -133,6 +133,7 @@ class ARIA {
 
     // Register all of the hooks needed by ARIA
 
+
     /*
     The action registered for this hook is for adding the form to create a new
     music competition.
@@ -167,6 +168,16 @@ class ARIA {
       'before_schedule_render', 10, 4
     );
 
+		/*
+    The action registered for this hook updates the list of competitions that
+    can be selected on the modify schedule page.
+    */
+    $this->loader->add_action(
+      'gform_enqueue_scripts',
+      'Modify_Schedule',
+      'before_modify_schedule_render', 10, 2
+    );
+
     /*
     The action registered for this hook updates the list of teachers that
     can be selected by students upon competition registration.
@@ -184,6 +195,15 @@ class ARIA {
       'gform_confirmation',
       'Scheduling_Algorithm',
       'aria_scheduling_algorithm', 10, 4
+    );
+
+		/*
+    The action registered for this hook is for rendering a saved schedule.
+    */
+    $this->loader->add_action(
+      'gform_confirmation',
+      'Modify_Schedule',
+      'render_schedule', 10, 4
     );
 
     /*

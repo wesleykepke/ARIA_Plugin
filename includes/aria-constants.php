@@ -26,6 +26,7 @@ define("MUSIC_UPLOAD_FORM_NAME", "ARIA: Upload Music");
 define("NNMTA_MUSIC_DATABASE_NAME", "NNMTA: Music Database");
 define("TEACHER_UPLOAD_FORM_NAME", "ARIA: Add Teacher");
 define("SCHEDULER_FORM_NAME", "ARIA: Schedule a Competition");
+define("MOD_SCHEDULE_FORM_NAME", "ARIA: Modify a Schedule");
 define("DOC_GEN_FORM_NAME", "ARIA: Generate Competition Documents");
 define("CSV_UPLOAD_FIELD_NAME", "CSV Music File");
 define("CSV_TEACHER_FIELD_NAME", "CSV Teacher File");
@@ -53,7 +54,8 @@ const TEACHER_MASTER = 4;
  * master-class, non-competitive, or command performance).
  */
 const SECTION_MASTER = 0;
-const SECTION_OTHER = 1;
+const SECTION_TRADITIONAL = 1;
+const SECTION_NON_COMP = 2;
 
 // Constants used to help offset into the scheduler object
 const SAT = 0;
