@@ -560,23 +560,24 @@ class ARIA_Form_Hooks {
 
           if (is_array($students)) {
 
-              // loop through students
-              for($i = 0; $i < count($students); $i++){
+            // loop through students
+            for($i = 0; $i < count($students); $i++){
 
-                // if student hash is found
-                if( $students[$i] == $student_hash ){
-                  // delete it
-                  array_splice($students, $i, 1);
-                  $teacher[strval($teacher_master_fields["students"])] = serialize($students);
+              // if student hash is found
+              if( $students[$i] == $student_hash ){
+                // delete it
+                array_splice($students, $i, 1);
+                $teacher[strval($teacher_master_fields["students"])] = serialize($students);
 
-                  // Update the teacher entry with the new student edition
-                  $result = GFAPI::update_entry($teacher);
-                  if (is_wp_error($result)) {
-                    wp_die(__LINE__.$result->get_error_message());
-                  }
-                  break;
+                // Update the teacher entry with the new student edition
+                $result = GFAPI::update_entry($teacher);
+                if (is_wp_error($result)) {
+                  wp_die(__LINE__.$result->get_error_message());
                 }
+                break;
               }
+            }
+          }
         }
       }
       //wp_die(print_r($teacher_entries));
