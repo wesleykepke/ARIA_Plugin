@@ -255,7 +255,7 @@ class Doc_Generator {
       $title_table->writeToCell(7, 1, 'Session Order:', $styles['h2']);
 
       $students_table = $body->addTable();
-      $students_table->addColumnsList(array(1, 5, 12.5));
+      $students_table->addColumnsList(array(1, 12.5, 5));
 
       $student_counter = 0;
       foreach($event_section['students'] as $student) {
@@ -266,18 +266,18 @@ class Doc_Generator {
         $students_table->addRow(0.5); // Blank
 
         $students_table->mergeCellRange(5*$student_counter + 1, 1, 5*$student_counter + 1, 3);
-        $students_table->writeToCell(5*$student_counter + 1, 1, $student['name'], $styles['h3']);
-        $students_table->writeToCell(5*$student_counter + 3, 2, $student['song_one']['composer'], $styles['p']);
-        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_one']['song'], $styles['p']);
-        $students_table->writeToCell(5*$student_counter + 4, 2, $student['song_two']['composer'], $styles['p']);
-        $students_table->writeToCell(5*$student_counter + 4, 3, $student['song_two']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 1, 1, ((string) ($student_counter + 1)).'. '.$student['name'], $styles['h3']);
+        $students_table->writeToCell(5*$student_counter + 3, 2, $student['song_one']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_one']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 2, $student['song_two']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 3, $student['song_two']['composer'], $styles['p']);
 
         $student_counter++;;
       }
     }
 
     // save rtf document and download it from browser
-    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet_'.time().'.rtf';
+    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet.rtf';
     $rtf->save($file_name);
     return $file_name;
   }
@@ -373,7 +373,7 @@ class Doc_Generator {
     }
 
     // save rtf document and download it from browser
-    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_adjudication_forms_'.time().'.rtf';
+    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_adjudication_forms.rtf';
     $rtf->save($file_name);
     return $file_name;
   }
