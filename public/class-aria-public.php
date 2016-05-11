@@ -87,8 +87,8 @@ class ARIA_Public {
 		wp_enqueue_script( 'jquery-ui-sortable' );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/aria-public.js', array( 'jquery' ), $this->version, false );
 
-		wp_enqueue_script('cry1', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/hmac-sha1.js' );
-		wp_enqueue_script( 'cry2', 'http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js' );
+		wp_enqueue_script('cry1', plugin_dir_url( __FILE__ ) . 'js/hmac-sha1.js' );
+		wp_enqueue_script( 'cry2', plugin_dir_url( __FILE__ ) . 'js/enc-base64-min.js' );
 
 		wp_register_script( 'resend_script', plugin_dir_url( __FILE__ ) . 'js/resend_link.js', array('jquery'), '1.0', false );
 		wp_enqueue_script('resend_script');

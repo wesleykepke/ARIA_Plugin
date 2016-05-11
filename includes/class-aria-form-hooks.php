@@ -467,7 +467,7 @@ class ARIA_Form_Hooks {
     return $vars;
   }
 
-  public static function email_post_update_entry($form, $entry_id, $original_entry)
+  public static function aria_student_master_post_update_entry($form, $entry_id, $original_entry)
   {
     //$form_id = $entry['form_id'];
     $entry = GFAPI::get_entry($entry_id);
