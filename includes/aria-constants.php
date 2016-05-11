@@ -54,7 +54,8 @@ const TEACHER_MASTER = 4;
  * master-class, non-competitive, or command performance).
  */
 const SECTION_MASTER = 0;
-const SECTION_OTHER = 1;
+const SECTION_TRADITIONAL = 1;
+const SECTION_NON_COMP = 2; 
 
 // Constants used to help offset into the scheduler object
 const SAT = 0;

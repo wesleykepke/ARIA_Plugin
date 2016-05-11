@@ -126,11 +126,14 @@ class Scheduling_Algorithm {
 
         // determine type of student
         $type = $student[strval($student_master_field_mapping['competition_format'])];
-        if ($type == "Master Class") {
+        if (strcmp($type, "Master Class") == 0) {
           $type = SECTION_MASTER;
         }
+        else if (strcmp($type, "Traditional") == 0) {
+          $type = SECTION_TRADITIONAL;
+        }
         else {
-          $type = SECTION_OTHER;
+          $type = SECTION_NON_COMP;
         }
 
         // determine the student's total play time for both songs
