@@ -167,7 +167,8 @@ class Scheduling_Algorithm {
         $parent_email = $student[strval($student_master_field_mapping['parent_email'])];
 
         // determine the email address of the student's teacher
-        $teacher_email = ARIA_API::get_teacher_email($student[strval($student_master_field_mapping['teacher_name'])],
+        $teacher_name = unserialize($student[strval($student_master_field_mapping['teacher_name'])]);
+        $teacher_email = ARIA_API::get_teacher_email($teacher_name,
                                                      $related_form_ids['teacher_master_form_id']);
 
         // determine the student's teacher's name
