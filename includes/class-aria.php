@@ -295,7 +295,7 @@ class ARIA {
 
 
     $this->loader->add_action( 'gform_after_update_entry', 
-        'ARIA_Form_Hooks', 'email_post_update_entry', 10, 3 );
+        'ARIA_Form_Hooks', 'aria_student_master_post_update_entry', 10, 3 );
 
 
 
