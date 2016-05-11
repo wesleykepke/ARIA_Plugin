@@ -166,12 +166,17 @@ class Scheduling_Algorithm {
         // determine the email address of the student's parent
         $parent_email = $student[strval($student_master_field_mapping['parent_email'])];
 
-        // determine the email address of the student's teacher
-        $teacher_email = ARIA_API::get_teacher_email($student[strval($student_master_field_mapping['teacher_name'])],
-                                                     $related_form_ids['teacher_master_form_id']);
-
-        // determine the student's teacher's name
+        // determine the teacher's name
         $teacher_name = $student[strval($student_master_field_mapping['teacher_name'])];
+
+        // determine the email address of the student's teacher
+        /* FOR NNMTA SERVER OR ANY COMPETITION WITH SERIALIZED TEACHER NAME
+        $teacher_name = unserialize($student[strval($student_master_field_mapping['teacher_name'])]);
+        $teacher_name = trim($teacher_name[0]) . " " . trim($teacher_name[1]);
+        */
+
+        $teacher_email = ARIA_API::get_teacher_email($teacher_name,
+                                                     $related_form_ids['teacher_master_form_id']);
 
         // create a student object based on previously obtained information
         $modified_student = new Student($first_name, $last_name, $type,

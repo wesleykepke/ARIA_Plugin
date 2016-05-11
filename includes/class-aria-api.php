@@ -184,6 +184,29 @@ class ARIA_API {
   }
 
   /**
+   * This function will find the ID of the form used to modify the scheduler.
+   *
+   * This function will iterate through all of the active form objects and
+   * return the ID of the form that is used to modify the generated schedule
+   * If no such form exists, the function will return -1.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_get_modify_schedule_form_id() {
+    $form_id = -1;
+    $all_active_forms = GFAPI::get_forms();
+
+    foreach ($all_active_forms as $form) {
+      if (array_key_exists('isModifyScheduleForm', $form)) {
+        $form_id = $form['id'];
+      }
+    }
+
+    return $form_id;
+  }
+
+  /**
    * This function will find the names of all active competitions.
    *
    * This function will iterate through all of the active competitions
@@ -607,11 +630,8 @@ class ARIA_API {
     $split_name = explode(' ', $teacher_name);
     $split_name[0] = strtolower(trim($split_name[0]));
     $split_name[1] = strtolower(trim($split_name[1]));
-    //echo $split_name[0] . $split_name[1] . "<br>";
-    //wp_die('inside get_teacher_email');
     $email = null;
     $field_mapping = self::aria_master_teacher_field_id_array();
-    //wp_die(var_dump($entries));
     foreach ($entries as $entry) {
       $first_name = strtolower(trim($entry[strval($field_mapping['first_name'])]));
       $last_name = strtolower(trim($entry[strval($field_mapping['last_name'])]));
@@ -621,7 +641,7 @@ class ARIA_API {
     }
 
     if (is_null($email)) {
-      wp_die('could not find email');
+      wp_die("Could not find a teacher email for: $teacher_name.");
     }
     return $email;
   }
