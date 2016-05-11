@@ -467,5 +467,58 @@ class ARIA_Form_Hooks {
     return $vars;
   }
 
+  public static function email_post_update_entry($form, $entry_id, $original_entry)
+  {
+    //$form_id = $entry['form_id'];
+    $entry = GFAPI::get_entry($entry_id);
+//wp_die(print_r($form));
+    // Only perform processing if it's a student form
+    if (!array_key_exists('isStudentMasterForm', $form)
+        || !$form['isStudentMasterForm']) {
+          return;
+    }
+
+    // Find the 4 related forms that pertain to $form
+    $related_forms = $form['aria_relations'];
+
+    // Find out the information associated with the $entry variable
+    $student_fields = ARIA_API::aria_student_field_id_array();
+
+    /* teacher master has not been fully checked because form doesn't look complete? */
+    $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
+    $student_master_fields = ARIA_API::aria_master_student_field_id_array();
+
+    $teacher_name = $entry[ strval($student_master_fields['teacher_name']) ];
+    $old_teacher_name = $original_entry[ strval($student_master_fields['teacher_name']) ];
+    if( $teacher_name != $old_teacher_name )
+    {
+      // find teacher in master
+      $search = array ( );
+      $sorting = array();
+      $paging = array('offset' => 0, 'page_size' => 2000);
+      $total_count = 0;
+      $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting, $paging, $total_count);
+      foreach( $teacher_entries as $teacher ){
+        $teacher_first = $teacher[ strval($teacher_master_fields['first_name'])];
+        $teacher_last = $teacher[ strval($teacher_master_fields['last_name'])];
+        $full_name = $teacher_first . ' ' . $teacher_last;
+        if($full_name == $teacher_name)
+        {
+          $teacher_hash =  $teacher[ strval($teacher_master_fields['teacher_hash'])];
+          $teacher_val = array();
+          $teacher_val[] = $teacher_first;
+          $teacher_val[] = $teacher_last;
+          $teacher_val[] = $teacher_hash;
+          $teacher_serial = serialize($teacher_val);
+          $entry[ strval($student_master_fields['teacher_name']) ] = $teacher_serial;
+          $result = GFAPI::update_entry($entry);
+          return;
+        }
+      }
+      //wp_die(print_r($teacher_entries));
+      //wp_die($teacher_name . $old_teacher_name);
+      wp_die("Error: Please type the teacher's name exactly as it appears in the teacher master. Ex: FirstName LastName");
+    }
+  }
 
 }
