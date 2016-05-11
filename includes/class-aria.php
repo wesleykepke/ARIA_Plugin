@@ -31,107 +31,107 @@ require_once("class-aria-api.php");
  */
 class ARIA {
 
-	/**
-	 * The loader that's responsible for maintaining and registering all hooks that power
-	 * the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      Plugin_Name_Loader    $loader    Maintains and registers all hooks for the plugin.
-	 */
-	protected $loader;
+  /**
+   * The loader that's responsible for maintaining and registering all hooks that power
+   * the plugin.
+   *
+   * @since    1.0.0
+   * @access   protected
+   * @var      Plugin_Name_Loader    $loader    Maintains and registers all hooks for the plugin.
+   */
+  protected $loader;
 
-	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
-	 */
-	protected $plugin_name;
+  /**
+   * The unique identifier of this plugin.
+   *
+   * @since    1.0.0
+   * @access   protected
+   * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+   */
+  protected $plugin_name;
 
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
+  /**
+   * The current version of the plugin.
+   *
+   * @since    1.0.0
+   * @access   protected
+   * @var      string    $version    The current version of the plugin.
+   */
+  protected $version;
 
-	/**
-	 * Define the core functionality of the plugin.
-	 *
-	 * Set the plugin name and the plugin version that can be used throughout the plugin.
-	 * Load the dependencies, define the locale, and set the hooks for the admin area and
-	 * the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function __construct() {
+  /**
+   * Define the core functionality of the plugin.
+   *
+   * Set the plugin name and the plugin version that can be used throughout the plugin.
+   * Load the dependencies, define the locale, and set the hooks for the admin area and
+   * the public-facing side of the site.
+   *
+   * @since    1.0.0
+   */
+  public function __construct() {
 
-		$this->plugin_name = 'ARIA';
-		$this->version = '1.0.0';
+    $this->plugin_name = 'ARIA';
+    $this->version = '1.0.0';
 
-		$this->load_dependencies();
-		$this->set_locale();
-		$this->define_admin_hooks();
-		$this->define_public_hooks();
+    $this->load_dependencies();
+    $this->set_locale();
+    $this->define_admin_hooks();
+    $this->define_public_hooks();
 
-	}
+  }
 
-	/**
-	 * Load the required dependencies for this plugin.
-	 *
-	 * Include the following files that make up the plugin:
-	 *
-	 * - Plugin_Name_Loader. Orchestrates the hooks of the plugin.
-	 * - Plugin_Name_i18n. Defines internationalization functionality.
-	 * - Plugin_Name_Admin. Defines all hooks for the admin area.
-	 * - Plugin_Name_Public. Defines all hooks for the public side of the site.
-	 *
-	 * Create an instance of the loader which will be used to register the hooks
-	 * with WordPress.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function load_dependencies() {
+  /**
+   * Load the required dependencies for this plugin.
+   *
+   * Include the following files that make up the plugin:
+   *
+   * - Plugin_Name_Loader. Orchestrates the hooks of the plugin.
+   * - Plugin_Name_i18n. Defines internationalization functionality.
+   * - Plugin_Name_Admin. Defines all hooks for the admin area.
+   * - Plugin_Name_Public. Defines all hooks for the public side of the site.
+   *
+   * Create an instance of the loader which will be used to register the hooks
+   * with WordPress.
+   *
+   * @since    1.0.0
+   * @access   private
+   */
+  private function load_dependencies() {
 
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-aria-loader.php';
-		$this->loader = new ARIA_Loader();
+    /**
+     * The class responsible for orchestrating the actions and filters of the
+     * core plugin.
+     */
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-aria-loader.php';
+    $this->loader = new ARIA_Loader();
 
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-plugin-name-i18n.php';
+    /**
+     * The class responsible for defining internationalization functionality
+     * of the plugin.
+     */
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-plugin-name-i18n.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-plugin-name-admin.php';
+    /**
+     * The class responsible for defining all actions that occur in the admin area.
+     */
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-plugin-name-admin.php';
 
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-aria-public.php';
+    /**
+     * The class responsible for defining all actions that occur in the public-facing
+     * side of the site.
+     */
+    require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-aria-public.php';
 
-		// Include all of the ARIA files needed as dependencies.
-		require_once("class-aria-create-competition.php");
-		require_once("class-aria-music.php");
-		require_once("class-aria-form-hooks.php");
-	    require_once("class-aria-teacher-upload.php");
-	    require_once("class-aria-resend-email-form.php");
-	    require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
-	    require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
+    // Include all of the ARIA files needed as dependencies.
+    require_once("class-aria-create-competition.php");
+    require_once("class-aria-music.php");
+    require_once("class-aria-form-hooks.php");
+      require_once("class-aria-teacher-upload.php");
+      require_once("class-aria-resend-email-form.php");
+      require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
+      require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
 
-		// Register all of the hooks needed by ARIA
+    // Register all of the hooks needed by ARIA
 
     /*
     The action registered for this hook is for adding the form to create a new
@@ -228,14 +228,14 @@ class ARIA {
     );
 
     /*
-	 * Payment testing
+   * Payment testing
 
 
     $this->loader->add_action(
-    	'gform_paypal_fulfillment',
-    	'ARIA_Registration_Handler',
-    	'aria_test_payment', 10, 4
-    	);
+      'gform_paypal_fulfillment',
+      'ARIA_Registration_Handler',
+      'aria_test_payment', 10, 4
+      );
     */
 
     /*
@@ -258,7 +258,7 @@ class ARIA {
     /*
     $this->loader->add_action('gform_after_submission',
       'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
-	*/
+  */
     /*
     The action registered for this hook is to invoke processing after a teacher
     has submitted their registration.
@@ -266,14 +266,20 @@ class ARIA {
     $this->loader->add_action('gform_after_submission',
       'ARIA_Form_Hooks', 'aria_after_teacher_submission', 10, 2);
 
-		/*
-		The filter that makes sure that the teacher pages have correct hashes.
-		*/
-		$this->loader->add_filter('gform_enqueue_scripts',
+    /*
+    The filter that makes sure that the teacher pages have correct hashes.
+    */
+    $this->loader->add_filter('gform_enqueue_scripts',
       'ARIA_Form_Hooks',
       'aria_before_teacher_render', 10, 2);
 
-		/*
+
+    $this->loader->add_action( 'gform_after_update_entry', 
+        'ARIA_Form_Hooks', 'email_post_update_entry', 10, 3 );
+
+
+
+    /*
     The action registered for this hook if for adding music upload/download
     functionality.
 
@@ -312,97 +318,97 @@ class ARIA {
     $this->loader->add_filter('query_vars', 'ARIA_Form_Hooks',
       'aria_add_query_vars_filter', 10, 1);
 
-		$this->loader->add_filter( 'wp_mail_content_type', 'ARIA_API',
-			'set_content_type', 10, 1);
-	}
+    $this->loader->add_filter( 'wp_mail_content_type', 'ARIA_API',
+      'set_content_type', 10, 1);
+  }
 
-	/**
-	 * Define the locale for this plugin for internationalization.
-	 *
-	 * Uses the Plugin_Name_i18n class in order to set the domain and to register the hook
-	 * with WordPress.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function set_locale() {
+  /**
+   * Define the locale for this plugin for internationalization.
+   *
+   * Uses the Plugin_Name_i18n class in order to set the domain and to register the hook
+   * with WordPress.
+   *
+   * @since    1.0.0
+   * @access   private
+   */
+  private function set_locale() {
 
-		$plugin_i18n = new Plugin_Name_i18n();
+    $plugin_i18n = new Plugin_Name_i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+    $this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
-	}
+  }
 
-	/**
-	 * Register all of the hooks related to the admin area functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_admin_hooks() {
+  /**
+   * Register all of the hooks related to the admin area functionality
+   * of the plugin.
+   *
+   * @since    1.0.0
+   * @access   private
+   */
+  private function define_admin_hooks() {
 
-		$plugin_admin = new Plugin_Name_Admin( $this->get_plugin_name(), $this->get_version() );
+    $plugin_admin = new Plugin_Name_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+    $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+    $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-	}
+  }
 
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_public_hooks() {
+  /**
+   * Register all of the hooks related to the public-facing functionality
+   * of the plugin.
+   *
+   * @since    1.0.0
+   * @access   private
+   */
+  private function define_public_hooks() {
 
-		$plugin_public = new ARIA_Public( $this->get_plugin_name(), $this->get_version() );
+    $plugin_public = new ARIA_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+    $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+    $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-	}
+  }
 
-	/**
-	 * Run the loader to execute all of the hooks with WordPress.
-	 *
-	 * @since    1.0.0
-	 */
-	public function run() {
-		$this->loader->run();
-	}
+  /**
+   * Run the loader to execute all of the hooks with WordPress.
+   *
+   * @since    1.0.0
+   */
+  public function run() {
+    $this->loader->run();
+  }
 
-	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
-	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
-	}
+  /**
+   * The name of the plugin used to uniquely identify it within the context of
+   * WordPress and to define internationalization functionality.
+   *
+   * @since     1.0.0
+   * @return    string    The name of the plugin.
+   */
+  public function get_plugin_name() {
+    return $this->plugin_name;
+  }
 
-	/**
-	 * The reference to the class that orchestrates the hooks with the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    Plugin_Name_Loader    Orchestrates the hooks of the plugin.
-	 */
-	public function get_loader() {
-		return $this->loader;
-	}
+  /**
+   * The reference to the class that orchestrates the hooks with the plugin.
+   *
+   * @since     1.0.0
+   * @return    Plugin_Name_Loader    Orchestrates the hooks of the plugin.
+   */
+  public function get_loader() {
+    return $this->loader;
+  }
 
-	/**
-	 * Retrieve the version number of the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
-	 */
-	public function get_version() {
-		return $this->version;
-	}
+  /**
+   * Retrieve the version number of the plugin.
+   *
+   * @since     1.0.0
+   * @return    string    The version number of the plugin.
+   */
+  public function get_version() {
+    return $this->version;
+  }
 
 }

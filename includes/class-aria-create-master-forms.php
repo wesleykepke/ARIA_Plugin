@@ -75,20 +75,12 @@ class ARIA_Create_Master_Forms {
     $student_master_form->fields[] = $student_birthday_date_field;
 
     // student's piano teacher
-    $piano_teachers_field = new GF_Field_Select();
+    $piano_teachers_field = new GF_Field_Text();
     $piano_teachers_field->label = "Piano Teacher's Name";
     $piano_teachers_field->id = $field_id_array['teacher_name'];
     $piano_teachers_field->isRequired = false;
     $piano_teachers_field->description = "";
     $student_master_form->fields[] = $piano_teachers_field;
-
-    // student's piano teacher does not exist
-    $teacher_missing_field = new GF_Field_Text();
-    $teacher_missing_field->label = "If your teacher's name is not listed, ".
-    "enter name below.";
-    $teacher_missing_field->id = $field_id_array['not_listed_teacher_name'];
-    $teacher_missing_field->isRequired = false;
-    $student_master_form->fields[] = $teacher_missing_field;
 
     // student's level
     $student_level_field = new GF_Field_Select();
@@ -134,6 +126,8 @@ class ARIA_Create_Master_Forms {
     "that you prefer in the event that your child receives a superior rating.";
     $command_times->descriptionPlacement = 'above';
     $command_times->choices = array();
+    $command_times->choices[]
+          = array('text' => 'Any time', 'value' => 'Any time', 'isSelected' => false);
     if (is_array($command_options_array)) {
       $index = 1;
       foreach( $command_options_array as $command_time ) {
@@ -144,42 +138,42 @@ class ARIA_Create_Master_Forms {
     $student_master_form->fields[] = $command_times;
 
     // student's first song period
-    $song_one_period_field = new GF_Field_Select();
+    $song_one_period_field = new GF_Field_Text();
     $song_one_period_field->label = "Song 1 Period";
     $song_one_period_field->id = $field_id_array['song_1_period'];
     $song_one_period_field->isRequired = false;
     $student_master_form->fields[] = $song_one_period_field;
 
     // student's first song composer
-    $song_one_composer_field = new GF_Field_Select();
+    $song_one_composer_field = new GF_Field_Text();
     $song_one_composer_field->label = "Song 1 Composer";
     $song_one_composer_field->id = $field_id_array['song_1_composer'];
     $song_one_composer_field->isRequired = false;
     $student_master_form->fields[] = $song_one_composer_field;
 
     // student's first song selection
-    $song_one_selection_field = new GF_Field_Select();
+    $song_one_selection_field = new GF_Field_Text();
     $song_one_selection_field->label = "Song 1 Selection";
     $song_one_selection_field->id = $field_id_array['song_1_selection'];
     $song_one_selection_field->isRequired = false;
     $student_master_form->fields[] = $song_one_selection_field;
 
     // student's second song period
-    $song_two_period_field = new GF_Field_Select();
+    $song_two_period_field = new GF_Field_Text();
     $song_two_period_field->label = "Song 2 Period";
     $song_two_period_field->id = $field_id_array['song_2_period'];
     $song_two_period_field->isRequired = false;
     $student_master_form->fields[] = $song_two_period_field;
 
     // student's second song composer
-    $song_two_composer_field = new GF_Field_Select();
+    $song_two_composer_field = new GF_Field_Text();
     $song_two_composer_field->label = "Song 2 Composer";
     $song_two_composer_field->id = $field_id_array['song_2_composer'];
     $song_two_composer_field->isRequired = false;
     $student_master_form->fields[] = $song_two_composer_field;
 
     // student's second song selection
-    $song_two_selection_field = new GF_Field_Select();
+    $song_two_selection_field = new GF_Field_Text();
     $song_two_selection_field->label = "Song 2 Selection";
     $song_two_selection_field->id = $field_id_array['song_2_selection'];
     $song_two_selection_field->isRequired = false;
