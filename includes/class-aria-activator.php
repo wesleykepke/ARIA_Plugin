@@ -55,6 +55,7 @@ class ARIA_Activator {
     require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
     require_once("class-aria-teacher-upload.php");
     require_once(ARIA_ROOT . "/admin/scheduler/doc-generator.php");
+		require_once(ARIA_ROOT . "/admin/scheduler/modify-schedule.php");
 		require_once("class-aria-resend-email-form.php");
     ARIA_Create_Competition::aria_create_competition_activation();
     ARIA_Music::aria_create_music_upload_form();
@@ -62,5 +63,6 @@ class ARIA_Activator {
     ARIA_TEACHER::aria_create_teacher_upload_form();
     Doc_Generator::aria_create_doc_gen_page();
 		ARIA_Resend_Email::aria_create_resend_teacher_email_form();
+		Modify_Schedule::aria_create_modify_schedule_page();
   }
 }
