@@ -525,8 +525,8 @@ class Section {
       }
 
       // student types 
-      if (!in_array($student->get_type(), $section_types )) {
-        $section_types = $student->get_type(); 
+      if (!in_array($student->get_type(), $section_types)) {
+        $section_types[] = $student->get_type(); 
       } 
     }
 
@@ -585,9 +585,6 @@ class Section {
       }
       $section_info .= '</li>';
     }
-
-    // determine the type of the section
-    $section_info .= '<li>Section Type: ';
     
     // include the total play time
     $section_info .= '<li>Total Play Time: ' . $this->current_time . ' minutes</li>';

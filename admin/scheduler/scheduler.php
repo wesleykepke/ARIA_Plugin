@@ -126,10 +126,10 @@ class Scheduling_Algorithm {
 
         // determine type of student
         $type = $student[strval($student_master_field_mapping['competition_format'])];
-        if ($type == "Master Class") {
+        if (strcmp($type, "Master Class") == 0) {
           $type = SECTION_MASTER;
         }
-        else if ($type == "Traditional") {
+        else if (strcmp($type, "Traditional") == 0) {
           $type = SECTION_TRADITIONAL;
         }
         else {
@@ -228,7 +228,6 @@ class Scheduling_Algorithm {
     the proctor(s), and the door guard.</h4>";
     $confirmation .= '<button id="saveScheduleButton" type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
     $confirmation .= $scheduler->get_schedule_string(false);
-    wp_die(); 
     return $confirmation;
   }
 
