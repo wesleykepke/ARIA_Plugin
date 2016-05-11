@@ -489,7 +489,17 @@ class ARIA_Form_Hooks {
     $student_master_fields = ARIA_API::aria_master_student_field_id_array();
 
     $teacher_name = $entry[ strval($student_master_fields['teacher_name']) ];
-    $old_teacher_name = $original_entry[ strval($student_master_fields['teacher_name']) ];
+    $old_teacher_val = $original_entry[ strval($student_master_fields['teacher_name']) ];
+    $old_teacher_val = unserialize($old_teacher_val);
+    if($old_teacher_val == false)
+    {
+      $old_teacher_name = '';
+    }
+    else
+    {
+      $old_teacher_name = $old_teacher_val[0] . ' ' . $old_teacher_val[1];
+      wp_die($old_teacher_name);
+    }
     if( $teacher_name != $old_teacher_name )
     {
       // find teacher in master
@@ -511,8 +521,18 @@ class ARIA_Form_Hooks {
           $teacher_val[] = $teacher_hash;
           $teacher_serial = serialize($teacher_val);
           $entry[ strval($student_master_fields['teacher_name']) ] = $teacher_serial;
+          // update student master
           $result = GFAPI::update_entry($entry);
+
+          // remove student from old teacher
+
+
+          // add student into new teacher
           return;
+        }
+        if($full_name == $old_teacher_name)
+        {
+          
         }
       }
       //wp_die(print_r($teacher_entries));
