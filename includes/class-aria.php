@@ -130,6 +130,7 @@ class ARIA {
       require_once("class-aria-resend-email-form.php");
       require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
       require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
+      require_once(ARIA_ROOT . '/admin/scheduler/modify-schedule.php');
 
     // Register all of the hooks needed by ARIA
 
