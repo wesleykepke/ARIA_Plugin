@@ -126,11 +126,14 @@ class Scheduling_Algorithm {
 
         // determine type of student
         $type = $student[strval($student_master_field_mapping['competition_format'])];
-        if ($type == "Master Class") {
+        if (strcmp($type, "Master Class") == 0) {
           $type = SECTION_MASTER;
         }
+        else if (strcmp($type, "Traditional") == 0) {
+          $type = SECTION_TRADITIONAL;
+        }
         else {
-          $type = SECTION_OTHER;
+          $type = SECTION_NON_COMP;
         }
 
         // determine the student's total play time for both songs
@@ -166,13 +169,13 @@ class Scheduling_Algorithm {
         // determine the email address of the student's parent
         $parent_email = $student[strval($student_master_field_mapping['parent_email'])];
 
-        // determine the email address of the student's teacher
+        // determine the teacher's name
         $teacher_name = unserialize($student[strval($student_master_field_mapping['teacher_name'])]);
-        $teacher_email = ARIA_API::get_teacher_email($teacher_name[0],
+        $teacher_name = trim($teacher_name[0]) . " " . trim($teacher_name[1]); 
+ 
+        // determine the email address of the student's teacher
+        $teacher_email = ARIA_API::get_teacher_email($teacher_name,
                                                      $related_form_ids['teacher_master_form_id']);
-
-        // determine the student's teacher's name
-        $teacher_name = $student[strval($student_master_field_mapping['teacher_name'])];
 
         // create a student object based on previously obtained information
         $modified_student = new Student($first_name, $last_name, $type,
