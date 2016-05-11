@@ -79,7 +79,8 @@ class ARIA_Create_Master_Forms {
     $piano_teachers_field->label = "Piano Teacher's Name";
     $piano_teachers_field->id = $field_id_array['teacher_name'];
     $piano_teachers_field->isRequired = false;
-    $piano_teachers_field->description = "";
+    $piano_teachers_field->description = "If modifying teacher name, just enter FirstName LastName";
+    $piano_teachers_field->description .= " (Do not worry about the extra characters).";
     $student_master_form->fields[] = $piano_teachers_field;
 
     // student's level
