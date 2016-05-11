@@ -607,11 +607,8 @@ class ARIA_API {
     $split_name = explode(' ', $teacher_name);
     $split_name[0] = strtolower(trim($split_name[0]));
     $split_name[1] = strtolower(trim($split_name[1]));
-    //echo $split_name[0] . $split_name[1] . "<br>";
-    //wp_die('inside get_teacher_email');
     $email = null;
     $field_mapping = self::aria_master_teacher_field_id_array();
-    //wp_die(var_dump($entries));
     foreach ($entries as $entry) {
       $first_name = strtolower(trim($entry[strval($field_mapping['first_name'])]));
       $last_name = strtolower(trim($entry[strval($field_mapping['last_name'])]));
