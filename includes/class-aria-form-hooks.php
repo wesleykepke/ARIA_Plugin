@@ -488,9 +488,10 @@ class ARIA_Form_Hooks {
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_API::aria_master_student_field_id_array();
 
+    $found = true;
     $teacher_name = $entry[ strval($student_master_fields['teacher_name']) ];
-    $old_teacher_val = $original_entry[ strval($student_master_fields['teacher_name']) ];
-    $old_teacher_val = unserialize($old_teacher_val);
+    $old_teacher_val_str = $original_entry[ strval($student_master_fields['teacher_name']) ];
+    $old_teacher_val = unserialize($old_teacher_val_str);
     $old_teacher_name = null;
     $old_teacher_hash = null;
     $student_hash = $entry[ strval($student_master_fields['hash']) ];
@@ -504,7 +505,7 @@ class ARIA_Form_Hooks {
       $old_teacher_name = $old_teacher_val[0] . ' ' . $old_teacher_val[1];
       $old_teacher_hash = $old_teacher_val[2];
     }
-    if( $teacher_name != $old_teacher_name )
+    if( $teacher_name != $old_teacher_val_str )
     {
       // find teacher in master
       $search = array ( );
@@ -512,6 +513,7 @@ class ARIA_Form_Hooks {
       $paging = array('offset' => 0, 'page_size' => 2000);
       $total_count = 0;
       $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting, $paging, $total_count);
+      $found = false;
       foreach( $teacher_entries as $teacher ){
         $teacher_first = $teacher[ strval($teacher_master_fields['first_name'])];
         $teacher_last = $teacher[ strval($teacher_master_fields['last_name'])];
@@ -519,6 +521,7 @@ class ARIA_Form_Hooks {
         $full_name = $teacher_first . ' ' . $teacher_last;
         if($full_name == $teacher_name)
         {
+          $found = true;
           $teacher_val = array();
           $teacher_val[] = $teacher_first;
           $teacher_val[] = $teacher_last;
@@ -532,7 +535,7 @@ class ARIA_Form_Hooks {
           // add student into new teacher
 
           // Determine whether a student has been added or not (if it's an array)
-          $students = $teacher_entry[strval($teacher_master_fields["students"])];
+          $students = $teacher[strval($teacher_master_fields["students"])];
           $students = unserialize($students);
 
           if (!is_array($students)) {
@@ -566,8 +569,16 @@ class ARIA_Form_Hooks {
               // if student hash is found
               if( $students[$i] == $student_hash ){
                 // delete it
-                array_splice($students, $i, 1);
-                $teacher[strval($teacher_master_fields["students"])] = serialize($students);
+                if(count($students == 1))
+                {
+                  //$students = null;
+                  $teacher[strval($teacher_master_fields["students"])] = null; 
+                }
+                else
+                {
+                  array_splice($students, $i, 1);
+                  $teacher[strval($teacher_master_fields["students"])] = serialize($students);
+                }
 
                 // Update the teacher entry with the new student edition
                 $result = GFAPI::update_entry($teacher);
@@ -582,7 +593,16 @@ class ARIA_Form_Hooks {
       }
       //wp_die(print_r($teacher_entries));
       //wp_die($teacher_name . $old_teacher_name);
-      wp_die("Error: Please type the teacher's name exactly as it appears in the teacher master. Ex: FirstName LastName");
+      if($found == false )
+      {
+        $entry[ strval($student_master_fields['teacher_name']) ] = $old_teacher_val_str;
+        $result = GFAPI::update_entry($entry);
+        if (is_wp_error($result)) {
+          wp_die(__LINE__.$result->get_error_message());
+        }
+                
+        wp_die("Error: Please type the teacher's name exactly as it appears in the teacher master. Ex: FirstName LastName");
+      }
     }
   }
 
