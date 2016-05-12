@@ -88,8 +88,30 @@ class Doc_Generator {
 
   private static function generate_documents($non_formatted_title, $title, $event_sections) {
     $files = array();
-    $files[] = self::create_announcing_sheets($non_formatted_title, $event_sections);
-    $files[] = self::create_adjudication_forms($non_formatted_title, $event_sections);
+    $files[] = array(
+      'path' => self::create_announcing_sheets($non_formatted_title, $event_sections),
+      'new_name' => strtolower(str_replace(' ', '_', $event_name).'_announcing_sheet.rtf')
+    );
+    $files[] = array(
+      'path' => self::create_adjudication_forms($non_formatted_title, $event_sections),
+      'new_name' => strtolower(str_replace(' ', '_', $event_name).'_adjudication_forms.rtf')
+    );
+    $files[] = array(
+      'path' => self::create_results_sheets($non_formatted_title, $event_sections),
+      'new_name' => strtolower(str_replace(' ', '_', $event_name).'_results_sheets.rtf')
+    );
+    $files[] = array(
+      'path' => self::create_teacher_master($non_formatted_title, $event_sections),
+      'new_name' => strtolower(str_replace(' ', '_', $event_name).'_teacher_master.rtf')
+    );
+    $files[] = array(
+      'path' => self::create_session_assignments($non_formatted_title, array($event_sections)),
+      'new_name' => strtolower(str_replace(' ', '_', $event_name).'_session_assignments.rtf')
+    );
+    $files[] = array(
+      'path' => self::create_competition_csv($non_formatted_title, $event_sections),
+      'new_name' => strtolower(str_replace(' ', '_', $event_name).'_competiton_overview.csv')
+    );
     self::download_documents($title, $files);
   }
 
@@ -255,7 +277,7 @@ class Doc_Generator {
       $title_table->writeToCell(7, 1, 'Session Order:', $styles['h2']);
 
       $students_table = $body->addTable();
-      $students_table->addColumnsList(array(1, 5, 12.5));
+      $students_table->addColumnsList(array(1, 12.5, 5));
 
       $student_counter = 0;
       foreach($event_section['students'] as $student) {
@@ -266,18 +288,18 @@ class Doc_Generator {
         $students_table->addRow(0.5); // Blank
 
         $students_table->mergeCellRange(5*$student_counter + 1, 1, 5*$student_counter + 1, 3);
-        $students_table->writeToCell(5*$student_counter + 1, 1, $student['name'], $styles['h3']);
-        $students_table->writeToCell(5*$student_counter + 3, 2, $student['song_one']['composer'], $styles['p']);
-        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_one']['song'], $styles['p']);
-        $students_table->writeToCell(5*$student_counter + 4, 2, $student['song_two']['composer'], $styles['p']);
-        $students_table->writeToCell(5*$student_counter + 4, 3, $student['song_two']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 1, 1, ((string) ($student_counter + 1)).'. '.$student['name'], $styles['h3']);
+        $students_table->writeToCell(5*$student_counter + 3, 2, $student['song_one']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_one']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 2, $student['song_two']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 3, $student['song_two']['composer'], $styles['p']);
 
         $student_counter++;;
       }
     }
 
     // save rtf document and download it from browser
-    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet_'.time().'.rtf';
+    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_announcing_sheet.rtf';
     $rtf->save($file_name);
     return $file_name;
   }
@@ -373,9 +395,242 @@ class Doc_Generator {
     }
 
     // save rtf document and download it from browser
-    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_adjudication_forms_'.time().'.rtf';
+    $file_name = ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_adjudication_forms.rtf';
     $rtf->save($file_name);
     return $file_name;
+  }
+
+  function create_results_sheets($event_name, $event_sections) {
+    // registers PHPRtfLite autoloader (spl)
+    PHPRtfLite::registerAutoloader();
+
+    // rtf document instance
+    $rtf = new PHPRtfLite();
+    $rtf->setMargins(1.25, 1.25, 1.25, 1.25);
+
+    // Set Fonts
+    $styles = aria_styles($rtf);
+
+
+    foreach($event_sections as $event_section) {
+      // Add section
+      $body = $rtf->addSection();
+
+      // Title
+      $body->writeText($event_name.'<br><br>', $styles['h1'], $styles['h1ParFormat'], USE_HTML_TAGS);
+      $body->writeText($event_section['section_name'].'<br>', $styles['h2'], $styles['h2ParFormat'], USE_HTML_TAGS);
+      $body->writeText('Judge: '.$event_section['judge'].'<br>', $styles['p'], $styles['h2ParFormat'], USE_HTML_TAGS);
+
+      $students_table = $body->addTable();
+      $students_table->addColumnsList(array(1, 5, 12.5));
+
+      $student_counter = 0;
+      foreach($event_section['students'] as $student) {
+        $students_table->addRow(0.5); // Student Name
+        $students_table->addRow(0.5); // Blank
+        $students_table->addRow(0.5); // Song 1
+        $students_table->addRow(0.5); // Song 2
+        $students_table->addRow(0.5); // Blank
+
+        $students_table->mergeCellRange(5*$student_counter + 1, 1, 5*$student_counter + 1, 2);
+        $students_table->writeToCell(5*$student_counter + 1, 1, $student['name'], $styles['h3']);
+        $students_table->writeToCell(5*$student_counter + 1, 3, '___Sw/D ___S ___E ___NA ___NC ___W', $styles['h3']);
+        $students_table->writeToCell(5*$student_counter + 3, 2, '___ '.$student['song_one']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_one']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 2, '___ '.$student['song_two']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 4, 3, $student['song_two']['song'], $styles['p']);
+
+        $student_counter++;;
+      }
+    }
+
+    // save rtf document to hello_world.rtf
+    $rtf->save(ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_results_sheet.rtf');
+
+    return ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_results_sheet.rtf';
+  }
+
+  function create_teacher_to_student_map ($event_sections){
+    $teacher_array = array();
+
+    foreach ($event_sections as $event_section) {
+      $performance_number = 1;
+      foreach ($event_section['students'] as $student) {
+        // Update student information.
+        $student_copy = $student;
+        $student_copy['section'] = $event_section['section_name'];
+        $student_copy['performance_number'] = $performance_number++;
+
+        // Create teacher map if not exists.
+        if (!key_exists($student['teacher'], $teacher_array)) {
+          $teacher_array[$student['teacher']] = array();
+        }
+
+        // Add student to it's teacher array.
+        $teacher_array[$student['teacher']][] = $student_copy;
+      }
+    }
+
+    return $teacher_array;
+  }
+
+  function create_teacher_master ($event_name, $event_sections, $additional_information = '', $command_performance_location = null, $command_performance_date = null){
+    // Change sections to teacher maps.
+    $teacher_array = create_teacher_to_student_map($event_sections);
+
+    // registers PHPRtfLite autoloader (spl)
+    PHPRtfLite::registerAutoloader();
+
+    // rtf document instance
+    $rtf = new PHPRtfLite();
+    $rtf->setMargins(1.25, 1.25, 1.25, 1.25);
+
+    // Get styles
+    $styles = aria_styles($rtf);
+
+    foreach ($teacher_array as $teacher_name => $students) {
+      // Add section
+      $body = $rtf->addSection();
+      $footer = $body->addFooter();
+      $footer->writeText($additional_information);
+
+      // Title
+      $body->writeText($event_name.'<br><br>', $styles['h1'], $styles['h1ParFormat'], USE_HTML_TAGS);
+      $body->writeText($teacher_name.'<br>', $styles['h2'], $styles['h2ParFormat'], USE_HTML_TAGS);
+
+      if(isset($command_performance_location) && isset($command_performance_date)) {
+        $body->writeText('Command Performance '.$command_performance_location.', '.$command_performance_date.'<br>', $styles['h2'], $styles['h2ParFormat'], USE_HTML_TAGS);
+        $body->writeText('The Command Performance schedule for your student(s) is as follows:<br>', $styles['p'], $styles['h2ParFormat'], USE_HTML_TAGS);
+      } else {
+        $body->writeText('The following students of yours have registered for the '.$event_name.'<br>', $styles['p'], $styles['h2ParFormat'], USE_HTML_TAGS);
+      }
+
+      $students_table = $body->addTable();
+      $students_table->addColumnsList(array(1, 5, 12.5));
+
+      $student_counter = 0;
+      foreach($students as $student) {
+        $students_table->addRow(0.5); // Name
+        $students_table->addRow(0.5); // Song 1
+        $students_table->addRow(0.5); // Song 2
+        $students_table->addRow(0.5); // Blank
+        $students_table->addRow(0.5); // Blank
+
+        $students_table->mergeCellRange(5*$student_counter + 1, 1, 5*$student_counter + 1, 3);
+        $students_table->writeToCell(5*$student_counter + 1, 1, $student['name'].', '.$student['section'].', performer # '.$student['performance_number'], $styles['h3']);
+        $students_table->writeToCell(5*$student_counter + 2, 2, $student['song_one']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 2, 3, $student['song_one']['song'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 3, 2, $student['song_two']['composer'], $styles['p']);
+        $students_table->writeToCell(5*$student_counter + 3, 3, $student['song_two']['song'], $styles['p']);
+
+        $student_counter++;
+      }
+    }
+
+    // Write to file
+    $file_name = (isset($command_performance_location) && isset($command_performance_date)) ? 'command_performance' : '';
+    $file_name .= 'teacher_master';
+    $rtf->save(ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_'.$file_name.'.rtf');
+    return ABSPATH.'wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_'.$file_name.'.rtf';
+  }
+
+  function create_session_assignments($event_name, $days) {
+    // rtf document instance
+    $rtf = new PHPRtfLite();
+    $rtf->setMargins(1.25, 1.25, 1.25, 1.25);
+    $rtf->setLandscape();
+
+    // Get styles
+    $styles = aria_styles($rtf);
+
+    foreach($days as $day) {
+      // Add section
+      $body = $rtf->addSection();
+      $session_table = $body->addTable();
+      $session_table->addColumnsList(array(3.5, 4.0, 1.5, 3.5, 4.0, 1.5, 3.5, 4.0));
+
+      $index = 0;
+      foreach($day as $section) {
+        if ($index % 3 == 0) {
+          $session_table->addRow(0.4);
+          $session_table->addRow(0.4);
+          $session_table->addRow(0.4);
+          $session_table->addRow(0.8);
+          $session_table->addRow(0.4);
+          $session_table->mergeCellRange(5*floor($index/3) + 1, 1, 5*floor($index/3) + 1, 2);
+          $session_table->mergeCellRange(5*floor($index/3) + 1, 4, 5*floor($index/3) + 1, 5);
+          $session_table->mergeCellRange(5*floor($index/3) + 1, 7, 5*floor($index/3) + 1, 8);
+        }
+
+        $session_table->writeToCell(5*floor($index/3) + 1, ($index%3)*3 + 1, $section['section_name'], $styles['h3']);
+        $session_table->writeToCell(5*floor($index/3) + 2, ($index%3)*3 + 1, 'Proctor:', $styles['p']);
+        $session_table->writeToCell(5*floor($index/3) + 3, ($index%3)*3 + 1, 'Door Monitor:', $styles['p']);
+        $session_table->writeToCell(5*floor($index/3) + 4, ($index%3)*3 + 1, 'Judge:', $styles['p']);
+        $session_table->writeToCell(5*floor($index/3) + 2, ($index%3)*3 + 2, $section['proctor'], $styles['p']);
+        $session_table->writeToCell(5*floor($index/3) + 3, ($index%3)*3 + 2, $section['monitor'], $styles['p']);
+        $session_table->writeToCell(5*floor($index/3) + 4, ($index%3)*3 + 2, $section['judge'], $styles['p']);
+        $index++;
+      }
+    }
+    $rtf->save(ABSPATH.'/wp-content/uploads'.strtolower(str_replace(' ', '_', $event_name)).'_session_assignments.rtf');
+    return ABSPATH.'/wp-content/uploads'.strtolower(str_replace(' ', '_', $event_name)).'_session_assignments.rtf';
+  }
+
+  function create_competition_csv($event_name, $event_sections) {
+    $file = fopen(ABSPATH.'/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_competiton_overview.csv', 'w');
+
+    fputcsv($file, array(
+      'Section',
+      'Teacher',
+      'Student',
+      'Level',
+      'Piece 1',
+      'Piece 2',
+      'Format',
+      'Judge',
+      'Proctor',
+      'Door'
+    ));
+
+    foreach($event_sections as $event_section) {
+      $section_info_printed = false;
+      foreach($event_section['students'] as $student) {
+        fputcsv($file, array(
+          $section_info_printed
+            ? ''
+            : array_key_exists('section_name', $event_section)
+              ? $event_section['section_name']
+              : '',
+          array_key_exists('teacher', $student) ? $student['teacher'] : '',
+          array_key_exists('name', $student) ? $student['name']: '',
+          array_key_exists('level', $student) ? $student['level'] : '',
+          array_key_exists('song_one', $student) ? $student['song_one']['song'] : '',
+          array_key_exists('song_two', $student) ? $student['song_two']['song'] : '',
+          array_key_exists('format', $student) ? $student['format'] : '',
+          $section_info_printed
+            ? ''
+            : array_key_exists('judge', $event_section)
+              ? $event_section['judge']
+              : '',
+          $section_info_printed
+            ? ''
+            : array_key_exists('proctor', $event_section)
+              ? $event_section['proctor']
+              : '',
+          $section_info_printed
+            ? ''
+            : array_key_exists('monitor', $event_section)
+              ? $event_section['monitor']
+              : '',
+        ));
+        $section_info_printed = true;
+      }
+      fputcsv($file, array(' '));
+    }
+
+    fclose($file);
+
+    return ABSPATH.'/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_competiton_overview.csv';
   }
 
   /**
@@ -391,46 +646,43 @@ class Doc_Generator {
    * @since 1.0.0
    */
   private static function download_documents($event_name, $files) {
-    /*
-    echo "Event name: $event_name <br>";
-    echo "Files: <br>";
-    wp_die(print_r($files));
-
-
-    /*
-    $zip = new ZipArchive();
-    $zip_name = $event_name . time() . ".zip";
-    $zip->open($zip_name,  ZipArchive::CREATE);
-    foreach ($files as $file_name) {
-      if (file_exists($file_name)) {
-        $zip->addFile($file_name);
-      }
+    $zipname = ABSPATH.'/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_generated_documents.zip';
+    $zip = new ZipArchive;
+    $zip->open($zipname, file_exists ($zipname) ? ZipArchive::OVERWRITE : ZipArchive::CREATE);
+    foreach($files as $file) {
+      $zip->addFile($file['path'], $file['new_name']);
     }
-
     $zip->close();
+    /*
+      foreach ($files as $file_name) {
+        // download the file
+        if (file_exists($file_name)) {
+          header('Content-Description: File Transfer');
+          header('Content-Type: application/octet-stream');
+          header('Content-Disposition: attachment; filename="'.basename($file_name).'"');
+          header('Expires: 0');
+          header('Cache-Control: must-revalidate');
+          header('Pragma: public');
+          header('Content-Length: ' . filesize($file_name));
+          readfile($file_name);
+          exit;
+        }
+        else {
+          wp_die("Inside download_document: no such file exists.");
+        }
+      }
+
+      wp_die();
     */
 
-/*
-    foreach ($files as $file_name) {
-      // download the file
-      if (file_exists($file_name)) {
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.basename($file_name).'"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($file_name));
-        readfile($file_name);
-        exit;
-      }
-      else {
-        wp_die("Inside download_document: no such file exists.");
-      }
-    }
-
-    wp_die();
-*/
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename='.$zipname);
+    header('Content-Length: ' . filesize($zipname));
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    readfile($zipname);
   }
 
   /**
