@@ -3,7 +3,7 @@
 require_once("class-aria-scheduler.php");
 
 function send_parents_and_teachers_emails() {
-  echo print_r($_POST); 
+  echo print_r($_POST);
 
   // determine the file path of the associated competition
   $title = str_replace(' ', '_', $_POST['compName']);
@@ -18,19 +18,18 @@ function send_parents_and_teachers_emails() {
   $file_path .= "uploads/$title.txt";
 
   //echo print_r($_POST);
-  echo "File path: $file_path <br>"; 
+  echo "File path: $file_path <br>";
 
   // read the serialized Scheduler object from file
   if (file_exists($file_path)) {
     $scheduler = file_get_contents($file_path);
     $scheduler = unserialize($scheduler);
-
-    // iterate through the scheduler object and update the information with the new data
-    echo "Emails have been sent";
+    $scheduler->send_teachers_competition_info($_POST['compName']);
+    $scheduler->send_parents_competition_info($_POST['compName']); 
   }
   else {
     echo "Emails were not sent becuase file doesn't exist";
   }
 }
 
-send_parents_and_teachers_emails(); 
+send_parents_and_teachers_emails();

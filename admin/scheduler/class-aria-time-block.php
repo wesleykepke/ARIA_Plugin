@@ -170,6 +170,15 @@ class TimeBlock {
   }
 
   /**
+   * This function will print the sections in a given time block object.
+   */
+  public function add_teacher_email(&$teacher_emails_to_students) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->add_teacher_email($teacher_emails_to_students);
+    }
+  }
+
+  /**
    * This function will help add to the schedule for the competition using HTML.
    *
    * Since the schedule is best demonstrated using HTML tables and lists, this
@@ -328,7 +337,7 @@ class TimeBlock {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public static function send_emails_to_parents() {
+  public function send_emails_to_parents() {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->send_emails_to_parents();
     }

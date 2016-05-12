@@ -17,8 +17,6 @@ if (window.location.href.indexOf('nnmta.org') != -1) {
  *
  */
 function generateDocuments() {
-  console.log("hi");
-
   // determine the name of the competition
   var compName = document.getElementById("comp-name-bold").innerHTML;
   var data = {};
@@ -27,9 +25,7 @@ function generateDocuments() {
   // request the server to generate competition documents
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/document-client.php";
   jQuery.post(targetFunc, data, function(response) {
-    //console.log(response);
     window.location = response;
-    //window.location = targetFunc;
      console.log("generateDocuments response>>", response);
   });
 }
@@ -39,8 +35,6 @@ function generateDocuments() {
  * parents and teachers regarding the competition info of their students.
  */
 function emailParentsAndTeachers() {
-  console.log("hi2");
-
   // determine the name of the competition
   var compName = document.getElementById("comp-name-bold").innerHTML;
   var data = {};
@@ -49,6 +43,7 @@ function emailParentsAndTeachers() {
   // request the server to send emails to parents and teachers
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/parent-teacher-email-client.php";
   jQuery.post(targetFunc, data, function(response) {
+    alert("Emails were successfully sent.");
     console.log("emailParentsAndTeachers response>>", response);
   });
 }

@@ -143,6 +143,9 @@ function sendScheduleToServer() {
     }
   }
 
+  console.log('hello');
+  console.log("Formatted student entries>>", formattedStudentInfos);
+
   // iterate through all of the tags with the section information we want
   for (var i = 0; i < taggedSectionInfos.length; i++) {
     // obtain all the information that the user can modify from the schedule
@@ -194,9 +197,9 @@ function sendScheduleToServer() {
 
   // send the data to the server
   jQuery.post(myUrl, data, function(response) {
+    alert("Schedule has been saved.");
 
-
-    console.log(response);
+    //console.log(response);
     document.getElementById("schedule").innerHTML = '';
     document.getElementById("schedule").innerHTML = response;
     // rearranging students in scheduler

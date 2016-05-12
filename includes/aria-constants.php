@@ -49,19 +49,6 @@ const STUDENT_MASTER = 2;
 const TEACHER_FORM = 3;
 const TEACHER_MASTER = 4;
 
-/**
- * These constants are used to determine the type of section (traditional,
- * master-class, non-competitive, or command performance).
- */
-const SECTION_MASTER = 0;
-const SECTION_TRADITIONAL = 1;
-const SECTION_NON_COMP = 2;
-
-// Constants used to help offset into the scheduler object
-const SAT = 0;
-const SUN = 1;
-const COMMAND = 0;
-const EITHER = 2;
 
 // Constants used for student level
 const LOW_LEVEL = 1;

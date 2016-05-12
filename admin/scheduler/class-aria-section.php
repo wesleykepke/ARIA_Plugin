@@ -10,7 +10,7 @@
  * @subpackage ARIA/admin
  */
 
-require_once("class-aria-scheduler.php");
+//require_once("class-aria-scheduler.php");
 require_once("class-aria-student.php");
 
 /**
@@ -774,15 +774,31 @@ class Section {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public static function send_emails_to_parents() {
+  public function send_emails_to_parents() {
     for ($i = 0; $i < count($this->students); $i++) {
       $parent_email = $this->students[$i]->get_parent_email();
       $message = $this->students[$i]->get_info_for_email();
       $subject = "NNMTA Performance Time";
-      if (!wp_mail($parent_email, $subject, $message)) {
+      $headers = "From: nnmta.org@gmail.com";
+      if (!mail($parent_email, $subject, $message, $headers)) {
+        /*
         wp_die("<h1>Emails to parent regarding competition info failed to send.
           Please try again.</h1>");
+          */
       }
+    }
+  }
+
+  /**
+   * This function will print the sections in a given time block object.
+   */
+  public function add_teacher_email(&$teacher_emails_to_students) {
+    for ($i = 0; $i < count($this->students); $i++) {
+      if (!in_array($this->students[$i]->get_teacher_email(), $teacher_emails_to_students)) {
+        //$teacher_emails_to_students[] = $this->students[$i]->get_teacher_email();
+        $teacher_emails_to_students[$this->students[$i]->get_teacher_email()] = array();
+      }
+      $teacher_emails_to_students[$this->students[$i]->get_teacher_email()][] = $this->students[$i];
     }
   }
 

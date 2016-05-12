@@ -161,6 +161,8 @@ class Student {
    */
   private $room;
 
+  private $date;
+
   /**
    * The constructor used to instantiate a new student object.
    *
@@ -189,6 +191,7 @@ class Student {
     $this->day = null;
     $this->room = null;
     $this->teacher_name = $teacher_name;
+    $this->date = null;
   }
 
   /**
@@ -202,6 +205,10 @@ class Student {
    */
   public function add_song($song_name) {
     $this->songs[] = $song_name;
+  }
+
+  public function add_date($date) {
+    $this->date = $date;
   }
 
   /**
@@ -361,7 +368,9 @@ class Student {
     }
 
     // construct and return the sentence of student information
-    return "ucword(strtolower($this->first_name)) ucword(strtolower($this->last_name)) will be playing $songs on $this->day at $this->start_time in $this->room.\n\n";
+    $first_name = ucwords(strtolower($this->first_name));
+    $last_name = ucwords(strtolower($this->last_name));
+    return "$first_name $last_name will be playing $songs on $this->day ($this->date) at $this->start_time in room: $this->room.\n\n";
   }
 
   /**http://php.net/manual/en/function.floatval.php
@@ -435,7 +444,7 @@ class Student {
    */
   public function get_section_info_for_doc_gen() {
     return array(
-      'name' => ucword(strtolower($this->first_name)) . ' ' . ucword(strtolower($this->last_name)),
+      'name' => ucwords(strtolower($this->first_name)) . ' ' . ucwords(strtolower($this->last_name)),
       'teacher' => $this->teacher_name,
       'level' => $this->skill_level,
       'song_one' => array(

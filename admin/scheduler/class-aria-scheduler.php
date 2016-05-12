@@ -18,6 +18,8 @@ require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
 
 require_once("class-aria-time-block.php");
 require_once("class-aria-student.php");
+require_once("class-aria-field-ids.php");
+require_once("scheduler-constants.php");
 
 /**
  * The scheduler object used for scheduling.
@@ -55,6 +57,12 @@ class Scheduler {
    */
   private $competition_type;
 
+  private $first_location;
+  private $second_location;
+  private $related_forms;
+  private $date_1;
+  private $date_2;
+
   /**
    * The constructor used to instantiate a new scheduler object.
    *
@@ -83,6 +91,12 @@ class Scheduler {
         $this->competition_type = null;
       break;
     }
+
+    $this->first_location = null;
+    $this->second_location = null;
+    $this->related_forms = null;
+    $this->date_1 = null;
+    $this->date_2 = null;
   }
 
   /**
@@ -120,7 +134,12 @@ class Scheduler {
                                             $group_by_level,
                                             $master_class_instructor_duration,
                                             $saturday_rooms,
-                                            $sunday_rooms) {
+                                            $sunday_rooms,
+                                            $first_location,
+                                            $second_location,
+                                            $related_forms,
+                                            $date_1,
+                                            $date_2) {
     // ensure the current scheduler object is for a regular competition
     if ($this->competition_type !== REGULAR_COMP) {
       return;
@@ -140,6 +159,13 @@ class Scheduler {
     echo 'master_class_instructor_duration: ' . $master_class_instructor_duration . "<br>";
     wp_die();
     //*/
+
+    // assign location
+    $this->first_location = $first_location;
+    $this->second_location = $second_location;
+    $this->related_forms = $related_forms;
+    $this->date_1 = $date_1;
+    $this->date_2 = $date_2;
 
     // preprocess the rooms for saturday
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
@@ -245,10 +271,12 @@ class Scheduler {
     switch ($day_preference) {
       case SAT:
         $preferred_day_num_time_blocks = $this->days[SAT]->getSize();
+        $student->add_date($this->date_1);
       break;
 
       case SUN:
         $preferred_day_num_time_blocks = $this->days[SUN]->getSize();
+        $student->add_date($this->date_2);
       break;
 
       case COMMAND:
@@ -324,7 +352,7 @@ class Scheduler {
       switch ($i) {
         case SAT:
           $schedule .= '<table style="float: left; width: 50%;">';
-          $schedule .= '<tr><th>Saturday</th></tr>';
+          $schedule .= '<tr><th>Saturday (' . $this->date_1 . ')</th></tr>';
           for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
@@ -337,7 +365,7 @@ class Scheduler {
 
         case SUN:
           $schedule .= '<tr><table style="float: right; width: 50%;">';
-          $schedule .= '<tr><th>Sunday</th></tr>';
+          $schedule .= '<tr><th>Sunday (' . $this->date_2 . ')</th></tr>';
           for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
@@ -564,95 +592,41 @@ class Scheduler {
    * @since 1.0.0
    * @author KREW
    */
-  public static function send_teachers_competition_info($comp_name) {
+  public function send_teachers_competition_info($comp_name) {
     // find the associated teacher master form
-    $related_forms = ARIA_API::aria_find_related_forms_ids($comp_name);
-    $teacher_master_form_id = $related_forms['teacher_master_form_id'];
-
-    // get all entries in the associated teacher master
-    $search_criteria = array();
-    $sorting = null;
-    $paging = array('offset' => 0, 'page_size' => 2000);
-    $total_count = 0;
-    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
-                                  $sorting, $paging, $total_count);
-
-    // get the associated entry in the create competition form
-    $create_comp_form_id = ARIA_API::aria_get_create_competition_form_id();
-    $comp_field_id_array = ARIA_API::aria_competition_field_id_array();
-    $comp_entries = GFAPI::get_entries($create_comp_form_id, $search_criteria,
-                                       $sorting, $paging, $total_count);
-
-    $first_location = null;
-    $second_location = null;
-    foreach ($comp_entries as $entry) {
-      if ($entry[strval($comp_field_id_array['competition_name'])] == $comp_name) {
-        // get the info for the (first) competition location
-        $first_loc_base = $comp_field_id_array['competition_location'];
-        $first_loc_start = $comp_field_id_array['competition_address_first'];
-        $first_loc_end = $comp_field_id_array['competition_country'];
-        $first_loc_itr = 1;
-        while ($first_loc_start <= $first_loc_end) {
-          if (!empty($entry[strval($first_loc_start)])) {
-            $first_location .= $entry[strval($first_loc_start)];
-            if ((floatval($first_loc_start) + 0.1) <= $first_loc_end) {
-              $first_location .= ', ';
-            }
-          }
-          $first_loc_itr++;
-          $first_loc_start = floatval(($first_loc_base . '.' . strval($first_loc_itr)));
-        }
-
-        // get the info for the (second, optional) competition location
-        $second_loc_base = $comp_field_id_array['competition_2_address'];
-        $second_loc_start = $comp_field_id_array['competition_2_address_first'];
-        $second_loc_end = $comp_field_id_array['competition_2_country'];
-        $second_loc_itr = 1;
-        while ($second_loc_start <= $second_loc_end) {
-          if (!empty($entry[strval($second_loc_start)])) {
-            $second_location .= $entry[strval($second_loc_start)];
-            if ((floatval($second_loc_start) + 0.1) <= $second_loc_end) {
-              $second_location .= ', ';
-            }
-          }
-          $second_loc_itr++;
-          $second_loc_start = floatval(($second_loc_base . '.' . strval($second_loc_itr)));
-        }
-      }
-    }
+    $teacher_master_form_id = $this->related_forms['teacher_master_form_id'];
+    $SAT = 0;
+    $SUN = 1;
 
     // store all of the teacher emails in an associative array
-    $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
     $teacher_emails_to_students = array();
-    foreach ($entries as $teacher) {
-      $teacher_email = $teacher[strval($field_mapping['email'])];
-      if(!array_key_exists($teacher_email, $teacher_emails_to_students)) {
-        $teacher_emails_to_students[] = $teacher_email;
-        $teacher_emails_to_students[$teacher_email] = array();
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->add_teacher_email($teacher_emails_to_students);
       }
     }
 
     // for each of the emails that were found, find all students that registered under that teacher
     foreach ($teacher_emails_to_students as $key => $value) {
       if (strpos($key, '@') !== false) {
-        $sat_email_message = "Saturday Location: $first_location\n";
+        $sat_email_message = "Saturday Location: $this->first_location\n";
 
-        if (is_null($second_location)) {
-          $sun_email_message = "Sunday Location: $first_location\n";
+        if (is_null($this->second_location)) {
+          $sun_email_message = "Sunday Location: $this->first_location\n";
         }
         else {
-          $sun_email_message = "Sunday Location: $second_location\n";
+          $sun_email_message = "Sunday Location: $this->second_location\n";
         }
 
-        $thisr->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
-        foreach ($teacher_emails_to_students[$key] as $student) {
+        //$this->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
+        foreach ($value as $student) {
           // students who requested saturday
-          if ($student->get_day_preference() === SAT) {
+          if ($student->get_day_preference() === $SAT) {
             $sat_email_message .= $student->get_info_for_email();
           }
 
           // students who requested sunday
-          else if ($student->get_day_preference() === SUN) {
+          else if ($student->get_day_preference() === $SUN) {
             $sun_email_message .= $student->get_info_for_email();
           }
         }
@@ -661,9 +635,10 @@ class Scheduler {
         $email_message = $sat_email_message . "\n\n" . $sun_email_message;
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;
-          if (!wp_mail($key, $subject, $email_message)) {
-            wp_die("<h1>Emails to teachers regarding competition info failed to send.
-          	  Please try again.</h1>");
+          $headers = "From: nnmta.org@gmail.com";
+          if (!mail($key, $subject, $email_message, $headers)) {
+            /*wp_die("<h1>Emails to teachers regarding competition info failed to send.
+          	  Please try again.</h1>");*/
           }
         }
       }
@@ -680,21 +655,9 @@ class Scheduler {
   * @since 1.0.0
   * @author KREW
   */
-  public static function send_parents_competition_info($comp_name) {
+  public function send_parents_competition_info($comp_name) {
     // find the associated teacher master form
-    $related_forms = ARIA_API::aria_find_related_forms_ids($comp_name);
-    $student_master_form_id = $related_forms['student_master_form_id'];
-
-    // get all entries in the associated teacher master
-    $search_criteria = array();
-    $sorting = null;
-    $paging = array('offset' => 0, 'page_size' => 2000);
-    $total_count = 0;
-    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria,
-                                  $sorting, $paging, $total_count);
-
-    // define variables to help us offset into the student master entries
-    $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
+    $student_master_form_id = $this->related_forms['student_master_form_id'];
 
     // iterate through all of the student entries
     for ($i = 0; $i < count($this->days); $i++) {

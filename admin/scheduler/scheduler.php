@@ -51,14 +51,24 @@ class Scheduling_Algorithm {
     $master_class_instructor_duration = $entry[$scheduling_field_mapping['master_class_instructor_duration']];
     $saturday_rooms = unserialize($entry[$scheduling_field_mapping['saturday_rooms']]);
     $sunday_rooms = unserialize($entry[$scheduling_field_mapping['sunday_rooms']]);
+    $date_1 = $entry[$scheduling_field_mapping['date_1']];
+    $date_1_temp = DateTime::createFromFormat('Y-m-d', $date_1);
+    $date_1 = $date_1_temp->format('m/d/Y');
+    $date_2 = $entry[$scheduling_field_mapping['date_2']];
+    $date_2_temp = DateTime::createFromFormat('Y-m-d', $date_2);
+    $date_2 = $date_2_temp->format('m/d/Y');
+
+    // obtain the room information from the submitted form
+    $first_location = $entry[$scheduling_field_mapping['location_field']];
+    $second_location = null;
+    if (!is_null($scheduling_field_mapping['location_field_2'])) {
+      $second_location = $entry[$scheduling_field_mapping['location_field_2']];
+    }
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
     $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
     $student_master_form_id = $related_form_ids['student_master_form_id'];
-
-    //print_r($sat_start_times);
-    //print_r($sun_start_times);
 
     /*
     // successfully takes input from form
@@ -111,7 +121,12 @@ class Scheduling_Algorithm {
                                           $group_by_level,
                                           $master_class_instructor_duration,
                                           $saturday_rooms,
-                                          $sunday_rooms);
+                                          $sunday_rooms,
+                                          $first_location,
+                                          $second_location,
+                                          $related_form_ids,
+                                          $date_1,
+                                          $date_2);
 
     // schedule all students that are registered for the current competition
     $playing_times = self::calculate_playing_times($student_master_form_id);
@@ -423,6 +438,43 @@ class Scheduling_Algorithm {
     $sunday_rooms->descriptionPlacement = "above";
     $form->fields[] = $sunday_rooms;
 
+    // location
+    $location_field = new GF_Field_Text();
+    $location_field->label = "Competition Location";
+    $location_field->id = $field_mapping['location_field'];
+    $location_field->isRequired = true;
+    $form->fields[] =$location_field;
+
+    // second location
+    $location_field_2 = new GF_Field_Text();
+    $location_field_2->label = "Sunday Competition Location (If different from above)";
+    $location_field_2->id = $field_mapping['location_field_2'];
+    $location_field_2->isRequired = false;
+    $location_field_2->description = 'If different location for second day above.';
+    $form->fields[] = $location_field_2;
+
+    // First Date
+    $date_1 = new GF_Field_Date();
+    $date_1->label = "First Day of Competition";
+    $date_1->id = $field_mapping['date_1'];
+    $date_1->isRequired = true;
+    $date_1->description = 'Select the first day of competition.';
+    $date_1->descriptionPlacement = 'above';
+    $date_1->calendarIconType = 'calendar';
+    $date_1->dateType = 'datepicker';
+    $form->fields[] = $date_1;
+
+    // Second Date
+    $date_2 = new GF_Field_Date();
+    $date_2->label = "Second Day of Competition";
+    $date_2->id = $field_mapping['date_2'];
+    $date_2->isRequired = true;
+    $date_2->description = 'Select the second day of competition.';
+    $date_2->descriptionPlacement = 'above';
+    $date_2->calendarIconType = 'calendar';
+    $date_2->dateType = 'datepicker';
+    $form->fields[] = $date_2;
+
     // add a default submission message for the schedule competition form
     $successful_submission_message = '';
     $form->confirmation['type'] = 'message';
@@ -440,6 +492,31 @@ class Scheduling_Algorithm {
     else {
       $scheduler_url = ARIA_API::aria_publish_form(SCHEDULER_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
     }
+  }
+
+  private static function aria_add_default_address_inputs($field) {
+    $field->inputs = array(
+      array("id" => "{$field->id}.1",
+      			"label" => "competition_address_first",
+      			"name" => ""),
+      array("id" => "{$field->id}.2",
+      			"label" => "competition_address_second",
+      			"name" => ""),
+      array("id" => "{$field->id}.3",
+      			"label" => "competition_city",
+      			"name" => ""),
+      array("id" => "{$field->id}.4",
+      			"label" => "State \/ Province",
+      			"name" => ""),
+      array("id" => "{$field->id}.5",
+      			"label" => "ZIP \/ Postal Code",
+      			"name" => ""),
+      array("id" => "{$field->id}.6",
+      			"label" => "competition_country",
+      			"name" => ""),
+    );
+
+    return $field;
   }
 
   /**
@@ -469,7 +546,23 @@ class Scheduling_Algorithm {
       'group_by_level' => 12,
       'master_class_instructor_duration' => 13,
       'saturday_rooms' => 14,
-      'sunday_rooms' => 15
+      'sunday_rooms' => 15,
+      'location_field' => 16,
+      'location_field_address_first' => 16.1,
+      'location_field_address_second' => 16.2,
+      'location_field_city' => 16.3,
+      'location_field_state' => 16.4,
+      'location_field_zip' => 16.5,
+      'location_field_country' => 16.6,
+      'location_field_2' => 17,
+      'location_field_2_address_first' => 17.1,
+      'location_field_2_address_second' => 17.2,
+      'location_field_2_city' => 17.3,
+      'location_field_2_state' => 17.4,
+      'location_field_2_zip' => 17.5,
+      'location_field_2_country' => 17.6,
+      'date_1' => 18,
+      'date_2' => 19
     );
   }
 
