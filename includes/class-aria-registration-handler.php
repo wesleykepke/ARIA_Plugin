@@ -85,8 +85,11 @@ class ARIA_Registration_Handler {
     $message_parent .= "<br />Once the event has been scheduled, you will receive an email with this student's scheduled performance time.";
     $message_parent .= "<br /><br />Thank you, <br />NNMTA Festival Chair<br />";
     $message_parent .= "(" . $email_info['festival_chairman_email'] . ")</html>";
-    if (!wp_mail($email_info['parent_email'], $subject, $message_parent)) {
-      wp_die('Parent email (for student registration) failed to send.');
+    if($email_info['parent_email'] != null )
+    {
+      if (!wp_mail($email_info['parent_email'], $subject, $message_parent)) {
+        wp_die('Parent email (for student registration) failed to send.');
+      }
     }
 
     // generate message to send to the festival chairman

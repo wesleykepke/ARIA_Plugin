@@ -552,7 +552,37 @@ class ARIA_Form_Hooks {
             wp_die(__LINE__.$result->get_error_message());
           }
 
-          //return;
+          // Send email
+      
+          // determine how many students have registered so far
+          $search_criteria = array();
+          $sorting = null;
+          $paging = array('offset' => 0, 'page_size' => 2000);
+          $total_count = 0;
+          $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria,
+                                  $sorting, $paging, $total_count);
+
+          // consolidate information for emails
+          $email_info = array();
+          $email_info['teacher_hash'] = $teacher_hash;
+          $email_info['teacher_name'] = $teacher_name;
+          $email_info['teacher_email'] = $teacher[strval($teacher_master_fields["email"])];
+          $email_info['notification_email'] = $related_forms["notification_email"];
+          $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
+          $email_info['parent_email'] = null;
+          $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
+          $email_info['student_hash'] = $student_hash;
+          $email_info['student_name'] = $entry[strval($student_fields["student_first_name"])] .
+    " " . $entry[strval($student_fields["student_last_name"])];
+          $email_info['parent_name'] = $entry[strval($student_fields["parent_first_name"])] .
+    " " . $entry[strval($student_fields["parent_last_name"])];
+          $comp_name = strpos($form['title'], 'Student Master');
+          $comp_name = substr($form['title'], 0, $comp_name - 1);
+          $email_info['competition_name'] = $comp_name;
+          $email_info['num_participants'] = count($entries);
+
+          // send emails to various parties (parents, teachers, festival chairman)
+          ARIA_Registration_Handler::aria_send_registration_emails($email_info);
         }
         // remove student from old teacher
         if($teacher_hash == $old_teacher_hash)
