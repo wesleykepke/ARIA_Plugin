@@ -38,9 +38,10 @@ class ARIA_Resend_Email {
     $email_field->label = "Email";
     $email_field->id = $field_mappings['email'];
     $email_field->description = "Please enter the email address that you";
-    $email_field->description .= " wish to send the regestration link to.";
+    $email_field->description .= " wish to send the regestration link to";
+    $email_field->description .= " (If different from email currently saved in teacher master)";
     $email_field->descriptionPlacement = "above";
-    $email_field->isRequired = true;
+    $email_field->isRequired = false;
     $form->fields[] = $email_field;
 
     $successful_submission_message = 'Congratulations! Your request has been sent';
@@ -90,17 +91,47 @@ class ARIA_Resend_Email {
     $form['fields'][$name_field]->choices = $competition_names;
   }
 
-
-
-
   public static function resend_teacher_field_id_array() {
     return array (
       'competition_name' => 1,
       'teacher' => 2,
       'student' => 3,
       'email' => 4
-  );
+    );
   }
 
+  public static function aria_after_resend_form($confirmation, $form, $entry, $ajax) {
+    // only perform processing is the resend url form was used
+    if (!array_key_exists('isResendEmailForm', $form)
+        || !$form['isResendEmailForm']) {
+      return $confirmation;
+    }
+    $field_mapping = self::resend_teacher_field_id_array();
+    $title = explode('_', $entry[$field_mapping['competition_name']])[0];
+
+    $req_email = $entry[$field_mapping['email']];
+
+    if( $req_email == null )
+    {
+      $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
+      $teacher_master_form_id = $related_form_ids['teacher_master_form_id'];
+      $teacher_master_field_mapping = ARIA_API::aria_master_teacher_field_id_array();
+
+      // find teacher in master
+      $search = array ( );
+      $search['field_filters'][] = array( 'key' => $teacher_master_field_mapping['teacher_hash'], 
+                                          'value' => $entry[$field_mapping['teacher']]);
+      $search['field_filters']['mode'] = 'any';
+      $sorting = array();
+      $paging = array('offset' => 0, 'page_size' => 2000);
+      $total_count = 0;
+      $teacher_entries = GFAPI::get_entries($teacher_master_form_id, $search, $sorting, $paging, $total_count);
+      $teacher_master_email_field = $teacher_master_field_mapping['email'];
+      $req_email = $teacher_entries[0][$teacher_master_email_field];
+      //wp_die(print_r($teacher_entries));
+    }
+  return $confirmation;
+
+  }
 
 }

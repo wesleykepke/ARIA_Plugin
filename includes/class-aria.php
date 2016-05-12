@@ -239,6 +239,16 @@ class ARIA {
 
 
     /*
+    The action registered for this hook is for resending a url
+    */
+    $this->loader->add_action(
+      'gform_confirmation',
+      'ARIA_Resend_Email',
+      'aria_after_resend_form', 10, 4
+    );
+
+
+    /*
     The action registered for this hook is for adding a new teacher to a
     specified music competition.
     */
