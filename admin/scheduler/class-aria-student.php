@@ -443,11 +443,22 @@ class Student {
    * @return   Array   An associative array of all student data in doc. gen. compatible form.
    */
   public function get_section_info_for_doc_gen() {
+    $str_type = null;
+    if ($this->type == 0) {
+      $str_type = "Masterclass";
+    }
+    else if ($this->type == 1) {
+      $str_type = "Traditional";
+    }
+    else {
+      $str_type = "Non-Competitive";
+    }
+
     return array(
       'name' => ucwords(strtolower($this->first_name)) . ' ' . ucwords(strtolower($this->last_name)),
       'teacher' => $this->teacher_name,
       'level' => $this->skill_level,
-      'format' => $this->type,
+      'format' => $str_type,
       'song_one' => array(
         'composer' => $this->composers[0],
         'song' => $this->songs[0]
