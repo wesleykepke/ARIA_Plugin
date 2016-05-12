@@ -62,6 +62,8 @@ class Modify_Schedule {
     otherwise, your changes will be lost. The information you supply here will be used for
     document generation.<br>For each section below, you can modify the start time,
     the room, the judge(s), the proctor(s), and the door guard.</h4>";
+    $confirmation .= '<button id="genDocumentsButton" type="button" onclick="generateDocuments()">Generate Documents</button><br>';
+    $confirmation .= '<button id="emailParentsAndTeachersButton" type="button" onclick="emailParentsAndTeachers()">Email Parents and Teachers</button><br>';
     $confirmation .= '<button id="saveScheduleButton" type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
     $confirmation .= $scheduler->get_schedule_string(false);
     return $confirmation;
