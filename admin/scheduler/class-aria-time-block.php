@@ -303,9 +303,7 @@ class TimeBlock {
    */
   public function update_section_students($student_data) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      if (!$this->sections[$i]->is_empty()) {
-        $this->sections[$i]->update_section_students($student_data[$i]);
-      }
+      $this->sections[$i]->update_section_students($student_data[$i]);
     }
   }
 

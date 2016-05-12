@@ -730,6 +730,13 @@ class Section {
    * @return  Student Object  The actual student object that the information associates with.
    */
   public function find_student_entry($student_to_find) {
+    if (!is_array($student_to_find)) {
+      return null;
+    }
+
+    //echo 'STUDENT TO FIND: ';
+    //echo print_r($student_to_find);
+
     // named variables to help offset into student object
     $name = 0;
     $skill_level = 1;
@@ -740,15 +747,15 @@ class Section {
     $student_object = null;
     for ($i = 0; $i < count($this->students); $i++) {
       $single_student = $this->students[$i];
-      //echo ($single_student->get_name()) . "\n";
       $matching_names = ($student_to_find[$name] == $single_student->get_name());
       $matching_skill_levels = ($student_to_find[$skill_level] == $single_student->get_skill_level());
+      //$single_student_songs = $single_student->get_songs();
       //$matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
       //$matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
 
       //if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
       if ($matching_names && $matching_skill_levels) {
-        //echo "Yay! Found $student_to_find[$name]\n";
+        echo "Yay! Found $student_to_find[$name]<br><br>";
         return $single_student;
       }
 
@@ -768,7 +775,7 @@ class Section {
     }
 
     // if the student doesn't exist in the section, return NULL
-    return $student_object;
+    return null;
   }
 
   /**
