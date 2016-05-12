@@ -447,6 +447,7 @@ class Student {
       'name' => ucwords(strtolower($this->first_name)) . ' ' . ucwords(strtolower($this->last_name)),
       'teacher' => $this->teacher_name,
       'level' => $this->skill_level,
+      'format' => $this->type,
       'song_one' => array(
         'composer' => $this->composers[0],
         'song' => $this->songs[0]
