@@ -793,12 +793,11 @@ class Section {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public function send_emails_to_parents() {
+  public function send_emails_to_parents($headers) {
     for ($i = 0; $i < count($this->students); $i++) {
       $parent_email = $this->students[$i]->get_parent_email();
       $message = $this->students[$i]->get_info_for_email();
       $subject = "NNMTA Performance Time";
-      $headers = "From: nnmta.org@gmail.com";
       if (!mail($parent_email, $subject, $message, $headers)) {
         /*
         wp_die("<h1>Emails to parent regarding competition info failed to send.

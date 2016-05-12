@@ -168,7 +168,7 @@ class Scheduler {
     $this->date_2 = $date_2;
 
     // preprocess the rooms for saturday
-    for ($i = 0; $i < $num_time_blocks_sat; $i++) {
+    for ($i = 0; $i < $num_concurrent_sections_sat; $i++) {
       if ($saturday_rooms != false && array_key_exists($i, $saturday_rooms)) {
         $saturday_rooms[$i] = $saturday_rooms[$i];
       }
@@ -178,7 +178,7 @@ class Scheduler {
     }
 
     // preprocess the rooms for sunday
-    for ($i = 0; $i < $num_time_blocks_sun; $i++) {
+    for ($i = 0; $i < $num_concurrent_sections_sun; $i++) {
       if ($sunday_rooms != false && array_key_exists($i, $sunday_rooms)) {
         $sunday_rooms[$i] = $sunday_rooms[$i];
       }
@@ -632,7 +632,7 @@ class Scheduler {
         $email_message = $sat_email_message . "\n\n" . $sun_email_message;
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;
-          $headers = "From: nnmta.org@gmail.com";
+          $headers = "From: " . $this->related_forms['festival_chairman_email'];
           if (!mail($key, $subject, $email_message, $headers)) {
             /*wp_die("<h1>Emails to teachers regarding competition info failed to send.
           	  Please try again.</h1>");*/
@@ -655,11 +655,12 @@ class Scheduler {
   public function send_parents_competition_info($comp_name) {
     // find the associated teacher master form
     $student_master_form_id = $this->related_forms['student_master_form_id'];
+    $headers = "From: " . $this->related_forms['festival_chairman_email'];
 
     // iterate through all of the student entries
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $this->days[$i][$j]->send_emails_to_parents();
+        $this->days[$i][$j]->send_emails_to_parents($headers);
       }
     }
   }

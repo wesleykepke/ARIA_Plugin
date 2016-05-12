@@ -61,7 +61,7 @@ class Scheduling_Algorithm {
     // obtain the room information from the submitted form
     $first_location = $entry[$scheduling_field_mapping['location_field']];
     $second_location = null;
-    if (!is_null($scheduling_field_mapping['location_field_2'])) {
+    if (!empty($entry[$scheduling_field_mapping['location_field_2']])) {
       $second_location = $entry[$scheduling_field_mapping['location_field_2']];
     }
 

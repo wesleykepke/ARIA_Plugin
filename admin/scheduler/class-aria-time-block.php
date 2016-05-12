@@ -335,9 +335,9 @@ class TimeBlock {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public function send_emails_to_parents() {
+  public function send_emails_to_parents($headers) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $this->sections[$i]->send_emails_to_parents();
+      $this->sections[$i]->send_emails_to_parents($headers);
     }
   }
 

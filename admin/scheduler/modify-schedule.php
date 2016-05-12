@@ -55,7 +55,7 @@ class Modify_Schedule {
     }
 
     // print the schedule to the festival chairman
-    $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $title . '</b></h1>';
+    $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $non_formatted_title . '</b></h1>';
     $confirmation .= "<h4>Congratulations! You have just successfully loaded a
     previously generated schedule.<br>After you make modifications to the schedule
     (adding judges, proctors, etc.), <b>you must click the 'Save Schedule' button</b>,
