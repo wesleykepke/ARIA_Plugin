@@ -99,6 +99,9 @@ class ARIA_Public {
 
 		wp_register_script( 'teacher_reg_script', plugin_dir_url( __FILE__ ) . 'js/teacher_reg.js', array('jquery'), '1.0', false );
 		wp_enqueue_script('teacher_reg_script');
+	
+		wp_register_script( 'modify_schedule_script', plugin_dir_url( __FILE__ ) . 'js/modify_schedule.js', array('jquery'), '1.0', false );
+		wp_enqueue_script('modify_schedule_script');
 	}
 
 }

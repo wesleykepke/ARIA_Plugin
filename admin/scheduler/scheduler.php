@@ -170,13 +170,13 @@ class Scheduling_Algorithm {
         $parent_email = $student[strval($student_master_field_mapping['parent_email'])];
 
         // determine the teacher's name
-        $teacher_name = $student[strval($student_master_field_mapping['teacher_name'])];
+        //$teacher_name = $student[strval($student_master_field_mapping['teacher_name'])];
 
         // determine the email address of the student's teacher
-        /* FOR NNMTA SERVER OR ANY COMPETITION WITH SERIALIZED TEACHER NAME
+        ///* FOR NNMTA SERVER OR ANY COMPETITION WITH SERIALIZED TEACHER NAME
         $teacher_name = unserialize($student[strval($student_master_field_mapping['teacher_name'])]);
         $teacher_name = trim($teacher_name[0]) . " " . trim($teacher_name[1]);
-        */
+        //*/
 
         $teacher_email = ARIA_API::get_teacher_email($teacher_name,
                                                      $related_form_ids['teacher_master_form_id']);
@@ -703,126 +703,6 @@ class Scheduling_Algorithm {
     //echo "<h1>Displaying playing times</h1>";
     //wp_die(print_r($playing_times));
     return $playing_times;
-  }
-
-  /**
-   * This function will send an email to each of the teachers in the competition.
-   *
-   * Once registration is complete, the teachers in the competition need to be
-   * emailed information regarding when each of their students is competing and
-   * about their volunteer duties. This function is responsible for generating
-   * and sending that email.
-   *
-   * @param		int	$teacher_master_form_id	The teacher master form of the given competition.
-   * @param 	Scheduler	$scheduler	The scheduler object for a given competition.
-   * @param 	String 	$comp_name 	The name of the competition.
-   *
-   * @return	void
-   *
-   * @since 1.0.0
-   * @author KREW
-   */
-  public static function send_teachers_competition_info($teacher_master_form_id, $scheduler,
-  	                                                    $comp_name) {
-    // get all entries in the associated teacher master
-    $search_criteria = array();
-    $sorting = null;
-    $paging = array('offset' => 0, 'page_size' => 2000);
-    $total_count = 0;
-    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria,
-                                  $sorting, $paging, $total_count);
-
-    // get the associated entry in the create competition form
-    $create_comp_form_id = ARIA_API::aria_get_create_competition_form_id();
-    $comp_field_id_array = ARIA_API::aria_competition_field_id_array();
-    $comp_entries = GFAPI::get_entries($create_comp_form_id, $search_criteria,
-                                       $sorting, $paging, $total_count);
-
-    $first_location = null;
-    $second_location = null;
-    foreach ($comp_entries as $entry) {
-      if ($entry[strval($comp_field_id_array['competition_name'])] == $comp_name) {
-        // get the info for the (first) competition location
-        $first_loc_base = $comp_field_id_array['competition_location'];
-        $first_loc_start = $comp_field_id_array['competition_address_first'];
-        $first_loc_end = $comp_field_id_array['competition_country'];
-        $first_loc_itr = 1;
-        while ($first_loc_start <= $first_loc_end) {
-          if (!empty($entry[strval($first_loc_start)])) {
-            $first_location .= $entry[strval($first_loc_start)];
-            if ((floatval($first_loc_start) + 0.1) <= $first_loc_end) {
-              $first_location .= ', ';
-            }
-          }
-          $first_loc_itr++;
-          $first_loc_start = floatval(($first_loc_base . '.' . strval($first_loc_itr)));
-        }
-
-        // get the info for the (second, optional) competition location
-        $second_loc_base = $comp_field_id_array['competition_2_address'];
-        $second_loc_start = $comp_field_id_array['competition_2_address_first'];
-        $second_loc_end = $comp_field_id_array['competition_2_country'];
-        $second_loc_itr = 1;
-        while ($second_loc_start <= $second_loc_end) {
-          if (!empty($entry[strval($second_loc_start)])) {
-            $second_location .= $entry[strval($second_loc_start)];
-            if ((floatval($second_loc_start) + 0.1) <= $second_loc_end) {
-              $second_location .= ', ';
-            }
-          }
-          $second_loc_itr++;
-          $second_loc_start = floatval(($second_loc_base . '.' . strval($second_loc_itr)));
-        }
-      }
-    }
-
-    // store all of the teacher emails in an associative array
-    $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
-    $teacher_emails_to_students = array();
-    foreach ($entries as $teacher) {
-      $teacher_email = $teacher[strval($field_mapping['email'])];
-      if(!array_key_exists($teacher_email, $teacher_emails_to_students)) {
-        $teacher_emails_to_students[] = $teacher_email;
-        $teacher_emails_to_students[$teacher_email] = array();
-      }
-    }
-
-    // for each of the emails that were found, find all students that registered under that teacher
-    foreach ($teacher_emails_to_students as $key => $value) {
-      if (strpos($key, '@') !== false) {
-        $sat_email_message = "Saturday Location: $first_location\n";
-
-        if (is_null($second_location)) {
-          $sun_email_message = "Sunday Location: $first_location\n";
-        }
-        else {
-          $sun_email_message = "Sunday Location: $second_location\n";
-        }
-
-        $scheduler->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
-        foreach ($teacher_emails_to_students[$key] as $student) {
-          // students who requested saturday
-          if ($student->get_day_preference() === SAT) {
-            $sat_email_message .= $student->get_info_for_email();
-          }
-
-          // students who requested sunday
-          else if ($student->get_day_preference() === SUN) {
-            $sun_email_message .= $student->get_info_for_email();
-          }
-        }
-
-        // once the message has been generated, send the email to the teachers
-        $email_message = $sat_email_message . "\n\n" . $sun_email_message;
-        if (!is_null($email_message)) {
-          $subject = "Student Assignments for " . $comp_name;
-          if (!wp_mail($key, $subject, $email_message)) {
-            wp_die("<h1>Emails to teachers regarding competition info failed to send.
-          	  Please try again.</h1>");
-          }
-        }
-      }
-    }
   }
 
   /**
