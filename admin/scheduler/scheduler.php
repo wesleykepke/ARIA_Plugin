@@ -112,7 +112,8 @@ class Scheduling_Algorithm {
     $scheduler->create_normal_competition($num_time_blocks_sat,
                                           $num_time_blocks_sun,
                                           $time_block_duration,
-                                          $both_start_times,
+                                          $sat_start_times,
+                                          $sun_start_times,
                                           $num_concurrent_sections_sat,
                                           $num_concurrent_sections_sun,
                                           $num_master_sections_sat,
@@ -646,6 +647,7 @@ class Scheduling_Algorithm {
                                                    $master_class_instructor_duration) {
     // check to see if the festival chairman entered the same amount of timeblock
     // starting times as the number of timeblocks
+    /*
     if ($num_time_blocks_sat != count($sat_start_times)) {
       wp_die("<h1>ERROR: The number of timeblock start times for Saturday must match the value
               entered for 'Number of Timeblocks on Saturday'. You requested " . $num_time_blocks_sat .
@@ -656,6 +658,7 @@ class Scheduling_Algorithm {
               entered for 'Number of Timeblocks on Sunday'. You requested " . $num_time_blocks_sun .
               " timeblocks for Sunday but specified " . count($sun_start_times) . " start time(s). </h1>");
     }
+    */
 
     // determine the total amount of play time for all students in the current competition
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();

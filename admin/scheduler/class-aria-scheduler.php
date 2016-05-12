@@ -125,7 +125,8 @@ class Scheduler {
   public function create_normal_competition($num_time_blocks_sat,
                                             $num_time_blocks_sun,
                                             $time_block_duration,
-                                            $both_start_times,
+                                            $sat_start_times,
+                                            $sun_start_times,
                                             $num_concurrent_sections_sat,
                                             $num_concurrent_sections_sun,
                                             $num_master_sections_sat,
@@ -187,14 +188,34 @@ class Scheduler {
       }
     }
 
-    $start_time_index = 0;
+    // preprocess the start times for saturday
+    for ($i = 0; $i < $num_time_blocks_sat; $i++) {
+      if ($sat_start_times != false && array_key_exists($i, $sat_start_times)) {
+        $sat_start_times[$i] = $sat_start_times[$i];
+      }
+      else {
+        $sat_start_times[$i] = "TYPE IN START TIME";
+      }
+    }
+
+    // preprocess the start times for sunday
+    for ($i = 0; $i < $num_time_blocks_sun; $i++) {
+      if ($sun_start_times != false && array_key_exists($i, $sun_start_times)) {
+        $sun_start_times[$i] = $sun_start_times[$i];
+      }
+      else {
+        $sun_start_times[$i] = "TYPE IN START TIME";
+      }
+    }
+
+    //$start_time_index = 0;
 
     // create the time blocks with their concurrent sections for saturday
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
       $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration,
                                            $song_threshold, $group_by_level,
-                                           $both_start_times[$start_time_index],
+                                           $sat_start_times[$i],
                                            'Saturday', $saturday_rooms);
     }
 
@@ -213,7 +234,7 @@ class Scheduler {
     for ($i = 0; $i < $num_time_blocks_sun; $i++) {
       $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration,
                                            $song_threshold, $group_by_level,
-                                           $both_start_times[$start_time_index],
+                                           $sun_start_times[$i],
                                            'Sunday', $sunday_rooms);
     }
 
