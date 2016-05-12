@@ -510,11 +510,14 @@ class Scheduler {
    * @param   Array   $student_data   The array of student information to use in the search process.
    */
   public function update_section_students($student_data) {
+    echo "Incoming section data<br>";
+    echo print_r($student_data);
+
     // create a new 2D array containing the student entry objects
     $new_section_data = array();
     for ($i = 0; $i < count($student_data); $i++) {
-      $new_section_data[$i] = array();
       for ($j = 0; $j < count($student_data[$i]); $j++) {
+        $new_section_data[$i] = array();
         $student = $this->find_student_entry($student_data[$i][$j]);
         if (!is_null($student)) {
           $new_section_data[$i][] = $student;
@@ -523,27 +526,34 @@ class Scheduler {
 
       // if the section is empty, add "EMPTY" to identify it as empty
       if ($student_data[$i] == "EMPTY") {
-        $new_section_data[$i][] = "EMPTY";
+        $new_section_data[$i] = "EMPTY";
       }
     }
 
 // this is working
-//echo "New section data\n";
-//echo print_r($new_section_data);
+echo "<br><br>New section data<br>";
+echo print_r($new_section_data);
 
     // iterate through all sections of the scheduler and update the students
     // that are assigned to each section
     $section_index = 0;
+    $new_section_data_offset = 0;
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        if ($new_section_data[$i] != "EMPTY") {
+        if ($new_section_data[$new_section_data_offset] != "EMPTY") {
           $new_timeblock_students = array();
           for ($k = 0; $k < $this->days[$i][$j]->get_num_concurrent_sections(); $k++) {
-            $new_timeblock_students[] = $new_section_data[$section_index];
+            $new_timeblock_students[$k] = $new_section_data[$i][$j];
             $section_index++;
           }
           $this->days[$i][$j]->update_section_students($new_timeblock_students);
+
         }
+        else {
+          echo "<br>Section $new_section_data_offset is empty.</br>";
+        }
+
+        $new_section_data_offset++;
       }
     }
 
