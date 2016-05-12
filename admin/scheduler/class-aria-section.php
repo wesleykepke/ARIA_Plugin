@@ -223,11 +223,10 @@ class Section {
     $this->day = $day;
     $this->room = $room;
     //$this->judges = array();
-    $this->judges = "";
-    $this->proctor = "";
-    $this->door_guard = "";
+    $this->judges = "TYPE IN JUDGE(S)";
+    $this->proctor = "TYPE IN PROCTOR(S)";
+    $this->door_guard = "TYPE IN DOOR GUARD";
     $this->music_runner = "";
-    $this->door_guard = "";
   }
 
   /**
@@ -504,13 +503,13 @@ class Section {
     $section_info .= '<li>Room: <span id="section-room" contenteditable="true">' . $this->room . '</span></li>';
 
     // create a placeholder for judges in this section
-    $section_info .= '<li>Judge(s): <span id="section-judges" contenteditable="true">' . 'TYPE IN JUDGE(S)' . '</span></li>';
+    $section_info .= '<li>Judge(s): <span id="section-judges" contenteditable="true">' . $this->judges . '</span></li>';
 
     // create a placeholder for proctors in this section
-    $section_info .= '<li>Proctor(s): <span id="section-proctors" contenteditable="true">' . 'TYPE IN PROCTOR(S)' . '</span></li>';
+    $section_info .= '<li>Proctor(s): <span id="section-proctors" contenteditable="true">' . $this->proctor . '</span></li>';
 
     // create a placeholder for the door guard of this section
-    $section_info .= '<li>Door Guard: <span id="section-door-guard" contenteditable="true">' . 'TYPE IN DOOR GUARD' . '</span></li>';
+    $section_info .= '<li>Door Guard: <span id="section-door-guard" contenteditable="true">' . $this->door_guard . '</span></li>';
 
     // determine number of students per section
     $section_info .= '<li>Number of Students: ' . strval(count($this->students)) . '</li>';
