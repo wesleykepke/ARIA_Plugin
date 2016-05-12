@@ -77,12 +77,6 @@ function teacher_reg_init(current_form_id, host){
       selected_text: { 1: '', 2: '' },
     };
 
-    // For testing purposes, allow change in level
-    $(input_id_arr['student_level']).live("change", function() {
-      st_level = $(input_id_arr['student_level']).val();
-      music = get_songs(st_level, levelField);
-    });
-
     // Disable teacher student field
     //$(input_id_arr['name']+'_3').prop("disabled", true);
     //$(input_id_arr['name']+'_6').prop("disabled", true);
