@@ -326,6 +326,15 @@ class TimeBlock {
   }
 
   /**
+   * Function for sending emails to all parents of students within a section.
+   */
+  public static function send_emails_to_parents() {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->send_emails_to_parents();
+    }
+  }
+
+  /**
    * The destructor used when a time block object is destroyed.
    *
    * @since 1.0.0

@@ -523,10 +523,10 @@ class Section {
         $skill_levels[] = $student->get_skill_level();
       }
 
-      // student types 
+      // student types
       if (!in_array($student->get_type(), $section_types)) {
-        $section_types[] = $student->get_type(); 
-      } 
+        $section_types[] = $student->get_type();
+      }
     }
 
     // skill levels
@@ -558,7 +558,7 @@ class Section {
 
         case SECTION_NON_COMP:
           $section_info .= "Non-competitive</li>";
-        break; 
+        break;
       }
     }
     else {
@@ -575,8 +575,8 @@ class Section {
 
           case SECTION_NON_COMP:
             $section_info .= "Non-Competitive</li>";
-          break; 
-        }         
+          break;
+        }
 
         if (($i + 1) != count($section_types)) {
           $section_info .= ', ';
@@ -584,7 +584,7 @@ class Section {
       }
       $section_info .= '</li>';
     }
-    
+
     // include the total play time
     $section_info .= '<li>Total Play Time: ' . $this->current_time . ' minutes</li>';
     $section_info .= "</ul>";
@@ -629,7 +629,7 @@ class Section {
 
     // add all of the section's information
     $doc_gen_single_section_data = array();
-    $doc_gen_single_section_data['section_name'] = $this->room;
+    $doc_gen_single_section_data['section_name'] = $this->day . ", " . $this->start_time . ", " . $this->room;
     $doc_gen_single_section_data['judge'] = $this->judges;
 
     $doc_gen_single_section_data['proctor'] = $this->proctor;
@@ -638,7 +638,6 @@ class Section {
     // for each student registered in the section, get their data
     $doc_gen_single_section_data['students'] = array();
     for ($i = 0; $i < count($this->students); $i++) {
-      //wp_die(print_r($this->students));
       $doc_gen_single_section_data['students'][] = $this->students[$i]->get_section_info_for_doc_gen();
     }
     $doc_gen_section_data[] = $doc_gen_single_section_data;
@@ -744,10 +743,11 @@ class Section {
       //echo ($single_student->get_name()) . "\n";
       $matching_names = ($student_to_find[$name] == $single_student->get_name());
       $matching_skill_levels = ($student_to_find[$skill_level] == $single_student->get_skill_level());
-      $matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
-      $matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
+      //$matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
+      //$matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
 
-      if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
+      //if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
+      if ($matching_names && $matching_skill_levels) {
         //echo "Yay! Found $student_to_find[$name]\n";
         return $single_student;
       }
@@ -769,6 +769,21 @@ class Section {
 
     // if the student doesn't exist in the section, return NULL
     return $student_object;
+  }
+
+  /**
+   * Function for sending emails to all parents of students within a section.
+   */
+  public static function send_emails_to_parents() {
+    for ($i = 0; $i < count($this->students); $i++) {
+      $parent_email = $this->students[$i]->get_parent_email();
+      $message = $this->students[$i]->get_info_for_email();
+      $subject = "NNMTA Performance Time";
+      if (!wp_mail($parent_email, $subject, $message)) {
+        wp_die("<h1>Emails to parent regarding competition info failed to send.
+          Please try again.</h1>");
+      }
+    }
   }
 
   /**

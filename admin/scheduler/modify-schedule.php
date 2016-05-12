@@ -55,7 +55,7 @@ class Modify_Schedule {
     }
 
     // print the schedule to the festival chairman
-    $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $non_formatted_title . '</b></h1>';
+    $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $title . '</b></h1>';
     $confirmation .= "<h4>Congratulations! You have just successfully loaded a
     previously generated schedule.<br>After you make modifications to the schedule
     (adding judges, proctors, etc.), <b>you must click the 'Save Schedule' button</b>,
@@ -63,8 +63,6 @@ class Modify_Schedule {
     document generation.<br>For each section below, you can modify the start time,
     the room, the judge(s), the proctor(s), and the door guard.</h4>";
     $confirmation .= '<button id="saveScheduleButton" type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
-    $confirmation .= '<button id="genDocumentsButton" type="button" onclick="generateDocuments()">Generate Documents</button><br>';
-    $confirmation .= '<button id="emailParentsAndTeachersButton" type="button" onclick="emailParentsAndTeachers()">Email Parents and Teachers</button><br>';
     $confirmation .= $scheduler->get_schedule_string(false);
     return $confirmation;
   }

@@ -361,7 +361,7 @@ class Student {
     }
 
     // construct and return the sentence of student information
-    return "$this->first_name $this->last_name will be playing $songs on $this->day at $this->start_time in $this->room.\n\n";
+    return "ucword(strtolower($this->first_name)) ucword(strtolower($this->last_name)) will be playing $songs on $this->day at $this->start_time in $this->room.\n\n";
   }
 
   /**http://php.net/manual/en/function.floatval.php
@@ -435,7 +435,7 @@ class Student {
    */
   public function get_section_info_for_doc_gen() {
     return array(
-      'name' => $this->first_name . ' ' . $this->last_name,
+      'name' => ucword(strtolower($this->first_name)) . ' ' . ucword(strtolower($this->last_name)),
       'teacher' => $this->teacher_name,
       'level' => $this->skill_level,
       'song_one' => array(

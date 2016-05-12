@@ -557,7 +557,6 @@ class Scheduler {
    * about their volunteer duties. This function is responsible for generating
    * and sending that email.
    *
-   * @param	int		$teacher_master_form_id	The teacher master form of the given competition.
    * @param 	String 		$comp_name 		The name of the competition.
    *
    * @return	void
@@ -565,7 +564,11 @@ class Scheduler {
    * @since 1.0.0
    * @author KREW
    */
-  public static function send_teachers_competition_info($teacher_master_form_id, $comp_name) {
+  public static function send_teachers_competition_info($comp_name) {
+    // find the associated teacher master form
+    $related_forms = ARIA_API::aria_find_related_forms_ids($comp_name);
+    $teacher_master_form_id = $related_forms['teacher_master_form_id'];
+
     // get all entries in the associated teacher master
     $search_criteria = array();
     $sorting = null;
@@ -663,6 +666,40 @@ class Scheduler {
           	  Please try again.</h1>");
           }
         }
+      }
+    }
+  }
+
+ /**
+  * Function for sending competition data to parents.
+  *
+  * @param 	String 		$comp_name 		The name of the competition.
+  *
+  * @return	void
+  *
+  * @since 1.0.0
+  * @author KREW
+  */
+  public static function send_parents_competition_info($comp_name) {
+    // find the associated teacher master form
+    $related_forms = ARIA_API::aria_find_related_forms_ids($comp_name);
+    $student_master_form_id = $related_forms['student_master_form_id'];
+
+    // get all entries in the associated teacher master
+    $search_criteria = array();
+    $sorting = null;
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria,
+                                  $sorting, $paging, $total_count);
+
+    // define variables to help us offset into the student master entries
+    $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
+
+    // iterate through all of the student entries
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->send_emails_to_parents();
       }
     }
   }

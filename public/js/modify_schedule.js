@@ -1,5 +1,5 @@
 /**
- * Define some constants used throughout this JS file. 
+ * Define some constants used throughout this JS file.
  */
 var host = "http://aria.cse.unr.edu";
 var public_key = "1ff591984b";
@@ -20,32 +20,35 @@ function generateDocuments() {
   console.log("hi");
 
   // determine the name of the competition
-  var compName = document.getElementById("comp-name-bold").innerHTML; 
+  var compName = document.getElementById("comp-name-bold").innerHTML;
   var data = {};
-  data.compName = compName; 
+  data.compName = compName;
 
-  // request the server to generate competition documents 
+  // request the server to generate competition documents
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/document-client.php";
   jQuery.post(targetFunc, data, function(response) {
-    console.log("generateDocuments response>>", response); 
+    //console.log(response);
+    window.location = response;
+    //window.location = targetFunc;
+     console.log("generateDocuments response>>", response);
   });
 }
 
 /**
  * This function is responsible for calling the appropriate PHP code to email
- * parents and teachers regarding the competition info of their students.  
+ * parents and teachers regarding the competition info of their students.
  */
 function emailParentsAndTeachers() {
   console.log("hi2");
 
   // determine the name of the competition
-  var compName = document.getElementById("comp-name-bold").innerHTML; 
+  var compName = document.getElementById("comp-name-bold").innerHTML;
   var data = {};
-  data.compName = compName; 
+  data.compName = compName;
 
-  // request the server to send emails to parents and teachers 
+  // request the server to send emails to parents and teachers
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/parent-teacher-email-client.php";
   jQuery.post(targetFunc, data, function(response) {
-    console.log("emailParentsAndTeachers response>>", response); 
+    console.log("emailParentsAndTeachers response>>", response);
   });
 }
