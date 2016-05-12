@@ -222,11 +222,9 @@ class Section {
     $this->start_time = $start_time;
     $this->day = $day;
     $this->room = $room;
-    //$this->judges = array();
     $this->judges = "TYPE IN JUDGE(S)";
     $this->proctor = "TYPE IN PROCTOR(S)";
     $this->door_guard = "TYPE IN DOOR GUARD";
-    $this->music_runner = "";
   }
 
   /**
@@ -702,17 +700,32 @@ class Section {
    * @param   Array   $student_data   The array of student objects to update the section.
    */
   public function update_section_students($student_data) {
-    // update the list of students that are in the current section
+    // remove all of the current students in the section
     unset($this->students);
     $this->students = array();
-    for ($i = 0; $i < count($student_data); $i++) {
-      $this->students[] = $student_data[$i];
+
+    // check if there are no students to add to the section
+    if (!is_array($student_data) && $student_data == "EMPTY") {
+      $this->current_time = 0;
+      $this->skill_level = null;
+      //$this->room = $room;
+      $this->judges = "TYPE IN JUDGE(S)";
+      $this->proctor = "TYPE IN PROCTOR(S)";
+      $this->door_guard = "TYPE IN DOOR GUARD";
+      return;
     }
 
-    // update the other information associated with the section
-    $this->current_time = 0;
-    for ($i = 0; $i < count($this->students); $i++) {
-      $this->current_time += $this->students[$i]->get_total_play_time();
+    // otherwise, update the list of students that are in the current section
+    else {
+      for ($i = 0; $i < count($student_data); $i++) {
+        array_push($this->students, $student_data[$i]);
+      }
+
+      // update the other information associated with the section
+      $this->current_time = 0;
+      for ($i = 0; $i < count($this->students); $i++) {
+        $this->current_time += $this->students[$i]->get_total_play_time();
+      }
     }
   }
 
@@ -755,7 +768,6 @@ class Section {
 
       //if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
       if ($matching_names && $matching_skill_levels) {
-        echo "Yay! Found $student_to_find[$name]<br><br>";
         return $single_student;
       }
 

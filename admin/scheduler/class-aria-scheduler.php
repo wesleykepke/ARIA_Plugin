@@ -510,10 +510,6 @@ class Scheduler {
    * @param   Array   $student_data   The array of student information to use in the search process.
    */
   public function update_section_students($student_data) {
-    echo "Incoming section data<br>";
-    echo print_r($student_data);
-    echo "<br>";
-
     // create a new 2D array containing the student entry objects
     $new_section_data = array();
     $section_index = 0;
@@ -521,8 +517,6 @@ class Scheduler {
       if (is_array($student_data[$i])){
         $new_section_data[$section_index] = array();
         for ($j = 0; $j < count($student_data[$i]); $j++) {
-          echo "<br>Row $i , Column $j :<br>";
-          echo $student_data[$i][$j];
           $student = $this->find_student_entry($student_data[$i][$j]);
           if (!is_null($student)) {
             array_push($new_section_data[$section_index], $student);
@@ -531,49 +525,27 @@ class Scheduler {
       }
       else {
         $new_section_data[$section_index] = "EMPTY";
-        echo "<br>Index i: $i<br>";
-        echo $student_data[$i];
       }
 
       $section_index++;
     }
 
-// this is working
-echo "<br><br>New section data<br>";
-for ($i = 0; $i < count($new_section_data); $i++) {
-  echo print_r($new_section_data[$i]);
-  echo "<br>";
-}
-
-
     // iterate through all sections of the scheduler and update the students
     // that are assigned to each section
     $section_index = 0;
+    $new_timeblock_data = array();
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        //if ($new_section_data[$new_section_data_offset] != "EMPTY") {
-          //$new_timeblock_students = array();
-          //$this->days[$i][$j]->update_section_students($new_section_data[$section_index]);
-          //echo "Section index: $section_index <br>";
-          //print_r($new_section_data[$section_index]);
-          /*
-          for ($k = 0; $k < $this->days[$i][$j]->get_num_concurrent_sections(); $k++) {
-            $new_timeblock_students[$k] = $new_section_data[$i][$j];
-            $section_index++;
-          }
-          $this->days[$i][$j]->update_section_students($new_timeblock_students);
-          */
-        //}
-        //else {
-          //echo "<br>Section $new_section_data_offset is empty.</br>";
-        //}
+        $new_timeblock_students = array();
+        for ($k = 0; $k < $this->days[$i][$j]->get_num_concurrent_sections(); $k++) {
+          array_push($new_timeblock_students, $new_section_data[$section_index]);
+          $section_index++;
+        }
 
-        $section_index++;
+        array_push($new_timeblock_data, $new_timeblock_students);
+        $this->days[$i][$j]->update_section_students($new_timeblock_students);
       }
     }
-
-    //echo "All students were added.";
-    //echo print_r($this->days);
   }
 
   /**
