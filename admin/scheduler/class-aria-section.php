@@ -793,10 +793,11 @@ class Section {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public function send_emails_to_parents($headers) {
+  public function send_emails_to_parents($headers, $fc_email) {
     for ($i = 0; $i < count($this->students); $i++) {
       $parent_email = $this->students[$i]->get_parent_email();
       $message = $this->students[$i]->get_info_for_email();
+      $message .= "If you have any questions, please contact the festival chair at $fc_email.";
       $subject = "NNMTA Performance Time";
       if (!mail($parent_email, $subject, $message, $headers)) {
         /*

@@ -677,11 +677,12 @@ class Scheduler {
     // find the associated teacher master form
     $student_master_form_id = $this->related_forms['student_master_form_id'];
     $headers = "From: " . $this->related_forms['festival_chairman_email'];
+    $fc_email = $this->related_forms['festival_chairman_email'];
 
     // iterate through all of the student entries
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $this->days[$i][$j]->send_emails_to_parents($headers);
+        $this->days[$i][$j]->send_emails_to_parents($headers, $fc_email);
       }
     }
   }

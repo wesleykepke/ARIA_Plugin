@@ -69,6 +69,8 @@ class Scheduling_Algorithm {
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
     $related_form_ids = ARIA_API::aria_find_related_forms_ids($title);
     $student_master_form_id = $related_form_ids['student_master_form_id'];
+    $student_master_form = GFAPI::get_form($student_master_form_id);
+    $related_forms = $student_master_form['aria_relations'];
 
     /*
     // successfully takes input from form
@@ -125,7 +127,7 @@ class Scheduling_Algorithm {
                                           $sunday_rooms,
                                           $first_location,
                                           $second_location,
-                                          $related_form_ids,
+                                          $related_forms,
                                           $date_1,
                                           $date_2);
 
