@@ -349,7 +349,7 @@ class Student {
    * @since 1.0.0
    * @return string Represents the student's competition information.
    */
-  public function get_info_for_email() {
+  public function get_info_for_email($fc_email) {
     // process the student's songs
     $songs = null;
     if (count($this->songs) > 2) {
@@ -370,7 +370,9 @@ class Student {
     // construct and return the sentence of student information
     $first_name = ucwords(strtolower($this->first_name));
     $last_name = ucwords(strtolower($this->last_name));
-    return "$first_name $last_name will be playing $songs on $this->day ($this->date) at $this->start_time in room: $this->room.\n\n";
+    $message = "$first_name $last_name will be playing $songs on $this->day ($this->date) at $this->start_time in room: $this->room.\n\n";
+    $message .= "If you have any questions, please contact the festival chair at $fc_email.";
+    return $message;
   }
 
   /**http://php.net/manual/en/function.floatval.php
