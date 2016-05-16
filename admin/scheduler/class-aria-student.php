@@ -340,16 +340,16 @@ class Student {
   }
 
   /**
-   * This function wihttp://php.net/manual/en/function.floatval.phpll construct the competition info on a per-student basis.
+   * This function will construct the competition info as a sentence on a per-student basis.
    *
-   * Using the information that is stored for each student, this function
-   * will construct and return a sentence that describes all of the stored
-   * information about a student for an upcoming competition.
+   * Using the information that is stored for each student, this function will
+   * construct and return a sentence that describes all of the stored information
+   * about a student for an upcoming competition.
    *
    * @since 1.0.0
-   * @return string Represents the student's competition information.
+   * @return  string  Represents the student's competition information.
    */
-  public function get_info_for_email($fc_email) {
+  public function get_info_for_email() {
     // process the student's songs
     $songs = null;
     if (count($this->songs) > 2) {
@@ -371,11 +371,10 @@ class Student {
     $first_name = ucwords(strtolower($this->first_name));
     $last_name = ucwords(strtolower($this->last_name));
     $message = "$first_name $last_name will be playing $songs on $this->day ($this->date) at $this->start_time in room: $this->room.\n\n";
-    $message .= "If you have any questions, please contact the festival chair at $fc_email.";
     return $message;
   }
 
-  /**http://php.net/manual/en/function.floatval.php
+  /**
    * The function will return an associative array that contains all of the
    * information associated with a student.
    *

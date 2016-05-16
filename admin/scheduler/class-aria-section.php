@@ -647,14 +647,20 @@ class Section {
    * Once the festival chairman has created a schedule for a competition and has
    * specified who will be the proctor, judge, etc. of a section, that information
    * will need to be added back into the scheduler. This function is responsible
-   * for accepting that new information and helping place it in the right place
-   * within a scheduler object.
+   * for accepting that new information and updating it in the current section
+   * object.
    *
    * @param   Array   $new_section_data   The array of new section information.
+   *
+   * @return  void
    */
   public function update_section_data($new_section_data) {
     // check if the section is EMPTY (from aria-public.js)
     if ($new_section_data[0] == "EMPTY") {
+      $this->start_time = "TYPE IN START TIME";
+      $this->judges = "TYPE IN JUDGE(S)";
+      $this->door_guard = "TYPE IN DOOR GUARD";
+      $this->proctor = "TYPE IN PROCTOR(S)";
       return;
     }
 
@@ -667,22 +673,27 @@ class Section {
 
     // assign the new data to the current section object
     if (!is_null($new_section_data)) {
+      // time
       if (array_key_exists($section_time, $new_section_data)) {
         $this->start_time = $new_section_data[$section_time];
       }
 
+      // room
       if (array_key_exists($section_room, $new_section_data)) {
         $this->room = $new_section_data[$section_room];
       }
 
+      // judges
       if (array_key_exists($section_judges, $new_section_data)) {
         $this->judges = $new_section_data[$section_judges];
       }
 
+      // proctor
       if (array_key_exists($section_proctor, $new_section_data)) {
         $this->proctor = $new_section_data[$section_proctor];
       }
 
+      // door guard
       if (array_key_exists($section_door_guard, $new_section_data)) {
         $this->door_guard = $new_section_data[$section_door_guard];
       }
@@ -796,24 +807,31 @@ class Section {
   public function send_emails_to_parents($headers, $fc_email) {
     for ($i = 0; $i < count($this->students); $i++) {
       $parent_email = $this->students[$i]->get_parent_email();
-      $message = $this->students[$i]->get_info_for_email($fc_email);
+      $message = $this->students[$i]->get_info_for_email();
+      $message .= "If you have any questions, please contact the festival chair at $fc_email.";
       $subject = "NNMTA Performance Time";
       if (!mail($parent_email, $subject, $message, $headers)) {
-        /*
-        wp_die("<h1>Emails to parent regarding competition info failed to send.
+        die("<h1>Emails to parent regarding competition info failed to send.
           Please try again.</h1>");
-          */
       }
     }
   }
 
   /**
-   * This function will print the sections in a given time block object.
+   * This function will add students and teachers into an array.
+   *
+   * This function will iterate through all of the students in the section
+   * and add them as a value under their teacher's email (the key). If the
+   * teacher's email does not yet appear in the array, it will be added along
+   * with the first student found.
+   *
+   * @param   $teacher_emails_to_students   The array that maps teacher emails to students
+   *
+   * @return void
    */
-  public function add_teacher_email(&$teacher_emails_to_students) {
+  public function group_students_by_teacher_email(&$teacher_emails_to_students) {
     for ($i = 0; $i < count($this->students); $i++) {
       if (!in_array($this->students[$i]->get_teacher_email(), $teacher_emails_to_students)) {
-        //$teacher_emails_to_students[] = $this->students[$i]->get_teacher_email();
         $teacher_emails_to_students[$this->students[$i]->get_teacher_email()] = array();
       }
       $teacher_emails_to_students[$this->students[$i]->get_teacher_email()][] = $this->students[$i];

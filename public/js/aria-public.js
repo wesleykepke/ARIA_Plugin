@@ -143,9 +143,6 @@ function sendScheduleToServer() {
     }
   }
 
-  console.log('hello');
-  console.log("Formatted student entries>>", formattedStudentInfos);
-
   // iterate through all of the tags with the section information we want
   for (var i = 0; i < taggedSectionInfos.length; i++) {
     // obtain all the information that the user can modify from the schedule
@@ -184,7 +181,7 @@ function sendScheduleToServer() {
     }
   }
 
-  //console.log(formattedStudentInfos);
+  console.log("formattedSectionInfos", formattedSectionInfos);
 
   // consolidate all data into a single JSON object
   data = {

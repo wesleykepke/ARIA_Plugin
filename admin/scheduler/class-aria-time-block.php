@@ -160,6 +160,7 @@ class TimeBlock {
 
   /**
    * This function will print the sections in a given time block object.
+   * DELETE THIS FUNCTION
    */
   public function print_schedule() {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
@@ -170,11 +171,18 @@ class TimeBlock {
   }
 
   /**
-   * This function will print the sections in a given time block object.
+   * This function will add students and teachers into an array.
+   *
+   * This function will iterate through all of the students in the section
+   * and add them as a value under their teacher's email (the key).
+   *
+   * @param   $teacher_emails_to_students   The array that maps teacher emails to students
+   *
+   * @return void
    */
-  public function add_teacher_email(&$teacher_emails_to_students) {
+  public function group_students_by_teacher_email(&$teacher_emails_to_students) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $this->sections[$i]->add_teacher_email($teacher_emails_to_students);
+      $this->sections[$i]->group_students_by_teacher_email($teacher_emails_to_students);
     }
   }
 
