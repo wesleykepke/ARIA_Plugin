@@ -260,19 +260,6 @@ class Student {
   }
 
   /**
-   * The function used to add a composer to the student's list of composers.
-   *
-   * This function will simply append the composer that is passed as a parameter
-   * to the students list of composers.
-   *
-   * @since 1.0.0
-   * @param string  $composer_name  The name of the composer.
-   */
-  public function add_composer($composer_name) {
-    $this->composers[] = $composer_name;
-  }
-
-  /**
    * The function will set the start time of the when the student is registered
    * to perform.
    *
@@ -292,6 +279,19 @@ class Student {
    */
   public function set_room($room) {
     $this->room = $room;
+  }
+
+  /**
+   * The function used to add a composer to the student's list of composers.
+   *
+   * This function will simply append the composer that is passed as a parameter
+   * to the students list of composers.
+   *
+   * @since 1.0.0
+   * @param string  $composer_name  The name of the composer.
+   */
+  public function add_composer($composer_name) {
+    $this->composers[] = $composer_name;
   }
 
   /**

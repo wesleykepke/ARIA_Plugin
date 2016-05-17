@@ -745,7 +745,7 @@ class Section {
     if (!is_array($student_data) && $student_data == "EMPTY") {
       $this->current_time = 0;
       $this->skill_level = null;
-      //$this->room = $room;
+      //$this->room = ;
       $this->judges = "TYPE IN JUDGE(S)";
       $this->proctor = "TYPE IN PROCTOR(S)";
       $this->door_guard = "TYPE IN DOOR GUARD";
@@ -762,6 +762,11 @@ class Section {
       $this->current_time = 0;
       for ($i = 0; $i < count($this->students); $i++) {
         $this->current_time += $this->students[$i]->get_total_play_time();
+        $this->students[$i]->set_date($this->date);
+        $this->students[$i]->set_day($this->day);
+        $this->students[$i]->set_location($this->location);
+        $this->students[$i]->set_start_time($this->start_time);
+        $this->students[$i]->set_room($this->room);
       }
     }
   }
