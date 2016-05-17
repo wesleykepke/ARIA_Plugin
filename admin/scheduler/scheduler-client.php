@@ -25,10 +25,10 @@ function parse_scheduler_html() {
     $scheduler = file_get_contents($file_path);
     $scheduler = unserialize($scheduler);
 
-    // iterate through the scheduler object and update the information with the new data
+    // update the section information with the scheduler object
     $scheduler->update_section_data($_POST['modifiableData']);
 
-    // iterate through the scheduler object and update the student sections
+    // update the student sections within the scheduler object
     $scheduler->update_section_students($_POST['studentData']);
 
     // get the new HTML to display to the user

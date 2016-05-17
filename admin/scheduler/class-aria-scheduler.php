@@ -10,12 +10,6 @@
  * @subpackage ARIA/admin
  */
 
-/*
-require_once(ARIA_ROOT . "/includes/aria-constants.php");
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-time-block.php");
-require_once(ARIA_ROOT . "/admin/scheduler/class-aria-student.php");
-*/
-
 require_once("class-aria-time-block.php");
 require_once("class-aria-student.php");
 require_once("class-aria-field-ids.php");
@@ -57,19 +51,67 @@ class Scheduler {
    */
   private $competition_type;
 
+  /**
+   * The first location of the music competition.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var	string $first_location	The main (and possibly first) location of a competition.
+   */
   private $first_location;
+
+  /**
+   * The second location of the music competition.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var	string $second_location	The second (optional) location of a competition.
+   */
   private $second_location;
-  private $related_forms;
-  private $date_1;
-  private $date_2;
+
+  /**
+   * The related information of the music competition.
+   *
+   * This is an array that stores the following infomration regarding a competition:
+   * student_form_id
+   * teacher_form_id
+   * student_master_form_id
+   * teacher_master_form_id
+   * student_public_form_url
+   * teacher_public_form_url
+   * festival_chairman_email
+   *
+   * @since 1.0.0
+   * @access private
+   * @var	array $related_comp_info	An array that stored various info associated with a competition.
+   */
+  private $related_comp_info;
+
+  /**
+   * The first date of the music competition.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var	string $first_date	The beginning of the competition.
+   */
+  private $first_date;
+
+  /**
+   * The second date of the music competition.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var	string $second_date	The ending of the competition.
+   */
+  private $second_date;
 
   /**
    * The constructor used to instantiate a new scheduler object.
    *
-   * Using the parameters passed to the constructor, a new scheduler object will
-   * be created.
+   * A new scheduler object will be created depending on the type of competition
+   * specified through the parameter.
    *
-   * @param	int	$competition_type	The type of the competition.
+   * @param   int   $competition_type   The type of the competition.
    *
    * @since 1.0.0
    * @author KREW
@@ -92,11 +134,12 @@ class Scheduler {
       break;
     }
 
+    // provide default values for the rest of the competition attributes
     $this->first_location = null;
     $this->second_location = null;
-    $this->related_forms = null;
-    $this->date_1 = null;
-    $this->date_2 = null;
+    $this->related_comp_info = null;
+    $this->first_date = null;
+    $this->second_date = null;
   }
 
   /**
@@ -105,12 +148,13 @@ class Scheduler {
    * Using the parameters passed to this function, the current scheduler object
    * will be created using the structure of a regular competition.
    *
-   * @param	int	$num_time_blocks_sat	The number of time blocks on saturday.
+   * @param int	$num_time_blocks_sat	The number of time blocks on saturday.
    * @param	int	$num_time_blocks_sun	The number of time blocks on sunday.
-   * @param Array   $both_start_times   The array of start times for both days.
    * @param	int	$time_block_duration	The amount of time allocated to each timeblock.
-   * @param	int	$num_concurrent_sections_sat	The number of sections/timeblock on saturday.
-   * @param	int	$num_concurrent_sections_sun	The number of sections/timeblock on sunday.
+   * @param array   $sat_start_times   The array of start times for saturday.
+   * @param array   $sun_start_times   The array of start times for sunday.
+   * @param	int	$num_concurrent_sections_sat	The number of sections per timeblock on saturday.
+   * @param	int	$num_concurrent_sections_sun	The number of sections per timeblock on sunday.
    * @param	int	$num_master_sections_sat	The number of master-class sections on saturday.
    * @param	int	$num_master_sections_sun	The number of master-class sections on sunday.
    * @param int 	$song_threshold 	The amount of times a song can be played in this section.
@@ -118,6 +162,11 @@ class Scheduler {
    * @param	int 	$master_class_instructor_duration 	The time that each judge has to spend with students.
    * @param array   $saturday_rooms  The array of room assignments for saturday.
    * @param array   $sunday_rooms  The array of room assignments for sunday.
+   * @param string  $first_location   The first location of the competition.
+   * @param string  $second_location  The second location of the competition (optional).
+   * @param array   $related_comp_info  An array that stores various info about the competition.
+   * @param string  $first_date   The first day of competition.
+   * @param string  $second_date  The second day of competition.
    *
    * @since 1.0.0
    * @author KREW
@@ -138,9 +187,9 @@ class Scheduler {
                                             $sunday_rooms,
                                             $first_location,
                                             $second_location,
-                                            $related_forms,
-                                            $date_1,
-                                            $date_2) {
+                                            $related_comp_info,
+                                            $first_date,
+                                            $second_date) {
     // ensure the current scheduler object is for a regular competition
     if ($this->competition_type !== REGULAR_COMP) {
       return;
@@ -161,12 +210,21 @@ class Scheduler {
     wp_die();
     //*/
 
-    // assign location
+    // assign the location of the competition
     $this->first_location = $first_location;
-    $this->second_location = $second_location;
-    $this->related_forms = $related_forms;
-    $this->date_1 = $date_1;
-    $this->date_2 = $date_2;
+    if (is_null($second_location)) {
+      $this->second_location = $first_location;
+    }
+    else {
+      $this->second_location = $second_location;
+    }
+
+    // assign the related competition info
+    $this->related_comp_info = $related_comp_info;
+
+    // assign the dates of the competition
+    $this->first_date = $first_date;
+    $this->second_date = $second_date;
 
     // preprocess the rooms for saturday
     for ($i = 0; $i < $num_concurrent_sections_sat; $i++) {
@@ -208,19 +266,18 @@ class Scheduler {
       }
     }
 
-    //$start_time_index = 0;
-
     // create the time blocks with their concurrent sections for saturday
     $this->days[SAT] = new SplFixedArray($num_time_blocks_sat);
     for ($i = 0; $i < $num_time_blocks_sat; $i++) {
       $this->days[SAT][$i] = new TimeBlock($num_concurrent_sections_sat, $time_block_duration,
                                            $song_threshold, $group_by_level,
                                            $sat_start_times[$i],
-                                           'Saturday', $saturday_rooms);
+                                           'Saturday', $saturday_rooms,
+                                           $this->first_location,
+                                           $this->first_date);
     }
 
     // designate some of the sections on saturday for master-class students
-    //echo 'num_master_sections_sat: ' . $num_master_sections_sat . "<br>";
     while ($num_master_sections_sat > 0) {
       for ($i = ($num_time_blocks_sat - 1); $i >= ($num_time_blocks_sat / 2); $i--) {
         if ($num_master_sections_sat > 0 && $this->days[SAT][$i]->assign_section_to_master($master_class_instructor_duration)) {
@@ -235,7 +292,9 @@ class Scheduler {
       $this->days[SUN][$i] = new TimeBlock($num_concurrent_sections_sun, $time_block_duration,
                                            $song_threshold, $group_by_level,
                                            $sun_start_times[$i],
-                                           'Sunday', $sunday_rooms);
+                                           'Sunday', $sunday_rooms,
+                                           $this->second_location,
+                                           $this->second_date);
     }
 
     // designate some of the sections on sunday for master-class students
@@ -292,12 +351,12 @@ class Scheduler {
     switch ($day_preference) {
       case SAT:
         $preferred_day_num_time_blocks = $this->days[SAT]->getSize();
-        $student->add_date($this->date_1);
+        $student->set_date($this->first_date);
       break;
 
       case SUN:
         $preferred_day_num_time_blocks = $this->days[SUN]->getSize();
-        $student->add_date($this->date_2);
+        $student->set_date($this->second_date);
       break;
 
       case COMMAND:
@@ -316,7 +375,7 @@ class Scheduler {
     // Student was unable to be scheduled for their requested date
     if ($current_time_block > $preferred_day_num_time_blocks && !$scheduled) {
       // might want to try adding them on another competition day?
-      wp_die('Errored to line 209 -- student did not get scheduled in their day preference.');
+      wp_die("Student did not get scheduled in their day preference. Please readjust schedule paramaters.");
       return false;
     }
 
@@ -325,6 +384,7 @@ class Scheduler {
 
   /**
    * This function will print the schedule in a human-readable format.
+   * DELETE THIS FUNCTION
    */
   public function print_schedule() {
     echo "<br>";
@@ -363,17 +423,20 @@ class Scheduler {
    * @return	string	The generated HTML output
    */
   public function get_schedule_string($forRerendering) {
+    // if used for rerendering purposes, we do not need to include outermost <div id="schedule"> tag
     if ($forRerendering) {
       $schedule = '<div id="schedule-table">';
     }
     else {
       $schedule = '<div id="schedule"><div id="schedule-table">';
     }
+
+    // iterate through the internal structure of the scheduler and generate the HTML
     for ($i = 0; $i < count($this->days); $i++) {
       switch ($i) {
         case SAT:
           $schedule .= '<table style="float: left; width: 50%;">';
-          $schedule .= '<tr><th>Saturday (' . $this->date_1 . ')</th></tr>';
+          $schedule .= '<tr><th>Saturday (' . $this->first_date . ')</th></tr>';
           for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
@@ -386,7 +449,7 @@ class Scheduler {
 
         case SUN:
           $schedule .= '<tr><table style="float: right; width: 50%;">';
-          $schedule .= '<tr><th>Sunday (' . $this->date_2 . ')</th></tr>';
+          $schedule .= '<tr><th>Sunday (' . $this->second_date . ')</th></tr>';
           for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
             $schedule .= '<tr><td>';
             $schedule .= '<tr><th>';
@@ -401,6 +464,7 @@ class Scheduler {
       $schedule .= '</table>';
     }
 
+    // properly close the HTML
     if ($forRerendering) {
       $schedule .= "</div>";
     }
@@ -612,23 +676,24 @@ class Scheduler {
    */
   public function send_teachers_competition_info($comp_name) {
     // find the associated teacher master form
-    $teacher_master_form_id = $this->related_forms['teacher_master_form_id'];
+    $teacher_master_form_id = $this->related_comp_info['teacher_master_form_id'];
+    $fc_email = $this->related_comp_info['festival_chairman_email'];
     $SAT = 0;
     $SUN = 1;
 
-    // store all of the teacher emails in an associative array
+    // group all of the students in the scheduler object by teacher
     $teacher_emails_to_students = array();
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $this->days[$i][$j]->add_teacher_email($teacher_emails_to_students);
+        $this->days[$i][$j]->group_students_by_teacher_email($teacher_emails_to_students);
       }
     }
 
-    // for each of the emails that were found, find all students that registered under that teacher
+    // for each of the email-student relationships that were found, generate an email message
     foreach ($teacher_emails_to_students as $key => $value) {
       if (strpos($key, '@') !== false) {
+        // handle the location for the emails
         $sat_email_message = "Saturday Location: $this->first_location\n";
-
         if (is_null($this->second_location)) {
           $sun_email_message = "Sunday Location: $this->first_location\n";
         }
@@ -636,7 +701,7 @@ class Scheduler {
           $sun_email_message = "Sunday Location: $this->second_location\n";
         }
 
-        //$this->group_all_students_by_teacher_email($key, $teacher_emails_to_students[$key]);
+        // iterate through all of the students for a given email
         foreach ($value as $student) {
           // students who requested saturday
           if ($student->get_day_preference() === $SAT) {
@@ -649,14 +714,15 @@ class Scheduler {
           }
         }
 
-        // once the message has been generated, send the email to the teachers
+        // once the message has been generated, send the email to the teachers (per teacher basis)
         $email_message = $sat_email_message . "\n\n" . $sun_email_message;
+        $email_message .= "\n\nIf you have any questions, please contact the festival chair at $fc_email.";
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;
-          $headers = "From: " . $this->related_forms['festival_chairman_email'];
+          $headers = "From: " . $this->related_comp_info['festival_chairman_email'];
           if (!mail($key, $subject, $email_message, $headers)) {
-            /*wp_die("<h1>Emails to teachers regarding competition info failed to send.
-          	  Please try again.</h1>");*/
+            die("<h1>Emails to teachers regarding competition info failed to send.
+          	  Please try again.</h1>");
           }
         }
       }
@@ -664,9 +730,12 @@ class Scheduler {
   }
 
  /**
-  * Function for sending competition data to parents.
+  * This function will send comperition info to the parents.
   *
-  * @param 	String 		$comp_name 		The name of the competition.
+  * This function will initiate the the process of sending emails to all of the
+  * parents who have children participating in the competition.
+  *
+  * @param  String  $comp_name  The name of the competition.
   *
   * @return	void
   *
@@ -674,15 +743,16 @@ class Scheduler {
   * @author KREW
   */
   public function send_parents_competition_info($comp_name) {
-    // find the associated teacher master form
-    $student_master_form_id = $this->related_forms['student_master_form_id'];
-    $headers = "From: " . $this->related_forms['festival_chairman_email'];
-    $fc_email = $this->related_forms['festival_chairman_email'];
+    // obtain data that will need to be sent to the timeblocks and sections
+    $student_master_form_id = $this->related_comp_info['student_master_form_id'];
+    $headers = "From: " . $this->related_comp_info['festival_chairman_email'];
+    $fc_email = $this->related_comp_info['festival_chairman_email'];
 
     // iterate through all of the student entries
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        $this->days[$i][$j]->send_emails_to_parents($headers, $fc_email);
+        $this->days[$i][$j]->send_parents_competition_info($headers, $fc_email,
+                                                           $this->first_location, $this->second_location);
       }
     }
   }

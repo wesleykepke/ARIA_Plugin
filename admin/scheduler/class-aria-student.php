@@ -161,6 +161,22 @@ class Student {
    */
   private $room;
 
+  /**
+   * The location of where the student is performing.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $location   The location of the student's competition.
+   */
+  private $location;
+
+  /**
+   * The date where the student is performing.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $date   The date of the student's competition.
+   */
   private $date;
 
   /**
@@ -173,6 +189,8 @@ class Student {
    * @param	int $day_preference 	The day that the student would like to compete.
    * @param	int $skill_level 	The skill level that the student identifies as.
    * @param int	$play_time	The total play time that the student requires.
+   * @param string  $location The location for this timeblock.
+   * @param string  $date   The date of this timeblock.
    */
   function __construct($first_name, $last_name, $type, $day_preference,
                        $skill_level, $play_time, $teacher_email, $parent_email,
@@ -191,6 +209,7 @@ class Student {
     $this->day = null;
     $this->room = null;
     $this->teacher_name = $teacher_name;
+    $this->location = null;
     $this->date = null;
   }
 
@@ -207,21 +226,37 @@ class Student {
     $this->songs[] = $song_name;
   }
 
-  public function add_date($date) {
+  /**
+   * The function used to set the date of a student's performance.
+   *
+   * This function will simply assign the date that a student is scheduled to
+   * perform to a student object.
+   *
+   * @since 1.0.0
+   * @param	string	$date 	The date in which the student is scheduled to perform.
+   */
+  public function set_date($date) {
     $this->date = $date;
   }
 
   /**
-   * The function used to add a composer to the student's list of composers.
-   *
-   * This function will simply append the composer that is passed as a parameter
-   * to the students list of composers.
+   * The function will set the location of where a student is performing.
    *
    * @since 1.0.0
-   * @param string  $composer_name  The name of the composer.
+   * @param string   $location   The location of the student's competition.
    */
-  public function add_composer($composer_name) {
-    $this->composers[] = $composer_name;
+  public function set_location($location) {
+    $this->location = $location;
+  }
+
+  /**
+   * The function will set the day of the when the student is scheduled to perform.
+   *
+   * @since 1.0.0
+   * @param string   $day   The day of the week in which the student is scheduled to perform.
+   */
+  public function set_day($day) {
+    $this->day = $day;
   }
 
   /**
@@ -236,17 +271,6 @@ class Student {
   }
 
   /**
-   * The function will set the day of the when the student is registered
-   * to perform.
-   *
-   * @since 1.0.0
-   * @param string   $start_time   The start time of the current time block.
-   */
-  public function set_day($day) {
-    $this->day = $day;
-  }
-
-  /**
    * The function will set the room of the where the student is registered
    * to perform.
    *
@@ -255,6 +279,19 @@ class Student {
    */
   public function set_room($room) {
     $this->room = $room;
+  }
+
+  /**
+   * The function used to add a composer to the student's list of composers.
+   *
+   * This function will simply append the composer that is passed as a parameter
+   * to the students list of composers.
+   *
+   * @since 1.0.0
+   * @param string  $composer_name  The name of the composer.
+   */
+  public function add_composer($composer_name) {
+    $this->composers[] = $composer_name;
   }
 
   /**
@@ -340,16 +377,16 @@ class Student {
   }
 
   /**
-   * This function wihttp://php.net/manual/en/function.floatval.phpll construct the competition info on a per-student basis.
+   * This function will construct the competition info as a sentence on a per-student basis.
    *
-   * Using the information that is stored for each student, this function
-   * will construct and return a sentence that describes all of the stored
-   * information about a student for an upcoming competition.
+   * Using the information that is stored for each student, this function will
+   * construct and return a sentence that describes all of the stored information
+   * about a student for an upcoming competition.
    *
    * @since 1.0.0
-   * @return string Represents the student's competition information.
+   * @return  string  Represents the student's competition information.
    */
-  public function get_info_for_email($fc_email) {
+  public function get_info_for_email() {
     // process the student's songs
     $songs = null;
     if (count($this->songs) > 2) {
@@ -370,12 +407,12 @@ class Student {
     // construct and return the sentence of student information
     $first_name = ucwords(strtolower($this->first_name));
     $last_name = ucwords(strtolower($this->last_name));
-    $message = "$first_name $last_name will be playing $songs on $this->day ($this->date) at $this->start_time in room: $this->room.\n\n";
-    $message .= "If you have any questions, please contact the festival chair at $fc_email.";
+    $message = "$first_name $last_name will be playing $songs on $this->day"
+    . " ($this->date) at $this->start_time in room: $this->room.\n";
     return $message;
   }
 
-  /**http://php.net/manual/en/function.floatval.php
+  /**
    * The function will return an associative array that contains all of the
    * information associated with a student.
    *

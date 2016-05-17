@@ -64,6 +64,9 @@ class Scheduling_Algorithm {
     if (!empty($entry[$scheduling_field_mapping['location_field_2']])) {
       $second_location = $entry[$scheduling_field_mapping['location_field_2']];
     }
+    else {
+      $second_location = $entry[$scheduling_field_mapping['location_field']];
+    }
 
     // find the related forms of the competition that the user chose
     $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();

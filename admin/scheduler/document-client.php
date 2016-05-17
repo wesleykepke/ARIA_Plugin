@@ -9,8 +9,6 @@ function generate_documents() {
   // determine the file path of the associated competition
   $title = str_replace(' ', '_', $_POST['compName']);
   $file_path = dirname(__FILE__);
-  //echo "FILE PATH: $file_path \n";
-  //echo "SERVER: " . ABSPATH . "\n";
   $parsed_file_path = explode('/', $file_path);
   $file_path = "";
   $parsed_file_path_index = 0;
@@ -30,10 +28,9 @@ function generate_documents() {
 
     // get the section information from the scheduler
     $event_sections = $scheduler->get_section_info_for_doc_gen();
-    generate_all_documents($title, $_POST['compName'], $event_sections);
 
-    // iterate through the scheduler object and update the information with the new data
-    //echo "Documents have been generated.\n\n";
+    // generate all of the documents associated with the competition
+    generate_all_documents($title, $_POST['compName'], $event_sections);
   }
   else {
     //echo "Documents have not been generated because file doesn't exist";

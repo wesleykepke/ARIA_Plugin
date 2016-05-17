@@ -23,7 +23,7 @@ require_once("class-aria-student.php");
  * given section, the type of section that it is (traditional, master-class,
  * non-competitive, or command performance), the current time that it would
  * take to allow all students to play their pieces in a given section, and
- * finally, functionality for determining whether the given section is full
+ * also, functionality for determining whether the given section is full
  * or can accomodate more students.
  *
  * @package    ARIA
@@ -191,6 +191,24 @@ class Section {
   private $proctor;
 
   /**
+   * The date of the current section.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $date   The date when the current section is taking place.
+   */
+  private $date;
+
+  /**
+   * The location of the current section.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $location   The location of the current section.
+   */
+  private $location;
+
+  /**
    * The constructor used to instantiate a new section object.
    *
    * @since 1.0.0
@@ -200,11 +218,11 @@ class Section {
    * @param string   $start_time   The start time of the current time block.
    * @param string  $day  The day of the current time block.
    * @param string  $room   The name/number of the room for the current section.
+   * @param string  $location The location for this timeblock.
+   * @param string  $date   The date of this timeblock.
    */
-  function __construct($section_time_limit = DEFAULT_SECTION_TIME,
-                       $song_threshold = NO_SONG_THRESHOLD,
-                       $group_by_level = false,
-                       $start_time, $day, $room) {
+  function __construct($section_time_limit, $song_threshold, $group_by_level,
+                       $start_time, $day, $room, $location, $date) {
     $this->type = null;
     $this->students = array();
     $this->section_time_limit = $section_time_limit;
@@ -222,6 +240,8 @@ class Section {
     $this->start_time = $start_time;
     $this->day = $day;
     $this->room = $room;
+    $this->location = $location;
+    $this->date = $date;
     $this->judges = "TYPE IN JUDGE(S)";
     $this->proctor = "TYPE IN PROCTOR(S)";
     $this->door_guard = "TYPE IN DOOR GUARD";
@@ -251,6 +271,8 @@ class Section {
   /**
    * The function used to add judges to the section.
    *
+   * DELETE THIS!
+   *
    * @param  $judge  String  The name of the judge to add to the competition.
    *
    * @return void
@@ -261,6 +283,8 @@ class Section {
 
   /**
    * The function used to add proctors to the section.
+   *
+   * DELETE THIS!
    *
    * @param  $proctor  String  The name of the proctor to add to the competition.
    *
@@ -360,6 +384,8 @@ class Section {
     // add student to this section
     $student->set_start_time($this->start_time);
     $student->set_day($this->day);
+    $student->set_date($this->date);
+    $student->set_location($this->location);
     $student->set_room($this->room);
     $this->students[] = $student;
     if ($this->type === SECTION_MASTER) {
@@ -647,14 +673,20 @@ class Section {
    * Once the festival chairman has created a schedule for a competition and has
    * specified who will be the proctor, judge, etc. of a section, that information
    * will need to be added back into the scheduler. This function is responsible
-   * for accepting that new information and helping place it in the right place
-   * within a scheduler object.
+   * for accepting that new information and updating it in the current section
+   * object.
    *
    * @param   Array   $new_section_data   The array of new section information.
+   *
+   * @return  void
    */
   public function update_section_data($new_section_data) {
     // check if the section is EMPTY (from aria-public.js)
     if ($new_section_data[0] == "EMPTY") {
+      $this->start_time = "TYPE IN START TIME";
+      $this->judges = "TYPE IN JUDGE(S)";
+      $this->door_guard = "TYPE IN DOOR GUARD";
+      $this->proctor = "TYPE IN PROCTOR(S)";
       return;
     }
 
@@ -667,22 +699,27 @@ class Section {
 
     // assign the new data to the current section object
     if (!is_null($new_section_data)) {
+      // time
       if (array_key_exists($section_time, $new_section_data)) {
         $this->start_time = $new_section_data[$section_time];
       }
 
+      // room
       if (array_key_exists($section_room, $new_section_data)) {
         $this->room = $new_section_data[$section_room];
       }
 
+      // judges
       if (array_key_exists($section_judges, $new_section_data)) {
         $this->judges = $new_section_data[$section_judges];
       }
 
+      // proctor
       if (array_key_exists($section_proctor, $new_section_data)) {
         $this->proctor = $new_section_data[$section_proctor];
       }
 
+      // door guard
       if (array_key_exists($section_door_guard, $new_section_data)) {
         $this->door_guard = $new_section_data[$section_door_guard];
       }
@@ -708,7 +745,7 @@ class Section {
     if (!is_array($student_data) && $student_data == "EMPTY") {
       $this->current_time = 0;
       $this->skill_level = null;
-      //$this->room = $room;
+      //$this->room = ;
       $this->judges = "TYPE IN JUDGE(S)";
       $this->proctor = "TYPE IN PROCTOR(S)";
       $this->door_guard = "TYPE IN DOOR GUARD";
@@ -725,6 +762,11 @@ class Section {
       $this->current_time = 0;
       for ($i = 0; $i < count($this->students); $i++) {
         $this->current_time += $this->students[$i]->get_total_play_time();
+        $this->students[$i]->set_date($this->date);
+        $this->students[$i]->set_day($this->day);
+        $this->students[$i]->set_location($this->location);
+        $this->students[$i]->set_start_time($this->start_time);
+        $this->students[$i]->set_room($this->room);
       }
     }
   }
@@ -793,27 +835,35 @@ class Section {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public function send_emails_to_parents($headers, $fc_email) {
+  public function send_parents_competition_info($headers, $fc_email) {
     for ($i = 0; $i < count($this->students); $i++) {
       $parent_email = $this->students[$i]->get_parent_email();
-      $message = $this->students[$i]->get_info_for_email($fc_email);
+      $message = $this->students[$i]->get_info_for_email();
+      $message .= "\nThe location of the event is: $this->location.\n";
+      $message .= "If you have any questions, please contact the festival chair at $fc_email.";
       $subject = "NNMTA Performance Time";
       if (!mail($parent_email, $subject, $message, $headers)) {
-        /*
-        wp_die("<h1>Emails to parent regarding competition info failed to send.
+        die("<h1>Emails to parent regarding competition info failed to send.
           Please try again.</h1>");
-          */
       }
     }
   }
 
   /**
-   * This function will print the sections in a given time block object.
+   * This function will add students and teachers into an array.
+   *
+   * This function will iterate through all of the students in the section
+   * and add them as a value under their teacher's email (the key). If the
+   * teacher's email does not yet appear in the array, it will be added along
+   * with the first student found.
+   *
+   * @param   $teacher_emails_to_students   The array that maps teacher emails to students
+   *
+   * @return void
    */
-  public function add_teacher_email(&$teacher_emails_to_students) {
+  public function group_students_by_teacher_email(&$teacher_emails_to_students) {
     for ($i = 0; $i < count($this->students); $i++) {
       if (!in_array($this->students[$i]->get_teacher_email(), $teacher_emails_to_students)) {
-        //$teacher_emails_to_students[] = $this->students[$i]->get_teacher_email();
         $teacher_emails_to_students[$this->students[$i]->get_teacher_email()] = array();
       }
       $teacher_emails_to_students[$this->students[$i]->get_teacher_email()][] = $this->students[$i];
