@@ -26,7 +26,7 @@ function generateDocuments() {
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/document-client.php";
   jQuery.post(targetFunc, data, function(response) {
     window.location = response;
-     console.log("generateDocuments response>>", response);
+    alert("Generated documents have been downloaded as a zip file.");
   });
 }
 
@@ -44,6 +44,5 @@ function emailParentsAndTeachers() {
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/parent-teacher-email-client.php";
   jQuery.post(targetFunc, data, function(response) {
     alert("Emails were successfully sent.");
-    console.log("emailParentsAndTeachers response>>", response);
   });
 }

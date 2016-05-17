@@ -23,7 +23,7 @@ require_once("class-aria-student.php");
  * given section, the type of section that it is (traditional, master-class,
  * non-competitive, or command performance), the current time that it would
  * take to allow all students to play their pieces in a given section, and
- * finally, functionality for determining whether the given section is full
+ * also, functionality for determining whether the given section is full
  * or can accomodate more students.
  *
  * @package    ARIA
@@ -191,6 +191,24 @@ class Section {
   private $proctor;
 
   /**
+   * The date of the current section.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $date   The date when the current section is taking place.
+   */
+  private $date;
+
+  /**
+   * The location of the current section.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $location   The location of the current section.
+   */
+  private $location;
+
+  /**
    * The constructor used to instantiate a new section object.
    *
    * @since 1.0.0
@@ -200,11 +218,11 @@ class Section {
    * @param string   $start_time   The start time of the current time block.
    * @param string  $day  The day of the current time block.
    * @param string  $room   The name/number of the room for the current section.
+   * @param string  $location The location for this timeblock.
+   * @param string  $date   The date of this timeblock.
    */
-  function __construct($section_time_limit = DEFAULT_SECTION_TIME,
-                       $song_threshold = NO_SONG_THRESHOLD,
-                       $group_by_level = false,
-                       $start_time, $day, $room) {
+  function __construct($section_time_limit, $song_threshold, $group_by_level,
+                       $start_time, $day, $room, $location, $date) {
     $this->type = null;
     $this->students = array();
     $this->section_time_limit = $section_time_limit;
@@ -222,6 +240,8 @@ class Section {
     $this->start_time = $start_time;
     $this->day = $day;
     $this->room = $room;
+    $this->location = $location;
+    $this->date = $date;
     $this->judges = "TYPE IN JUDGE(S)";
     $this->proctor = "TYPE IN PROCTOR(S)";
     $this->door_guard = "TYPE IN DOOR GUARD";
@@ -251,6 +271,8 @@ class Section {
   /**
    * The function used to add judges to the section.
    *
+   * DELETE THIS!
+   *
    * @param  $judge  String  The name of the judge to add to the competition.
    *
    * @return void
@@ -261,6 +283,8 @@ class Section {
 
   /**
    * The function used to add proctors to the section.
+   *
+   * DELETE THIS!
    *
    * @param  $proctor  String  The name of the proctor to add to the competition.
    *
@@ -360,6 +384,8 @@ class Section {
     // add student to this section
     $student->set_start_time($this->start_time);
     $student->set_day($this->day);
+    $student->set_date($this->date);
+    $student->set_location($this->location);
     $student->set_room($this->room);
     $this->students[] = $student;
     if ($this->type === SECTION_MASTER) {
@@ -804,10 +830,11 @@ class Section {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public function send_emails_to_parents($headers, $fc_email) {
+  public function send_parents_competition_info($headers, $fc_email) {
     for ($i = 0; $i < count($this->students); $i++) {
       $parent_email = $this->students[$i]->get_parent_email();
       $message = $this->students[$i]->get_info_for_email();
+      $message .= "\nThe location of the event is: $this->location.\n";
       $message .= "If you have any questions, please contact the festival chair at $fc_email.";
       $subject = "NNMTA Performance Time";
       if (!mail($parent_email, $subject, $message, $headers)) {

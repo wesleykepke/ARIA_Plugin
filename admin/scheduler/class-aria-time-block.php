@@ -82,6 +82,24 @@ class TimeBlock {
   private $rooms;
 
   /**
+   * The location for this timeblock.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $location   The location specified by the festival chair.
+   */
+  private $location;
+
+  /**
+   * The date of this timeblock.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $date   The date specified by the festival chair.
+   */
+  private $date;
+
+  /**
    * The constructor used to instantiate a new time block object.
    *
    * @since 1.0.0
@@ -92,19 +110,23 @@ class TimeBlock {
    * @param string  $start_time   The start time of the current time block.
    * @param string  $day  The day of the current time block.
    * @param array   $rooms  The array of room names/numbers.
+   * @param string  $location The location for this timeblock.
+   * @param string  $date   The date of this timeblock.
    */
   function __construct($num_concurrent_sections, $time_block_duration,
                        $song_threshold, $group_by_level, $start_time,
-                       $day, $rooms) {
+                       $day, $rooms, $location, $date) {
     $this->num_concurrent_sections = $num_concurrent_sections;
     $this->sections = new SplFixedArray($num_concurrent_sections);
     $this->start_time = $start_time;
     $this->day = $day;
     $this->rooms = $rooms;
+    $this->location = $location;
+    $this->date = $date;
     for ($i = 0; $i < $num_concurrent_sections; $i++) {
       $this->sections[$i] = new Section($time_block_duration, $song_threshold,
                                         $group_by_level, $start_time, $day,
-                                        $rooms[$i]);
+                                        $rooms[$i], $location, $date);
     }
   }
 
@@ -343,9 +365,9 @@ class TimeBlock {
   /**
    * Function for sending emails to all parents of students within a section.
    */
-  public function send_emails_to_parents($headers, $fc_email) {
+  public function send_parents_competition_info($headers, $fc_email) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      $this->sections[$i]->send_emails_to_parents($headers, $fc_email);
+      $this->sections[$i]->send_parents_competition_info($headers, $fc_email);
     }
   }
 
