@@ -62,7 +62,7 @@ class Score_Input {
     Please note that you only need to select a song for students who receive either a
     'Superior with Distinction' or 'Superior' result.</h4>";
     $confirmation .= '<button id="saveScoresButton" type="button" onclick="sendScoresToServer()">Save Scores</button><br>';
-    $confirmation .= '<button id="printCommandStudentsButton" type="button" onclick="printCommandStudents()">Print List of SD/S Students</button><br>';
+    $confirmation .= '<button id="printTrophyListButton" type="button" onclick="printTrophyList()">Print Trophy List</button><br>';
     $confirmation .= $scheduler->get_score_input_string(false);
     return $confirmation;
   }
