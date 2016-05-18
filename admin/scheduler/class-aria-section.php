@@ -500,6 +500,47 @@ class Section {
   }
 
   /**
+   * This function will print the student and the info required for score input
+   * using HTML.
+   *
+   * This function will consoliate all information about a student that is necessary
+   * for score reporting and convert it to an HTML format so it can be displayed
+   * for the festival chairman to see and available to input score information.
+   *
+   * @param   Integer   $day  The integer constant for a given day
+   */
+  public function get_score_input_string($day) {
+    $schedule = '<ul>';
+
+    /*
+    switch ($day) {
+      case SAT:
+        $schedule .= '<ul id="sortable1" class="connectedSortable">';
+      break;
+
+      case SUN:
+          $schedule .= '<ul id="sortable2" class="connectedSortable">';
+      break;
+    }
+    */
+
+    for ($i = 0; $i < count($this->students); $i++) {
+      $student_name = $this->students[$i]->get_name();
+      $student_songs = $this->students[$i]->get_songs();
+      $schedule .= '<li class="ui-state-default">Student #';
+      $schedule .= strval($i + 1);
+      $schedule .= '<ul class="student-info">';
+      $schedule .= "<li>$student_name</li>";
+      $schedule .= "<li>$student_songs[0]</li>";
+      $schedule .= "<li>$student_songs[1]</li>";
+      $schedule .= '</ul></li>';
+    }
+
+    $schedule .= '</ul>';
+    return $schedule;
+  }
+
+  /**
    * This function will return a plethora of information regarding the current section.
    *
    * This function returns a formatted string that lists all of the information about a

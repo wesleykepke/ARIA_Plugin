@@ -60,7 +60,7 @@ class Score_Input {
     previously generated schedule of students.<br>After you input scores under each student,
     <b>you must click the 'Save Scores' button</b>, otherwise, the scores will be lost.</h4>";
     $confirmation .= '<button id="saveScoresButton" type="button" onclick="sendScoresToServer()">Save Scores</button><br>';
-    //$confirmation .= $scheduler->get_schedule_string(false);
+    $confirmation .= $scheduler->get_score_input_string(false);
     return $confirmation;
   }
 

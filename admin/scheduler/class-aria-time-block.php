@@ -233,6 +233,34 @@ class TimeBlock {
   }
 
   /**
+   * This function will help add to the schedule (the score input version) for the
+   * competition using HTML.
+   *
+   * Since the schedule is best demonstrated using HTML tables and lists, this
+   * function is responsible for creating the basic HTML structure. The creation
+   * of the inner HTML will be abstracted away to the timeblocks and sections. This function
+   * will be responsible for generating the HTML in such a way that the festival chairman
+   * will be able to select how the student performed and which song they will be
+   * choosing for command performance.
+   *
+   * @param   Integer   $day  The integer constant for a given day
+   *
+   * @return	string	The generated HTML output
+   */
+  public function get_score_input_string($day) {
+    $schedule = '';
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $schedule .= '<tr><th id="section-info" class="section">';
+      $schedule .= 'Section #';
+      $schedule .= strval($i + 1);
+      $schedule .= $this->sections[$i]->get_section_info();
+      $schedule .= $this->sections[$i]->get_score_input_string($day);
+      $schedule .= '</th></tr>';
+    }
+    return $schedule;
+  }
+
+  /**
    * This function will find all of the students participating in a timeblock
    * and group them by teacher email.
    *
