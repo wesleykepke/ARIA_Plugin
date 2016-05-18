@@ -530,9 +530,19 @@ class Section {
       $schedule .= '<li class="ui-state-default">Student #';
       $schedule .= strval($i + 1);
       $schedule .= '<ul class="student-info">';
-      $schedule .= "<li>$student_name</li>";
-      $schedule .= "<li>$student_songs[0]</li>";
-      $schedule .= "<li>$student_songs[1]</li>";
+      $schedule .= "<li>Student Name: $student_name</li>";
+      $schedule .= '<form>
+                      <input type="radio" name="result" value="SD">Superior with Distinction<br>
+                      <input type="radio" name="result" value="S">Superior<br>
+                      <input type="radio" name="result" value="E">Excellent<br>
+                      <input type="radio" name="result" value="NA">Needs Attention<br>
+                      <input type="radio" name="result" value="NC">Non-Competitive<br>
+                      <input type="radio" name="result" value="W">Withdrawn<br>
+                    </form>';
+      $schedule .= '<form>
+                      <input type="radio" name="song1" value="S1">$student_songs[0]<br>
+                      <input type="radio" name="song1" value="S1">$student_songs[0]<br>
+                    </form>';
       $schedule .= '</ul></li>';
     }
 
