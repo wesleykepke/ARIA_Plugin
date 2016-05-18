@@ -58,8 +58,11 @@ class Score_Input {
     $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $non_formatted_title . '</b></h1>';
     $confirmation .= "<h4>Congratulations! You have just successfully loaded a
     previously generated schedule of students.<br>After you input scores under each student,
-    <b>you must click the 'Save Scores' button</b>, otherwise, the scores will be lost.</h4>";
+    <b>you must click the 'Save Scores' button</b>, otherwise, the scores will be lost.
+    Please note that you only need to select a song for students who receive either a
+    'Superior with Distinction' or 'Superior' result.</h4>";
     $confirmation .= '<button id="saveScoresButton" type="button" onclick="sendScoresToServer()">Save Scores</button><br>';
+    $confirmation .= '<button id="printCommandStudentsButton" type="button" onclick="printCommandStudents()">Print List of SD/S Students</button><br>';
     $confirmation .= $scheduler->get_score_input_string(false);
     return $confirmation;
   }
