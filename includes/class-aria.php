@@ -126,14 +126,14 @@ class ARIA {
     require_once("class-aria-create-competition.php");
     require_once("class-aria-music.php");
     require_once("class-aria-form-hooks.php");
-      require_once("class-aria-teacher-upload.php");
-      require_once("class-aria-resend-email-form.php");
-      require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
-      require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
-      require_once(ARIA_ROOT . '/admin/scheduler/modify-schedule.php');
+    require_once("class-aria-teacher-upload.php");
+    require_once("class-aria-resend-email-form.php");
+    require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
+    require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
+    require_once(ARIA_ROOT . '/admin/scheduler/modify-schedule.php');
+    require_once(ARIA_ROOT . '/admin/scheduler/score-input.php');
 
     // Register all of the hooks needed by ARIA
-
 
     /*
     The action registered for this hook is for adding the form to create a new
@@ -179,6 +179,16 @@ class ARIA {
       'before_modify_schedule_render', 10, 2
     );
 
+		/*
+    The action registered for this hook updates the list of competitions that
+    can be selected on the score input page.
+    */
+    $this->loader->add_action(
+      'gform_enqueue_scripts',
+      'Score_Input',
+      'before_score_input_render', 10, 2
+    );
+
     /*
     The action registered for this hook updates the list of teachers that
     can be selected by students upon competition registration.
@@ -196,6 +206,15 @@ class ARIA {
       'gform_confirmation',
       'Scheduling_Algorithm',
       'aria_scheduling_algorithm', 10, 4
+    );
+
+    /*
+    The action registered for this hook is for adding score input functionality.
+    */
+    $this->loader->add_action(
+      'gform_confirmation',
+      'Score_Input',
+      'render_score_input_form', 10, 4
     );
 
 		/*
@@ -305,7 +324,7 @@ class ARIA {
       'aria_before_teacher_render', 10, 2);
 
 
-    $this->loader->add_action( 'gform_after_update_entry', 
+    $this->loader->add_action( 'gform_after_update_entry',
         'ARIA_Form_Hooks', 'aria_student_master_post_update_entry', 10, 3 );
 
 
