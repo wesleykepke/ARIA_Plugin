@@ -14,7 +14,6 @@ if (window.location.href.indexOf('nnmta.org') != -1) {
 /**
  * This function is responsible for sending the updated student scores to the
  * server and saving that information.
- *
  */
 function sendScoresToServer() {
   // determine the name of the competition
@@ -76,6 +75,7 @@ function sendScoresToServer() {
   }
 
   data.students = allStudents;
+  data.funcToCall = "update_scores";
   console.log(data);
 
   // define the location of PHP script
@@ -83,8 +83,24 @@ function sendScoresToServer() {
 
   // send the student scores to the server
   jQuery.post(targetFunc, data, function(response) {
-    //window.location = response;
-    console.log(response);
     alert("Scores were successfully saved.");
+  });
+}
+
+/**
+ * This function is responsible for printing a list of all students who will be
+ * performing in command performance.
+ */
+function printTrophyList() {
+  var data = {};
+  data.funcToCall = "print_trophy_list";
+
+  // define the location of PHP script
+  var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/score-input-client.php";
+
+  // get list of command performance from server
+  jQuery.post(targetFunc, data, function(response) {
+    alert("Downloading trophy list.");
+    console.log(response);
   });
 }
