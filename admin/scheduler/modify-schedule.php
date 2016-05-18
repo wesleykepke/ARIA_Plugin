@@ -40,7 +40,7 @@ class Modify_Schedule {
     $title = $entry[strval($field_mapping['active_competitions'])];
     $related_forms = ARIA_API::aria_find_related_forms_ids($title);
 
-    // locate that serialized version of the scheduler object
+    // locate the serialized version of the scheduler object
     $non_formatted_title = $title;
     $title = str_replace(' ', '_', $title);
     $file_path = ARIA_FILE_UPLOAD_LOC . $title . ".txt";
