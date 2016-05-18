@@ -685,7 +685,6 @@ class Scheduler {
     // iterate through all sections of the scheduler and update the students
     // that are assigned to each section
     $section_index = 0;
-    $new_timeblock_data = array();
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         $new_timeblock_students = array();
@@ -694,7 +693,6 @@ class Scheduler {
           $section_index++;
         }
 
-        array_push($new_timeblock_data, $new_timeblock_students);
         $this->days[$i][$j]->update_section_students($new_timeblock_students);
       }
     }
@@ -709,8 +707,13 @@ class Scheduler {
    *
    * @param   Array   $students   The array of score information to use in updating the students.
    */
-  public function update_student_scores() {
-            
+  public function update_student_scores($students) {
+    // search through the scheduler and update all of the students' scores
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->update_student_scores($students);
+      }
+    }
   }
 
   /**
@@ -810,7 +813,7 @@ class Scheduler {
   }
 
  /**
-  * This function will send comperition info to the parents.
+  * This function will send competition info to the parents.
   *
   * This function will initiate the the process of sending emails to all of the
   * parents who have children participating in the competition.
@@ -835,6 +838,21 @@ class Scheduler {
                                                            $this->first_location, $this->second_location);
       }
     }
+  }
+
+  /**
+   * This function will print a trophy list.
+   *
+   * The trophy list is all students who have received a score of "SD" or "S"
+   * in the regular competition.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function print_trophy_list() {
+
   }
 
  /**

@@ -532,8 +532,8 @@ class Section {
                     </li>';
       $schedule .= '<li>Student Songs:
                       <form class="student-song">
-                        <input class="my-indent" type="radio" name="song" value="S0">' . $student_songs[0] . '<br>
-                        <input class="my-indent" type="radio" name="song" value="S1">' . $student_songs[1] . '<br>
+                        <input class="my-indent" type="radio" name="song" value="0">' . $student_songs[0] . '<br>
+                        <input class="my-indent" type="radio" name="song" value="1">' . $student_songs[1] . '<br>
                       </form>
                     </li>';
       $schedule .= '</ul></li>';
@@ -799,6 +799,7 @@ class Section {
     // otherwise, update the list of students that are in the current section
     else {
       for ($i = 0; $i < count($student_data); $i++) {
+        echo "Adding " . $student_data[$i]->get_name() . " to a section<br>";
         array_push($this->students, $student_data[$i]);
       }
 
@@ -811,6 +812,42 @@ class Section {
         $this->students[$i]->set_location($this->location);
         $this->students[$i]->set_start_time($this->start_time);
         $this->students[$i]->set_room($this->room);
+      }
+    }
+
+    echo "Start date: $this->date <br>";
+    echo "Room number: $this->room <br>";
+    echo "Has this many students: " . count($this->students) . "<br>";
+  }
+
+  /**
+   * This function will update the scores of each student.
+   *
+   * Once the festival chairman has entered the scores for all of the students
+   * in a competition, those scores need to be updated in the respective student
+   * entries. This function is responsible for accomplishing that task. more
+   * specifically, this function will iterate through all students in the
+   * current section. If the incoming student's name and skill level match that
+   * of a student in the given section, this function will update that students
+   * results (of the competition).
+   *
+   * @param   Array   $student   The array of result information to use in updating the students.
+   */
+  public function update_student_scores($studentsInfo) {
+    for ($i = 0; $i < count($studentsInfo); $i++) {
+      $name = $studentsInfo[$i]['studentToFind'][0];
+      $skill_level = $studentsInfo[$i]['studentToFind'][1];
+      for ($j = 0; $j < count($this->students); $j++) {
+        $matching_names = ($this->students[$j]->get_name() == $name);
+        $matching_skill_levels = ($this->students[$j]->get_skill_level() == $skill_level);
+        if ($matching_names && $matching_skill_levels) {
+          echo "Updating scores<br>";
+          echo "Name: $name<br>";
+          $this->students[$j]->set_competition_result($studentsInfo[$i]['result']);
+          if ($result == 'SD' || $result == 'S') {
+            $this->students[$j]->set_command_performance_song($studentsInfo[$i]['song']);
+          }
+        }
       }
     }
   }

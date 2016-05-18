@@ -180,6 +180,27 @@ class Student {
   private $date;
 
   /**
+   * The result of the student's performance.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $result   Will either be SD, S, E, NA, NC, or W.
+   */
+  private $result;
+
+  /**
+   * The song that the tudent is performing for the command performance.
+   *
+   * If the student did not receive a score of SD or S, then this value will
+   * remain null.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $command_performance_song   The song the student is playing for command performance.
+   */
+  private $command_performance_song;
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
@@ -211,6 +232,8 @@ class Student {
     $this->teacher_name = $teacher_name;
     $this->location = null;
     $this->date = null;
+    $this->result = null;
+    $this->command_performance_song = null;
   }
 
   /**
@@ -279,6 +302,26 @@ class Student {
    */
   public function set_room($room) {
     $this->room = $room;
+  }
+
+  /**
+   * The function will set the result of the student's competition performance.
+   *
+   * @since 1.0.0
+   * @param string   $result  The result of how the student performed in competition.
+   */
+  public function set_competition_result($result) {
+    $this->result = $result;
+  }
+
+  /**
+   * The function will set which song the student is performing for command performance.
+   *
+   * @since 1.0.0
+   * @param int   $song  The song that the student will perform in command performance.
+   */
+  public function set_command_performance_song($song) {
+    $this->command_performance_song = $this->songs[intval($song)];
   }
 
   /**

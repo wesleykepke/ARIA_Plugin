@@ -253,7 +253,7 @@ class TimeBlock {
       $schedule .= '<tr><th id="section-info" class="section">';
       $schedule .= 'Section #';
       $schedule .= strval($i + 1);
-      $schedule .= $this->sections[$i]->get_section_info();
+      //$schedule .= $this->sections[$i]->get_section_info();
       $schedule .= $this->sections[$i]->get_score_input_string($day);
       $schedule .= '</th></tr>';
     }
@@ -362,6 +362,25 @@ class TimeBlock {
   public function update_section_students($student_data) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->update_section_students($student_data[$i]);
+    }
+  }
+
+  /**
+   * This function will update the scores of each student.
+   *
+   * Once the festival chairman has entered the scores for all of the students
+   * in a competition, those scores need to be updated in the respective student
+   * entries. This function is responsible for accomplishing that task. More
+   * specifically, given a particular student, this function will attempt to locate
+   * that student within a given timeblock and update their results. If no such
+   * student is found, then that student will not be updated.
+   *
+   * @param   Array   $students   The array of result information to use in updating the students.
+   */
+  public function update_student_scores($students) {
+    // search through the sections within the timeblock and update all of the student's scores
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->update_student_scores($students);
     }
   }
 
