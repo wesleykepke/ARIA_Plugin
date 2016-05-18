@@ -28,7 +28,7 @@ class Score_Input {
    * @since 1.0.0
    * @author KREW
    */
-  public static function render_schedule($confirmation, $form, $entry, $ajax) {
+  public static function render_score_input_form($confirmation, $form, $entry, $ajax) {
     // only perform processing if it's the score input form
     if (!array_key_exists('isScoreInputForm', $form)
         || !$form['isScoreInputForm']) {
@@ -57,11 +57,8 @@ class Score_Input {
     // print the schedule to the festival chairman
     $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $non_formatted_title . '</b></h1>';
     $confirmation .= "<h4>Congratulations! You have just successfully loaded a
-    previously generated schedule.<br>After you make modifications to the schedule
-    (adding judges, proctors, etc.), <b>you must click the 'Save Schedule' button</b>,
-    otherwise, your changes will be lost. The information you supply here will be used for
-    document generation.<br>For each section below, you can modify the start time,
-    the room, the judge(s), the proctor(s), and the door guard.</h4>";
+    previously generated schedule of students.<br>After you input scores under each student,
+    <b>you must click the 'Save Scores' button</b>, otherwise, the scores will be lost.</h4>";
     $confirmation .= '<button id="saveScoresButton" type="button" onclick="sendScoresToServer()">Save Scores</button><br>';
     //$confirmation .= $scheduler->get_schedule_string(false);
     return $confirmation;
@@ -103,7 +100,7 @@ class Score_Input {
 
     // add a default submission message for the doc. gen. form
     $successful_submission_message = 'Congratulations! You have just successfully' .
-    ' loaded the score input form';
+    ' loaded the score input form.';
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
@@ -153,7 +150,7 @@ class Score_Input {
    * @since 1.0.0
    * @author KREW
    */
-   public static function before_modify_schedule_render($form, $is_ajax) {
+   public static function before_score_input_render($form, $is_ajax) {
      // Only perform prepopulation if it's the modify schedule form
      if (!array_key_exists('isScoreInputForm', $form)
          || !$form['isScoreInputForm']) {
