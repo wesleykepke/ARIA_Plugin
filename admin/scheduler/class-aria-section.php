@@ -510,28 +510,30 @@ class Section {
    * @param   Integer   $day  The integer constant for a given day
    */
   public function get_score_input_string($day) {
-    $schedule = '<ul>';
+    $schedule = '<ul id="staticStudentInfo">';
     for ($i = 0; $i < count($this->students); $i++) {
       $student_name = $this->students[$i]->get_name();
+      $student_level = $this->students[$i]->get_skill_level();
       $student_songs = $this->students[$i]->get_songs();
       $schedule .= '<li class="ui-state-default">Student #';
       $schedule .= strval($i + 1);
       $schedule .= '<ul class="student-info">';
-      $schedule .= "<li>Student Name: $student_name</li>";
+      $schedule .= '<li class="student-name">' . "Student Name: $student_name" . '</li>';
+      $schedule .= '<li class="student-level">' . "Student Level: $student_level" . '</li>';
       $schedule .= '<li>Student Result:
-                      <form>
-                        <input type="radio" name="result" value="SD">Superior with Distinction<br>
-                        <input type="radio" name="result" value="S">Superior<br>
-                        <input type="radio" name="result" value="E">Excellent<br>
-                        <input type="radio" name="result" value="NA">Needs Attention<br>
-                        <input type="radio" name="result" value="NC">Non-Competitive<br>
-                        <input type="radio" name="result" value="W">Withdrawn<br>
+                      <form class="student-result">
+                        <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                        <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                        <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                        <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                        <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                        <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
                       </form>
                     </li>';
       $schedule .= '<li>Student Songs:
-                      <form>
-                        <input type="radio" name="song" value="S0">' . $student_songs[0] . '<br>
-                        <input type="radio" name="song" value="S1">' . $student_songs[1] . '<br>
+                      <form class="student-song">
+                        <input class="my-indent" type="radio" name="song" value="S0">' . $student_songs[0] . '<br>
+                        <input class="my-indent" type="radio" name="song" value="S1">' . $student_songs[1] . '<br>
                       </form>
                     </li>';
       $schedule .= '</ul></li>';
@@ -831,14 +833,9 @@ class Section {
       return null;
     }
 
-    //echo 'STUDENT TO FIND: ';
-    //echo print_r($student_to_find);
-
     // named variables to help offset into student object
     $name = 0;
     $skill_level = 1;
-    $song_1 = 2;
-    $song_2 = 3;
 
     // search through all students in the given section
     $student_object = null;
@@ -846,28 +843,9 @@ class Section {
       $single_student = $this->students[$i];
       $matching_names = ($student_to_find[$name] == $single_student->get_name());
       $matching_skill_levels = ($student_to_find[$skill_level] == $single_student->get_skill_level());
-      //$single_student_songs = $single_student->get_songs();
-      //$matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
-      //$matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
-
-      //if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
       if ($matching_names && $matching_skill_levels) {
         return $single_student;
       }
-
-      /*
-
-      $single_student_songs = $single_student->get_songs();
-      $matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
-      $matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
-
-      // if all of the information matches, return that student
-      if ($matching_names && $matching_skill_levels &&
-          $matching_song1 && $matching_song2) {
-            //echo "found student";
-        return $student_object;
-      }
-      */
     }
 
     // if the student doesn't exist in the section, return NULL

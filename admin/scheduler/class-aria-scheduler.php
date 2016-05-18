@@ -701,6 +701,19 @@ class Scheduler {
   }
 
   /**
+   * This function will update the scores of each student.
+   *
+   * Once the festival chairman has entered the scores for all of the students
+   * in a competition, those scores need to be updated in the respective student
+   * entries. This function is responsible for accomplishing that task.
+   *
+   * @param   Array   $students   The array of score information to use in updating the students.
+   */
+  public function update_student_scores() {
+            
+  }
+
+  /**
    * This function will search through the current scheduler object and locate
    * the student entry.
    *
