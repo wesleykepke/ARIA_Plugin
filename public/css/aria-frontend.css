@@ -2,10 +2,15 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
-#sortable1, #sortable2 {
+
+#sortable1, #sortable2, #staticStudentInfo {
   border: 2px solid;
   list-style-type: none;
   padding: 0px;
+}
+
+.my-indent {
+  margin-left: 2em;
 }
 
 .ui-state-default {
