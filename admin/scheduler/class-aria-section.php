@@ -511,19 +511,6 @@ class Section {
    */
   public function get_score_input_string($day) {
     $schedule = '<ul>';
-
-    /*
-    switch ($day) {
-      case SAT:
-        $schedule .= '<ul id="sortable1" class="connectedSortable">';
-      break;
-
-      case SUN:
-          $schedule .= '<ul id="sortable2" class="connectedSortable">';
-      break;
-    }
-    */
-
     for ($i = 0; $i < count($this->students); $i++) {
       $student_name = $this->students[$i]->get_name();
       $student_songs = $this->students[$i]->get_songs();
@@ -543,8 +530,8 @@ class Section {
                     </li>';
       $schedule .= '<li>Student Songs:
                       <form>
-                        <input type="radio" name="song0" value="S0">' . $student_songs[0] . '<br>
-                        <input type="radio" name="song1" value="S1">' . $student_songs[1] . '<br>
+                        <input type="radio" name="song" value="S0">' . $student_songs[0] . '<br>
+                        <input type="radio" name="song" value="S1">' . $student_songs[1] . '<br>
                       </form>
                     </li>';
       $schedule .= '</ul></li>';
