@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The modify schedule page.
+ * The score input page.
  *
  * @link       http://example.com
  * @since      1.0.0
@@ -10,15 +10,15 @@
  * @subpackage ARIA/admin
  */
 
-class Modify_Schedule {
+class Score_Input {
 
   /**
    * This function handles processing after the festival chairman has elected to
-   * modify the schedule for a given competition.
+   * input scores for a given competition.
    *
-   * This function will present the user with the schedule of whatever competition
-   * they select (provided the scheduler has already ran for the competition they
-   * select).
+   * This function will present the user with a score input form of whatever
+   * competition they select (provided the scheduler has already ran for the
+   * competition they select).
    *
    * @param 	Entry Object  $entry  The entry that was just submitted.
    * @param 	Form Object   $form   The form used to submit entries.
@@ -28,15 +28,15 @@ class Modify_Schedule {
    * @since 1.0.0
    * @author KREW
    */
-  public static function render_schedule($confirmation, $form, $entry, $ajax) {
-    // only perform processing if it's the modify schedule form
-    if (!array_key_exists('isModifyScheduleForm', $form)
-        || !$form['isModifyScheduleForm']) {
+  public static function render_score_input_form($confirmation, $form, $entry, $ajax) {
+    // only perform processing if it's the score input form
+    if (!array_key_exists('isScoreInputForm', $form)
+        || !$form['isScoreInputForm']) {
       return $confirmation;
     }
 
     // determine which competition to render the schedule for
-    $field_mapping = self::modify_schedule_field_id_array();
+    $field_mapping = self::score_input_field_id_array();
     $title = $entry[strval($field_mapping['active_competitions'])];
     $related_forms = ARIA_API::aria_find_related_forms_ids($title);
 
@@ -57,39 +57,35 @@ class Modify_Schedule {
     // print the schedule to the festival chairman
     $confirmation .= '<h1 id="comp-name"><b id="comp-name-bold">' . $non_formatted_title . '</b></h1>';
     $confirmation .= "<h4>Congratulations! You have just successfully loaded a
-    previously generated schedule.<br>After you make modifications to the schedule
-    (adding judges, proctors, etc.), <b>you must click the 'Save Schedule' button</b>,
-    otherwise, your changes will be lost. The information you supply here will be used for
-    document generation.<br>For each section below, you can modify the start time,
-    the room, the judge(s), the proctor(s), and the door guard.</h4>";
-    $confirmation .= '<button id="genDocumentsButton" type="button" onclick="generateDocuments()">Generate Documents</button><br>';
-    $confirmation .= '<button id="emailParentsAndTeachersButton" type="button" onclick="emailParentsAndTeachers()">Email Parents and Teachers</button><br>';
-    $confirmation .= '<button id="saveScheduleButton" type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
-    $confirmation .= $scheduler->get_schedule_string(false);
+    previously generated schedule of students.<br>After you input scores under each student,
+    <b>you must click the 'Save Scores' button</b>, otherwise, the scores will be lost.</h4>";
+    $confirmation .= '<button id="saveScoresButton" type="button" onclick="sendScoresToServer()">Save Scores</button><br>';
+    //$confirmation .= $scheduler->get_schedule_string(false);
     return $confirmation;
   }
 
   /**
-   * This function creates the modify schedule page.
+   * This function creates the score input page.
    *
    * This function is responsible for creating and initializing all of the fields
-   * that are required in the page for modifying the schedule.
+   * that are required in the page for saving scores.
    *
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_create_modify_schedule_page() {
+  public static function aria_create_score_input_page() {
     // prevent form from being created twice
-    if (ARIA_API::aria_get_modify_schedule_form_id() !== -1) {
+    if (ARIA_API::aria_get_score_input_form_id() !== -1) {
     	return;
     }
 
-    $field_mapping = self::modify_schedule_field_id_array();
-    $form = new GF_Form(MOD_SCHEDULE_FORM_NAME, "");
+    $field_mapping = self::score_input_field_id_array();
+    $form = new GF_Form(SCORE_INPUT_FORM_NAME, "");
     $form->description = "<h4>Please select from the drop-down menu the competition
-    that you would like to modify the schedule for. Once you click on 'Submit',
-    the previously saved schedule will be shown. If you have yet to run the scheduler
-    for the competition you select, you must do so before using this page.</h4>";
+    that you would like to input scores for. Once you click on 'Submit',
+    the previously input scores will be shown (or will be empty if no scores have
+    been added yet). If you have yet to run the scheduler for the competition you
+    select, you must do so before using this page.</h4>";
 
     // drop-down menu of active competitions
     $active_competitions_field = new GF_Field_Select();
@@ -97,20 +93,20 @@ class Modify_Schedule {
     $active_competitions_field->id = $field_mapping['active_competitions'];
     $active_competitions_field->isRequired = false;
     $active_competitions_field->description = "Please select the name of the" .
-    " competition that you would like to view the schedule for.";
+    " competition that you would like to input scores for.";
     $active_competitions_field->descriptionPlacement = "above";
     $active_competitions_field->choices = array("Select from below");
     $form->fields[] = $active_competitions_field;
 
     // add a default submission message for the doc. gen. form
     $successful_submission_message = 'Congratulations! You have just successfully' .
-    ' loaded a previously saved competition schedule.';
+    ' loaded the score input form.';
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
     // identify form as the scheduling page
     $form_arr = $form->createFormArray();
-    $form_arr['isModifyScheduleForm'] = true;
+    $form_arr['isScoreInputForm'] = true;
 
     // add form to dashboard
     $form_id = GFAPI::add_form($form_arr);
@@ -118,34 +114,34 @@ class Modify_Schedule {
       wp_die($form_id->get_error_message());
     }
     else {
-      $doc_gen_url = ARIA_API::aria_publish_form(MOD_SCHEDULE_FORM_NAME,
+      $doc_gen_url = ARIA_API::aria_publish_form(SCORE_INPUT_FORM_NAME,
                                                  $form_id, CHAIRMAN_PASS, true);
     }
   }
 
   /**
-   * Returns an associative array for field mappings of modify schedule form.
+   * Returns an associative array for field mappings of score input form.
    *
    * This function returns an array that maps all of the names of the
-   * fields in the modify schedule form to a unique integer so that they can be
+   * fields in the score input form to a unique integer so that they can be
    * referenced. Moreover, this array helps prevent the case where the
    * names of these fields are modified from the dashboard.
    *
    * @since 1.0.0
    * @author KREW
    */
-  private static function modify_schedule_field_id_array() {
+  private static function score_input_field_id_array() {
     return array(
       'active_competitions' => 1
     );
   }
 
   /**
-   * This function will pre-populate the drop-down menu on the scheduling
+   * This function will pre-populate the drop-down menu on the score input
    * page with all of the active competitions.
    *
-   * Whenever the festival chairman visits the page that is used for adding a
-   * teacher, that page needs to have the drop-down menu of active competitions
+   * Whenever the festival chairman visits the page that is used for adding student
+   * scores, that page needs to have the drop-down menu of active competitions
    * pre-populated. This function is responsible for accomplishing that goal.
    *
    * @param $form 	Form Object 	The current form object.
@@ -154,10 +150,10 @@ class Modify_Schedule {
    * @since 1.0.0
    * @author KREW
    */
-   public static function before_modify_schedule_render($form, $is_ajax) {
+   public static function before_score_input_render($form, $is_ajax) {
      // Only perform prepopulation if it's the modify schedule form
-     if (!array_key_exists('isModifyScheduleForm', $form)
-         || !$form['isModifyScheduleForm']) {
+     if (!array_key_exists('isScoreInputForm', $form)
+         || !$form['isScoreInputForm']) {
            return;
      }
 
@@ -174,7 +170,7 @@ class Modify_Schedule {
        unset($single_competition);
      }
 
-     $field_mapping = self::modify_schedule_field_id_array();
+     $field_mapping = self::score_input_field_id_array();
      $search_field = $field_mapping['active_competitions'];
      $name_field = ARIA_API::aria_find_field_by_id($form['fields'], $search_field);
      $form['fields'][$name_field]->choices = $competition_names;

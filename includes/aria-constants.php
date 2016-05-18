@@ -27,6 +27,7 @@ define("NNMTA_MUSIC_DATABASE_NAME", "NNMTA: Music Database");
 define("TEACHER_UPLOAD_FORM_NAME", "ARIA: Add Teacher");
 define("SCHEDULER_FORM_NAME", "ARIA: Schedule a Competition");
 define("MOD_SCHEDULE_FORM_NAME", "ARIA: Modify a Schedule");
+define("SCORE_INPUT_FORM_NAME", "ARIA: Input Student Scores"); 
 define("DOC_GEN_FORM_NAME", "ARIA: Generate Competition Documents");
 define("CSV_UPLOAD_FIELD_NAME", "CSV Music File");
 define("CSV_TEACHER_FIELD_NAME", "CSV Teacher File");
