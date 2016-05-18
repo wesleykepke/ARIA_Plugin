@@ -476,6 +476,73 @@ class Scheduler {
   }
 
   /**
+   * This function will create the schedule (score input version) for the competition using HTML.
+   *
+   * Since the schedule is best demonstrated using HTML tables and lists, this
+   * function is responsible for creating the basic HTML structure. The creation
+   * of the inner HTML will be abstracted away to the timeblocks and sections. This function
+   * will be responsible for generating the HTML in such a way that the festival chairman
+   * will be able to select how the student performed and which song they will be
+   * choosing for command performance.
+   *
+   * @param   $forRerendering   Boolean   Determines if this HTML is for rerendering purposes.
+   *
+   * @return	string	The generated HTML output
+   */
+  public function get_score_input_string($forRerendering) {
+    // if used for rerendering purposes, we do not need to include outermost <div id="schedule"> tag
+    if ($forRerendering) {
+      $schedule = '<div id="schedule-table">';
+    }
+    else {
+      $schedule = '<div id="schedule"><div id="schedule-table">';
+    }
+
+    // iterate through the internal structure of the scheduler and generate the HTML
+    for ($i = 0; $i < count($this->days); $i++) {
+      switch ($i) {
+        case SAT:
+          $schedule .= '<table style="float: left; width: 50%;">';
+          $schedule .= '<tr><th>Saturday (' . $this->first_date . ')</th></tr>';
+          for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+            $schedule .= '<tr><td>';
+            $schedule .= '<tr><th>';
+            $schedule .= 'Timeblock # ' . strval($j + 1);
+            $schedule .= $this->days[$i][$j]->get_score_input_string(SAT);
+            $schedule .= '</th></tr>';
+            $schedule .= '</td></tr>';
+          }
+        break;
+
+        case SUN:
+          $schedule .= '<tr><table style="float: right; width: 50%;">';
+          $schedule .= '<tr><th>Sunday (' . $this->second_date . ')</th></tr>';
+          for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+            $schedule .= '<tr><td>';
+            $schedule .= '<tr><th>';
+            $schedule .= 'Timeblock # ' . strval($j + 1);
+            $schedule .= $this->days[$i][$j]->get_score_input_string(SUN);
+            $schedule .= '</th></tr>';
+            $schedule .= '</td></tr>';
+          }
+        break;
+      }
+
+      $schedule .= '</table>';
+    }
+
+    // properly close the HTML
+    if ($forRerendering) {
+      $schedule .= "</div>";
+    }
+    else {
+      $schedule .= "</div></div>";
+    }
+
+    return $schedule;
+  }
+
+  /**
    * This function will find all of the students participating in a competition
    * and group them by teacher email.
    *
