@@ -531,18 +531,22 @@ class Section {
       $schedule .= strval($i + 1);
       $schedule .= '<ul class="student-info">';
       $schedule .= "<li>Student Name: $student_name</li>";
-      $schedule .= '<form>
-                      <input type="radio" name="result" value="SD">Superior with Distinction<br>
-                      <input type="radio" name="result" value="S">Superior<br>
-                      <input type="radio" name="result" value="E">Excellent<br>
-                      <input type="radio" name="result" value="NA">Needs Attention<br>
-                      <input type="radio" name="result" value="NC">Non-Competitive<br>
-                      <input type="radio" name="result" value="W">Withdrawn<br>
-                    </form>';
-      $schedule .= '<form>
-                      <input type="radio" name="song1" value="S1">$student_songs[0]<br>
-                      <input type="radio" name="song1" value="S1">$student_songs[0]<br>
-                    </form>';
+      $schedule .= '<li>Student Result:
+                      <form>
+                        <input type="radio" name="result" value="SD">Superior with Distinction<br>
+                        <input type="radio" name="result" value="S">Superior<br>
+                        <input type="radio" name="result" value="E">Excellent<br>
+                        <input type="radio" name="result" value="NA">Needs Attention<br>
+                        <input type="radio" name="result" value="NC">Non-Competitive<br>
+                        <input type="radio" name="result" value="W">Withdrawn<br>
+                      </form>
+                    </li>';
+      $schedule .= '<li>Student Songs:
+                      <form>
+                        <input type="radio" name="song0" value="S0">' . $student_songs[0] . '<br>
+                        <input type="radio" name="song1" value="S1">' . $student_songs[1] . '<br>
+                      </form>
+                    </li>';
       $schedule .= '</ul></li>';
     }
 
