@@ -88,8 +88,8 @@ function sendScoresToServer() {
 }
 
 /**
- * This function is responsible for printing a list of all students who will be
- * performing in command performance.
+ * This function is responsible for downloading a list of all students who will
+ * be getting trophies!
  */
 function getTrophyList() {
   var data = {};
@@ -100,9 +100,29 @@ function getTrophyList() {
   // define the location of PHP script
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/score-input-client.php";
 
-  // get list of command performance from server
+  // get list of students who need trophies!
   jQuery.post(targetFunc, data, function(response) {
     window.location = host + "/" + response;
     alert("Downloading trophy list.");
+  });
+}
+
+/**
+ * This function is responsible for downloading a list of all students who will be
+ * performing in command performance.
+ */
+function getCommandStudents() {
+  var data = {};
+  var compName = document.getElementById("comp-name-bold").innerHTML;
+  data.funcToCall = "get_command_students";
+  data.compName = compName;
+
+  // define the location of PHP script
+  var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/score-input-client.php";
+
+  // get list of command performance from server
+  jQuery.post(targetFunc, data, function(response) {
+    window.location = host + "/" + response;
+    alert("Downloading list of students participating in command performance.");
   });
 }
