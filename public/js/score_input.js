@@ -91,16 +91,18 @@ function sendScoresToServer() {
  * This function is responsible for printing a list of all students who will be
  * performing in command performance.
  */
-function printTrophyList() {
+function getTrophyList() {
   var data = {};
-  data.funcToCall = "print_trophy_list";
+  var compName = document.getElementById("comp-name-bold").innerHTML;
+  data.funcToCall = "get_trophy_list";
+  data.compName = compName;
 
   // define the location of PHP script
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/score-input-client.php";
 
   // get list of command performance from server
   jQuery.post(targetFunc, data, function(response) {
+    window.location = host + "/" + response;
     alert("Downloading trophy list.");
-    console.log(response);
   });
 }
