@@ -419,6 +419,44 @@ class TimeBlock {
   }
 
   /**
+   * This function will help create the trophy list.
+   *
+   * The trophy list is all students who have received a score of "SD" or "S"
+   * in the regular competition.
+   *
+   * @param   string  $trophy_list  The list of "SD" and "S" students.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function create_trophy_list(&$trophy_list) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->create_trophy_list($trophy_list);
+    }
+  }
+
+  /**
+   * This function will help create a list of all students who will be in the command performance.
+   *
+   * Students who are participating in command performance will have received a
+   * score of "SD" or "S".
+   *
+   * @param   string  $student_list  The name of the students in the command performance.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function get_command_students(&$student_list) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->get_command_students($student_list);
+    }
+  }
+
+  /**
    * The destructor used when a time block object is destroyed.
    *
    * @since 1.0.0

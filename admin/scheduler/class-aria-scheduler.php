@@ -841,18 +841,53 @@ class Scheduler {
   }
 
   /**
-   * This function will print a trophy list.
+   * This function will create a trophy list.
    *
    * The trophy list is all students who have received a score of "SD" or "S"
    * in the regular competition.
+   *
+   * @param   string  $file_name  The name of the trophy list text file.
    *
    * @return	void
    *
    * @since 1.0.0
    * @author KREW
    */
-  public function print_trophy_list() {
+  public function create_trophy_list($file_name) {
+    $file = fopen($file_name, "w");
+    $trophy_list = "";
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->create_trophy_list($trophy_list);
+      }
+    }
+    fwrite($file, $trophy_list);
+    fclose($file);
+  }
 
+  /**
+   * This function will create a list of all students who will be in the command performance.
+   *
+   * Students who are participating in command performance will have received a
+   * score of "SD" or "S".
+   *
+   * @param   string  $file_name  The name of the command performance list file.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function get_command_students($file_name) {
+    $file = fopen($file_name, "w");
+    $student_list = "";
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->get_command_students($student_list);
+      }
+    }
+    fwrite($file, $student_list);
+    fclose($file);
   }
 
  /**

@@ -201,6 +201,18 @@ class Student {
   private $command_performance_song;
 
   /**
+   * The composer of the song that the tudent is performing for the command performance.
+   *
+   * If the student did not receive a score of SD or S, then this value will
+   * remain null.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $command_performance_song_composer   The composer of the song the student is playing for command performance.
+   */
+  private $command_performance_song_composer;
+
+  /**
    * The constructor used to instantiate a new student object.
    *
    * @since 1.0.0
@@ -234,6 +246,7 @@ class Student {
     $this->date = null;
     $this->result = null;
     $this->command_performance_song = null;
+    $this->command_performance_song_composer = null;
   }
 
   /**
@@ -322,6 +335,7 @@ class Student {
    */
   public function set_command_performance_song($song) {
     $this->command_performance_song = $this->songs[intval($song)];
+    $this->command_performance_song_composer = $this->composers[intval($song)];
   }
 
   /**
@@ -366,6 +380,36 @@ class Student {
    */
   public function get_day_preference() {
     return $this->day_preference;
+  }
+
+  /**
+   * The function will return the result of the student's performance.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's result on competition day.
+   */
+  public function get_competition_result() {
+    return $this->result;
+  }
+
+  /**
+   * The function will return the song that the student is playing in command performance.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's selected song for command performance.
+   */
+  public function get_command_performance_song() {
+    return $this->command_performance_song;
+  }
+
+  /**
+   * The function will return the composer of the song that the student is playing in command performance.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's selected song's composer for command performance.
+   */
+  public function get_command_performance_song_composer() {
+    return $this->command_performance_song_composer;
   }
 
   /**

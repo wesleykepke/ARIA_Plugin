@@ -928,6 +928,58 @@ class Section {
   }
 
   /**
+   * This function will help create the trophy list.
+   *
+   * The trophy list is all students who have received a score of "SD" or "S"
+   * in the regular competition.
+   *
+   * @param   string  $trophy_list  The list of "SD" and "S" students.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function create_trophy_list(&$trophy_list) {
+    for ($i = 0; $i < count($this->students); $i++) {
+      $result = $this->students[$i]->get_competition_result();
+      if ($result == 'SD' || $result == 'S') {
+        $trophy_list .= "Student Name: " . $this->students[$i]->get_name() . "\n";
+        $trophy_list .= "Student Skill Level: " . $this->students[$i]->get_skill_level() . "\n";
+        $trophy_list .= "Student Rating: " . $result . "\n\n";
+      }
+    }
+  }
+
+  /**
+   * This function will help create a list of all students who will be in the command performance.
+   *
+   * Students who are participating in command performance will have received a
+   * score of "SD" or "S".
+   *
+   * @param   string  $student_list  The name of the students in the command performance.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function get_command_students(&$student_list) {
+    for ($i = 0; $i < count($this->students); $i++) {
+      $result = $this->students[$i]->get_competition_result();
+      if ($result == 'SD' || $result == 'S') {
+        $student_list .= "Student's Name: " . $this->students[$i]->get_name() . "\n";
+        $student_list .= "Student's Skill Level: " . $this->students[$i]->get_skill_level() . "\n";
+        $student_list .= "Student's Age: " . "DONT HAVE YET" . "\n";
+        $student_list .= "Student's Rating: " . $result . "\n";
+        $student_list .= "Student's Command Performance Song: " . $this->students[$i]->get_command_performance_song() . "\n";
+        $student_list .= "Student's Command Performance Composer: " . $this->students[$i]->get_command_performance_song_composer() . "\n";
+        $student_list .= "Student's Preferred Time: " . "DONT HAVE YET" . "\n\n";
+      }
+    }
+  }
+
+  /**
    * The destructor used when a section object is destroyed.
    *
    * @since 1.0.0
