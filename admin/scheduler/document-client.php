@@ -18,9 +18,6 @@ function generate_documents() {
   }
   $file_path .= "uploads/$title.txt";
 
-  ////echo print_r($_POST);
-  ////echo "File path: $file_path <br>";
-
   // read the serialized Scheduler object from file
   if (file_exists($file_path)) {
     $scheduler = file_get_contents($file_path);
@@ -466,20 +463,6 @@ function download_documents($event_name, $files) {
     echo "Zip failed to open.";
   }
 
-  //header('Content-Description: File Transfer');
-  /*
-  header("Pragma: public");
-  header("Expires: 0");
-  header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-  header("Content-Type: application/force-download");
-  header("Content-Type: application/octet-stream");
-  header("Content-Type: application/download");
-  header("Content-Disposition: attachment; filename=\"".$zipname."\"");
-  header("Content-Transfer-Encoding: binary");
-  header("Content-Length: ".filesize($zipname));
-  readfile($zipname);
-  */
-  //$zipname = str_replace("'\'", "", $zipname);
   echo '/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_generated_documents.zip';
 }
 
