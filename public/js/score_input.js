@@ -84,6 +84,10 @@ function sendScoresToServer() {
   // send the student scores to the server
   jQuery.post(targetFunc, data, function(response) {
     alert("Scores were successfully saved.");
+
+    // rerender the schedule with the updated HTML
+    document.getElementById("schedule").innerHTML = '';
+    document.getElementById("schedule").innerHTML = response;
   });
 }
 
