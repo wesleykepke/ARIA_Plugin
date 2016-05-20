@@ -186,7 +186,7 @@ class Student {
    * @access private
    * @var   string   $result   Will either be SD, S, E, NA, NC, or W.
    */
-  private $result;
+  private $competition_result;
 
   /**
    * The song that the tudent is performing for the command performance.
@@ -211,6 +211,33 @@ class Student {
    * @var   string   $command_performance_song_composer   The composer of the song the student is playing for command performance.
    */
   private $command_performance_song_composer;
+
+  /**
+   * The student's birthdate.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $birthdate   The birthdate of the student.
+   */
+  private $birthdate;
+
+  /**
+   * The student's age.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $age   The age of the student.
+   */
+  private $age;
+
+  /**
+   * The student's preferred command performance time.
+   *
+   * @since 1.0.0
+   * @access private
+   * @var   string   $birthdate   The timeslot the student wishes to play in for command performance.
+   */
+  private $preferred_command_performance_time;
 
   /**
    * The constructor used to instantiate a new student object.
@@ -244,9 +271,12 @@ class Student {
     $this->teacher_name = $teacher_name;
     $this->location = null;
     $this->date = null;
-    $this->result = null;
+    $this->competition_result = null;
     $this->command_performance_song = null;
     $this->command_performance_song_composer = null;
+    $this->birthdate = null;
+    $this->preferred_command_performance_time = null;
+    $this->age = null;
   }
 
   /**
@@ -323,8 +353,8 @@ class Student {
    * @since 1.0.0
    * @param string   $result  The result of how the student performed in competition.
    */
-  public function set_competition_result($result) {
-    $this->result = $result;
+  public function set_competition_result($competition_result) {
+    $this->competition_result = $competition_result;
   }
 
   /**
@@ -334,8 +364,50 @@ class Student {
    * @param int   $song  The song that the student will perform in command performance.
    */
   public function set_command_performance_song($song) {
-    $this->command_performance_song = $this->songs[intval($song)];
-    $this->command_performance_song_composer = $this->composers[intval($song)];
+    if (!is_null($song)) {
+      $this->command_performance_song = $this->songs[intval($song)];
+      $this->command_performance_song_composer = $this->composers[intval($song)];
+    }
+    else {
+      $this->command_performance_song = null;
+      $this->command_performance_song_composer = null;
+    }
+  }
+
+  /**
+   * The function will set the birthday of the student.
+   *
+   * @since 1.0.0
+   * @param string   $birthdate   The birthday of the student.
+   */
+  public function set_birthday($birthdate) {
+    $this->birthdate = $birthdate;
+    $birthdate_array = explode("-", $this->birthdate);
+    $today = getdate();
+    $this->age = $today["year"] - intval($birthdate_array[0]);
+
+    // adjust birthday as necessary
+    if ($today["mon"] <= intval($birthdate_array[1])) {
+      // today's month is less than student's birth month
+      if ($today["mon"] < intval($birthdate_array[1])) {
+        $this->age--;
+      }
+
+      // same month, and the current day is less than the student's birthday
+      elseif ($today["mday"] < intval($birthdate_array[2])) {
+        $this->age--;
+      }
+    }
+  }
+
+  /**
+   * The function will set the preferred command performance time of the student.
+   *
+   * @since 1.0.0
+   * @param string   $preferred_command_performance_time  The preferred timeslot for command performance.
+   */
+  public function set_preferred_command_performance_time($preferred_command_performance_time) {
+    $this->preferred_command_performance_time = $preferred_command_performance_time;
   }
 
   /**
@@ -363,6 +435,16 @@ class Student {
   }
 
   /**
+   * The function will return the preferred command performance time.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's preferred command performance time.
+   */
+  public function get_preferred_command_performance_time() {
+    return $this->preferred_command_performance_time;
+  }
+
+  /**
    * The function will return the name of the student.
    *
    * @since 1.0.0
@@ -370,6 +452,26 @@ class Student {
    */
   public function get_name() {
     return $this->first_name . ' ' . $this->last_name;
+  }
+
+  /**
+   * The function will return the age of the student.
+   *
+   * @since 1.0.0
+   * @return string Represents age of student.
+   */
+  public function get_age() {
+    return $this->age;
+  }
+
+  /**
+   * The function will return the birthdate of the student.
+   *
+   * @since 1.0.0
+   * @return string Represents birthdate of student.
+   */
+  public function get_birthdate() {
+    return $this->birthdate;
   }
 
   /**
@@ -389,7 +491,7 @@ class Student {
    * @return string Represents the student's result on competition day.
    */
   public function get_competition_result() {
-    return $this->result;
+    return $this->competition_result;
   }
 
   /**
@@ -430,6 +532,16 @@ class Student {
    */
   public function get_songs() {
     return $this->songs;
+  }
+
+  /**
+   * The function will return an array of composers (strings).
+   *
+   * @since 1.0.0
+   * @return	array 	The array of song composers that the student is performing
+   */
+  public function get_song_composers() {
+    return $this->composers;
   }
 
   /**
