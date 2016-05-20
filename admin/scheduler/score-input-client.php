@@ -142,14 +142,14 @@ function get_command_students() {
     $scheduler = unserialize($scheduler);
 
     // update all of the scores in the scheduler
-    $command_student_list_file = ABSPATH . "wp-content/uploads/$title" . "_Command_Performance_List.txt";
+    $command_student_list_file = ABSPATH . "wp-content/uploads/$title" . "_Command_Performance_List.csv";
     $scheduler->get_command_students($command_student_list_file);
 
     // create a zip file
     $zipname = ABSPATH . "wp-content/uploads/$title" . "_Command_Performance_List.zip";
     $zip = new ZipArchive;
     if ($zip->open($zipname, file_exists ($zipname) ? ZipArchive::OVERWRITE : ZipArchive::CREATE)) {
-      $zip->addFile($command_student_list_file, $title . "_Command_Performance_List.txt");
+      $zip->addFile($command_student_list_file, $title . "_Command_Performance_List.csv");
       $zip->close();
     }
     else {
