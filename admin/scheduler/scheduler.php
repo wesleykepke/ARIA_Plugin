@@ -220,6 +220,11 @@ class Scheduling_Algorithm {
         // add composer of student's second song
         $modified_student->add_composer($student[strval($student_master_field_mapping['song_2_composer'])]);
 
+        // add student's birthday
+        $modified_student->set_birthday($student[strval($student_master_field_mapping['student_birthday'])]);
+
+        // add student's preferred command performance time
+        $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['preferred_command_performance'])]);
 
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
