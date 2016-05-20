@@ -43,12 +43,16 @@ function update_scores() {
     // update all of the scores in the scheduler
     $scheduler->update_student_scores($_POST['students']);
 
+    // get the new HTML to display to the user
+    $new_html = $scheduler->get_score_input_string(true);
+
     // write the scheduler object back out to file
     $scheduler_data = serialize($scheduler);
     $fp = fopen($file_path, 'w+');
     if ($fp) {
       fwrite($fp, $scheduler_data);
       fclose($fp);
+      echo $new_html;
     }
     else {
       echo "Did not save correctly.";
