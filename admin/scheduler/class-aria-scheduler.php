@@ -383,35 +383,6 @@ class Scheduler {
   }
 
   /**
-   * This function will print the schedule in a human-readable format.
-   * DELETE THIS FUNCTION
-   */
-  public function print_schedule() {
-    echo "<br>";
-    for ($i = 0; $i < count($this->days); $i++) {
-      switch ($i) {
-        case SAT:
-          echo 'SATURDAY' . "<br>";
-        break;
-
-        case SUN:
-          echo 'SUNDAY' . "<br>";
-        break;
-      }
-
-      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        echo 'Time Block # ' . $j . "<br>";
-        $this->days[$i][$j]->print_schedule();
-      }
-
-      echo "<br>";
-    }
-
-    echo "<br>";
-    //wp_die('schedule complete');
-  }
-
-  /**
    * This function will create the schedule for the competition using HTML.
    *
    * Since the schedule is best demonstrated using HTML tables and lists, this

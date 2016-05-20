@@ -181,18 +181,6 @@ class TimeBlock {
   }
 
   /**
-   * This function will print the sections in a given time block object.
-   * DELETE THIS FUNCTION
-   */
-  public function print_schedule() {
-    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      echo '<b>Section # ' . $i . '</b><br>';
-      $this->sections[$i]->print_schedule();
-      echo '<br>';
-    }
-  }
-
-  /**
    * This function will add students and teachers into an array.
    *
    * This function will iterate through all of the students in the section
