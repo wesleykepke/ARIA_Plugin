@@ -129,7 +129,6 @@ class ARIA {
     require_once("class-aria-teacher-upload.php");
     require_once("class-aria-resend-email-form.php");
     require_once(ARIA_ROOT . '/admin/scheduler/scheduler.php');
-    require_once(ARIA_ROOT . '/admin/scheduler/doc-generator.php');
     require_once(ARIA_ROOT . '/admin/scheduler/modify-schedule.php');
     require_once(ARIA_ROOT . '/admin/scheduler/score-input.php');
 
@@ -148,16 +147,6 @@ class ARIA {
       'gform_confirmation',
       'ARIA_Create_Competition',
       'aria_create_teacher_and_student_forms', 10, 4);
-
-    /*
-    The action registered for this hook updates the list of competitions that
-    can be selected for scheduling on the scheduling page.
-    */
-    $this->loader->add_action(
-      'gform_enqueue_scripts',
-      'Doc_Generator',
-      'before_doc_gen_render', 10, 4
-    );
 
     /*
     The action registered for this hook updates the list of competitions that
@@ -224,16 +213,6 @@ class ARIA {
       'gform_confirmation',
       'Modify_Schedule',
       'render_schedule', 10, 4
-    );
-
-    /*
-    The action registered for this hook is for adding doc. gen. and email
-    functionality.
-    */
-    $this->loader->add_action(
-      'gform_confirmation',
-      'Doc_Generator',
-      'doc_gen_and_email', 10, 4
     );
 
     /*

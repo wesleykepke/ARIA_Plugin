@@ -383,35 +383,6 @@ class Scheduler {
   }
 
   /**
-   * This function will print the schedule in a human-readable format.
-   * DELETE THIS FUNCTION
-   */
-  public function print_schedule() {
-    echo "<br>";
-    for ($i = 0; $i < count($this->days); $i++) {
-      switch ($i) {
-        case SAT:
-          echo 'SATURDAY' . "<br>";
-        break;
-
-        case SUN:
-          echo 'SUNDAY' . "<br>";
-        break;
-      }
-
-      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
-        echo 'Time Block # ' . $j . "<br>";
-        $this->days[$i][$j]->print_schedule();
-      }
-
-      echo "<br>";
-    }
-
-    echo "<br>";
-    //wp_die('schedule complete');
-  }
-
-  /**
    * This function will create the schedule for the competition using HTML.
    *
    * Since the schedule is best demonstrated using HTML tables and lists, this
@@ -685,7 +656,6 @@ class Scheduler {
     // iterate through all sections of the scheduler and update the students
     // that are assigned to each section
     $section_index = 0;
-    $new_timeblock_data = array();
     for ($i = 0; $i < count($this->days); $i++) {
       for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
         $new_timeblock_students = array();
@@ -694,8 +664,25 @@ class Scheduler {
           $section_index++;
         }
 
-        array_push($new_timeblock_data, $new_timeblock_students);
         $this->days[$i][$j]->update_section_students($new_timeblock_students);
+      }
+    }
+  }
+
+  /**
+   * This function will update the scores of each student.
+   *
+   * Once the festival chairman has entered the scores for all of the students
+   * in a competition, those scores need to be updated in the respective student
+   * entries. This function is responsible for accomplishing that task.
+   *
+   * @param   Array   $students   The array of score information to use in updating the students.
+   */
+  public function update_student_scores($students) {
+    // search through the scheduler and update all of the students' scores
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->update_student_scores($students);
       }
     }
   }
@@ -797,7 +784,7 @@ class Scheduler {
   }
 
  /**
-  * This function will send comperition info to the parents.
+  * This function will send competition info to the parents.
   *
   * This function will initiate the the process of sending emails to all of the
   * parents who have children participating in the competition.
@@ -822,6 +809,56 @@ class Scheduler {
                                                            $this->first_location, $this->second_location);
       }
     }
+  }
+
+  /**
+   * This function will create a trophy list.
+   *
+   * The trophy list is all students who have received a score of "SD" or "S"
+   * in the regular competition.
+   *
+   * @param   string  $file_name  The name of the trophy list text file.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function create_trophy_list($file_name) {
+    $file = fopen($file_name, "w");
+    $trophy_list = "";
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->create_trophy_list($trophy_list);
+      }
+    }
+    fwrite($file, $trophy_list);
+    fclose($file);
+  }
+
+  /**
+   * This function will create a list of all students who will be in the command performance.
+   *
+   * Students who are participating in command performance will have received a
+   * score of "SD" or "S".
+   *
+   * @param   string  $file_name  The name of the command performance list file.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function get_command_students($file_name) {
+    $file = fopen($file_name, "w");
+    $student_list = "";
+    for ($i = 0; $i < count($this->days); $i++) {
+      for ($j = 0; $j < $this->days[$i]->getSize(); $j++) {
+        $this->days[$i][$j]->get_command_students($student_list);
+      }
+    }
+    fwrite($file, $student_list);
+    fclose($file);
   }
 
  /**

@@ -40,9 +40,11 @@ function parse_scheduler_html() {
     if ($fp) {
       fwrite($fp, $scheduler_data);
       fclose($fp);
+      echo $new_html;
     }
-
-    echo $new_html;
+    else {
+      echo "<h1>Didn't work.</h1>";
+    }
   }
 }
 

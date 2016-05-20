@@ -425,34 +425,6 @@ class Section {
   }
 
   /**
-   * This function will print all the students in given section.
-   *
-   * This function will iterate through all of the students that are registered
-   * for the given section, obtain their information, and print out all of this
-   * information.
-   *
-   * @return void
-   */
-  public function print_schedule() {
-    for ($i = 0; $i < count($this->students); $i++) {
-      $student_info = $this->students[$i]->get_student_info();
-      echo 'Total play time for section #' . $i . ': ' . $this->current_time . " minutes.<br>";
-      foreach ($student_info as $key => $value) {
-        echo $key . "<br>";
-        if (is_array($value)) {
-          for ($j = 0; $j < count($value); $j++) {
-            echo $value[$j] . "<br>";
-          }
-        }
-        else {
-          echo $value . "<br>";
-        }
-      }
-      unset($student_info);
-    }
-  }
-
-  /**
    * This function will print the student and their info in HTML.
    *
    * This function will consoliate all information about a student and convert
@@ -510,30 +482,160 @@ class Section {
    * @param   Integer   $day  The integer constant for a given day
    */
   public function get_score_input_string($day) {
-    $schedule = '<ul>';
+    $schedule = '<ul id="staticStudentInfo">';
     for ($i = 0; $i < count($this->students); $i++) {
+      // acquire some student attributes
       $student_name = $this->students[$i]->get_name();
+      $student_level = $this->students[$i]->get_skill_level();
       $student_songs = $this->students[$i]->get_songs();
+      $student_songs_composers = $this->students[$i]->get_song_composers();
+      $student_competition_result = $this->students[$i]->get_competition_result();
+      $student_command_performance_song = $this->students[$i]->get_command_performance_song();
       $schedule .= '<li class="ui-state-default">Student #';
       $schedule .= strval($i + 1);
       $schedule .= '<ul class="student-info">';
-      $schedule .= "<li>Student Name: $student_name</li>";
-      $schedule .= '<li>Student Result:
-                      <form>
-                        <input type="radio" name="result" value="SD">Superior with Distinction<br>
-                        <input type="radio" name="result" value="S">Superior<br>
-                        <input type="radio" name="result" value="E">Excellent<br>
-                        <input type="radio" name="result" value="NA">Needs Attention<br>
-                        <input type="radio" name="result" value="NC">Non-Competitive<br>
-                        <input type="radio" name="result" value="W">Withdrawn<br>
-                      </form>
-                    </li>';
-      $schedule .= '<li>Student Songs:
-                      <form>
-                        <input type="radio" name="song" value="S0">' . $student_songs[0] . '<br>
-                        <input type="radio" name="song" value="S1">' . $student_songs[1] . '<br>
-                      </form>
-                    </li>';
+
+      // show student's name and level
+      $schedule .= '<li class="student-name">' . "Student Name: $student_name" . '</li>';
+      $schedule .= '<li class="student-level">' . "Student Level: $student_level" . '</li>';
+
+      // if result was saved as SD, make that the default checked radio button
+      if ($student_competition_result == "SD") {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD" checked="checked">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if result was saved as S, make that the default checked radio button
+      elseif ($student_competition_result == "S") {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S" checked="checked">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if result was saved as E, make that the default checked radio button
+      elseif ($student_competition_result == "E") {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E" checked="checked">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if result was saved as NA, make that the default checked radio button
+      elseif ($student_competition_result == "NA") {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA" checked="checked">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if result was saved as NC, make that the default checked radio button
+      elseif ($student_competition_result == "NC") {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC" checked="checked">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if result was saved as W, make that the default checked radio button
+      elseif ($student_competition_result == "W") {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W" checked="checked">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if result was saved as S, make that the default checked radio button
+      else {
+        $schedule .= '<li>Student Result:
+                        <form class="student-result">
+                          <input class="my-indent" type="radio" name="result" value="SD">Superior with Distinction<br>
+                          <input class="my-indent" type="radio" name="result" value="S">Superior<br>
+                          <input class="my-indent" type="radio" name="result" value="E">Excellent<br>
+                          <input class="my-indent" type="radio" name="result" value="NA">Needs Attention<br>
+                          <input class="my-indent" type="radio" name="result" value="NC">Non-Competitive<br>
+                          <input class="my-indent" type="radio" name="result" value="W">Withdrawn<br>
+                        </form>
+                      </li>';
+      }
+
+      // if the student is playing their first song in command performance, make that the default radio button
+      $achieved_command_performance_score = ($student_competition_result == "SD" || $student_competition_result == "S");
+      if ($achieved_command_performance_score && !is_null($student_command_performance_song) &&
+        $student_command_performance_song == $student_songs[0] ) {
+        $schedule .= '<li>Student Songs:
+                        <form class="student-song">
+                          <input class="my-indent" type="radio" name="song" value="0" checked="checked">' . $student_songs[0]
+                          . " by " . $student_songs_composers[0] . '<br>
+                          <input class="my-indent" type="radio" name="song" value="1">' . $student_songs[1]
+                          . " by " . $student_songs_composers[1] . '<br>
+                        </form>
+                      </li>';
+      }
+
+      // otherwise if the student is playing their second song in command performance, make that the default radio button
+      elseif ($achieved_command_performance_score && !is_null($student_command_performance_song) &&
+              $student_command_performance_song == $student_songs[1]) {
+        $schedule .= '<li>Student Songs:
+                        <form class="student-song">
+                          <input class="my-indent" type="radio" name="song" value="0">' . $student_songs[0]
+                          . " by " . $student_songs_composers[0] . '<br>
+                          <input class="my-indent" type="radio" name="song" value="1" checked="checked">' . $student_songs[1]
+                          . " by " . $student_songs_composers[1] . '<br>
+                        </form>
+                      </li>';
+      }
+
+      // if no song has been selected yet, make none of the radio buttons default
+      else {
+        $schedule .= '<li>Student Songs:
+                        <form class="student-song">
+                          <input class="my-indent" type="radio" name="song" value="0">' . $student_songs[0]
+                          . " by " . $student_songs_composers[0] . '<br>
+                          <input class="my-indent" type="radio" name="song" value="1">' . $student_songs[1]
+                          . " by " . $student_songs_composers[1] . '<br>
+                        </form>
+                      </li>';
+      }
+
       $schedule .= '</ul></li>';
     }
 
@@ -814,6 +916,40 @@ class Section {
   }
 
   /**
+   * This function will update the scores of each student.
+   *
+   * Once the festival chairman has entered the scores for all of the students
+   * in a competition, those scores need to be updated in the respective student
+   * entries. This function is responsible for accomplishing that task. more
+   * specifically, this function will iterate through all students in the
+   * current section. If the incoming student's name and skill level match that
+   * of a student in the given section, this function will update that students
+   * results (of the competition).
+   *
+   * @param   Array   $student   The array of result information to use in updating the students.
+   */
+  public function update_student_scores($studentsInfo) {
+    for ($i = 0; $i < count($studentsInfo); $i++) {
+      $name = $studentsInfo[$i]['studentToFind'][0];
+      $skill_level = $studentsInfo[$i]['studentToFind'][1];
+      for ($j = 0; $j < count($this->students); $j++) {
+        $matching_names = ($this->students[$j]->get_name() == $name);
+        $matching_skill_levels = ($this->students[$j]->get_skill_level() == $skill_level);
+        if ($matching_names && $matching_skill_levels) {
+          $competition_result = $studentsInfo[$i]['result'];
+          $this->students[$j]->set_competition_result($competition_result);
+          if ($competition_result == 'SD' || $competition_result == 'S') {
+            $this->students[$j]->set_command_performance_song($studentsInfo[$i]['song']);
+          }
+          else {
+            $this->students[$j]->set_command_performance_song(null);
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * This function will search through the current section object and locate
    * the student entry.
    *
@@ -831,14 +967,9 @@ class Section {
       return null;
     }
 
-    //echo 'STUDENT TO FIND: ';
-    //echo print_r($student_to_find);
-
     // named variables to help offset into student object
     $name = 0;
     $skill_level = 1;
-    $song_1 = 2;
-    $song_2 = 3;
 
     // search through all students in the given section
     $student_object = null;
@@ -846,28 +977,9 @@ class Section {
       $single_student = $this->students[$i];
       $matching_names = ($student_to_find[$name] == $single_student->get_name());
       $matching_skill_levels = ($student_to_find[$skill_level] == $single_student->get_skill_level());
-      //$single_student_songs = $single_student->get_songs();
-      //$matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
-      //$matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
-
-      //if ($matching_names && $matching_skill_levels && $matching_song1 && $matching_song2) {
       if ($matching_names && $matching_skill_levels) {
         return $single_student;
       }
-
-      /*
-
-      $single_student_songs = $single_student->get_songs();
-      $matching_song1 = ($student_to_find[$song1] == $single_student_songs[0]);
-      $matching_song2 = ($student_to_find[$song2] == $single_student_songs[1]);
-
-      // if all of the information matches, return that student
-      if ($matching_names && $matching_skill_levels &&
-          $matching_song1 && $matching_song2) {
-            //echo "found student";
-        return $student_object;
-      }
-      */
     }
 
     // if the student doesn't exist in the section, return NULL
@@ -909,6 +1021,58 @@ class Section {
         $teacher_emails_to_students[$this->students[$i]->get_teacher_email()] = array();
       }
       $teacher_emails_to_students[$this->students[$i]->get_teacher_email()][] = $this->students[$i];
+    }
+  }
+
+  /**
+   * This function will help create the trophy list.
+   *
+   * The trophy list is all students who have received a score of "SD" or "S"
+   * in the regular competition.
+   *
+   * @param   string  $trophy_list  The list of "SD" and "S" students.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function create_trophy_list(&$trophy_list) {
+    for ($i = 0; $i < count($this->students); $i++) {
+      $result = $this->students[$i]->get_competition_result();
+      if ($result == 'SD' || $result == 'S') {
+        $trophy_list .= "Student Name: " . $this->students[$i]->get_name() . "\n";
+        $trophy_list .= "Student Skill Level: " . $this->students[$i]->get_skill_level() . "\n";
+        $trophy_list .= "Student Rating: " . $result . "\n\n";
+      }
+    }
+  }
+
+  /**
+   * This function will help create a list of all students who will be in the command performance.
+   *
+   * Students who are participating in command performance will have received a
+   * score of "SD" or "S".
+   *
+   * @param   string  $student_list  The name of the students in the command performance.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function get_command_students(&$student_list) {
+    for ($i = 0; $i < count($this->students); $i++) {
+      $result = $this->students[$i]->get_competition_result();
+      if ($result == 'SD' || $result == 'S') {
+        $student_list .= '"' . $this->students[$i]->get_name() . '",';
+        $student_list .= '"' . $this->students[$i]->get_skill_level() . '",';
+        $student_list .= '"' . $this->students[$i]->get_age() . '",';
+        $student_list .= '"' . $result . '",';
+        $student_list .= '"' . $this->students[$i]->get_command_performance_song() . '",';
+        $student_list .= '"' . $this->students[$i]->get_command_performance_song_composer() . '",';
+        $student_list .= '"' . $this->students[$i]->get_preferred_command_performance_time(). '"' . "\n";
+      }
     }
   }
 

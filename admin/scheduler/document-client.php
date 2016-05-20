@@ -18,9 +18,6 @@ function generate_documents() {
   }
   $file_path .= "uploads/$title.txt";
 
-  ////echo print_r($_POST);
-  ////echo "File path: $file_path <br>";
-
   // read the serialized Scheduler object from file
   if (file_exists($file_path)) {
     $scheduler = file_get_contents($file_path);
@@ -40,27 +37,27 @@ function generate_documents() {
 function generate_all_documents($non_formatted_title, $title, $event_sections) {
   $files = array();
   $files[] = array(
-    'path' => create_announcing_sheets($non_formatted_title, $event_sections),
+    'path' => create_announcing_sheets($title, $event_sections),
     'new_name' => strtolower(str_replace(' ', '_', $non_formatted_title).'_announcing_sheet.rtf')
   );
   $files[] = array(
-    'path' => create_adjudication_forms($non_formatted_title, $event_sections),
+    'path' => create_adjudication_forms($title, $event_sections),
     'new_name' => strtolower(str_replace(' ', '_', $non_formatted_title).'_adjudication_forms.rtf')
   );
   $files[] = array(
-    'path' => create_results_sheets($non_formatted_title, $event_sections),
+    'path' => create_results_sheets($title, $event_sections),
     'new_name' => strtolower(str_replace(' ', '_', $non_formatted_title).'_results_sheets.rtf')
   );
   $files[] = array(
-    'path' => create_teacher_master($non_formatted_title, $event_sections),
+    'path' => create_teacher_master($title, $event_sections),
     'new_name' => strtolower(str_replace(' ', '_', $non_formatted_title).'_teacher_master.rtf')
   );
   $files[] = array(
-    'path' => create_session_assignments($non_formatted_title, array($event_sections)),
+    'path' => create_session_assignments($title, array($event_sections)),
     'new_name' => strtolower(str_replace(' ', '_', $non_formatted_title).'_session_assignments.rtf')
   );
   $files[] = array(
-    'path' => create_competition_csv($non_formatted_title, $event_sections),
+    'path' => create_competition_csv($title, $event_sections),
     'new_name' => strtolower(str_replace(' ', '_', $non_formatted_title).'_competiton_overview.csv')
   );
   download_documents($title, $files);
@@ -466,20 +463,6 @@ function download_documents($event_name, $files) {
     echo "Zip failed to open.";
   }
 
-  //header('Content-Description: File Transfer');
-  /*
-  header("Pragma: public");
-  header("Expires: 0");
-  header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-  header("Content-Type: application/force-download");
-  header("Content-Type: application/octet-stream");
-  header("Content-Type: application/download");
-  header("Content-Disposition: attachment; filename=\"".$zipname."\"");
-  header("Content-Transfer-Encoding: binary");
-  header("Content-Length: ".filesize($zipname));
-  readfile($zipname);
-  */
-  //$zipname = str_replace("'\'", "", $zipname);
   echo '/wp-content/uploads/'.strtolower(str_replace(' ', '_', $event_name)).'_generated_documents.zip';
 }
 

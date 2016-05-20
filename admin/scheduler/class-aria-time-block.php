@@ -181,18 +181,6 @@ class TimeBlock {
   }
 
   /**
-   * This function will print the sections in a given time block object.
-   * DELETE THIS FUNCTION
-   */
-  public function print_schedule() {
-    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
-      echo '<b>Section # ' . $i . '</b><br>';
-      $this->sections[$i]->print_schedule();
-      echo '<br>';
-    }
-  }
-
-  /**
    * This function will add students and teachers into an array.
    *
    * This function will iterate through all of the students in the section
@@ -253,7 +241,7 @@ class TimeBlock {
       $schedule .= '<tr><th id="section-info" class="section">';
       $schedule .= 'Section #';
       $schedule .= strval($i + 1);
-      $schedule .= $this->sections[$i]->get_section_info();
+      //$schedule .= $this->sections[$i]->get_section_info();
       $schedule .= $this->sections[$i]->get_score_input_string($day);
       $schedule .= '</th></tr>';
     }
@@ -366,6 +354,25 @@ class TimeBlock {
   }
 
   /**
+   * This function will update the scores of each student.
+   *
+   * Once the festival chairman has entered the scores for all of the students
+   * in a competition, those scores need to be updated in the respective student
+   * entries. This function is responsible for accomplishing that task. More
+   * specifically, given a particular student, this function will attempt to locate
+   * that student within a given timeblock and update their results. If no such
+   * student is found, then that student will not be updated.
+   *
+   * @param   Array   $students   The array of result information to use in updating the students.
+   */
+  public function update_student_scores($students) {
+    // search through the sections within the timeblock and update all of the student's scores
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->update_student_scores($students);
+    }
+  }
+
+  /**
    * This function will search through the current timeblock object and locate
    * the student entry.
    *
@@ -396,6 +403,44 @@ class TimeBlock {
   public function send_parents_competition_info($headers, $fc_email) {
     for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
       $this->sections[$i]->send_parents_competition_info($headers, $fc_email);
+    }
+  }
+
+  /**
+   * This function will help create the trophy list.
+   *
+   * The trophy list is all students who have received a score of "SD" or "S"
+   * in the regular competition.
+   *
+   * @param   string  $trophy_list  The list of "SD" and "S" students.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function create_trophy_list(&$trophy_list) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->create_trophy_list($trophy_list);
+    }
+  }
+
+  /**
+   * This function will help create a list of all students who will be in the command performance.
+   *
+   * Students who are participating in command performance will have received a
+   * score of "SD" or "S".
+   *
+   * @param   string  $student_list  The name of the students in the command performance.
+   *
+   * @return	void
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public function get_command_students(&$student_list) {
+    for ($i = 0; $i < $this->num_concurrent_sections; $i++) {
+      $this->sections[$i]->get_command_students($student_list);
     }
   }
 
