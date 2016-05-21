@@ -566,6 +566,16 @@ class Student {
   }
 
   /**
+   * The function will return the name of the student's teacher.
+   *
+   * @since 1.0.0
+   * @return string Represents the student's teacher's name.
+   */
+  public function get_teacher_name() {
+    return $this->teacher_name;
+  }
+
+  /**
    * The function will return the email address of the student's parent.
    *
    * @since 1.0.0

@@ -1041,9 +1041,21 @@ class Section {
     for ($i = 0; $i < count($this->students); $i++) {
       $result = $this->students[$i]->get_competition_result();
       if ($result == 'SD' || $result == 'S') {
-        $trophy_list .= "Student Name: " . $this->students[$i]->get_name() . "\n";
-        $trophy_list .= "Student Skill Level: " . $this->students[$i]->get_skill_level() . "\n";
-        $trophy_list .= "Student Rating: " . $result . "\n\n";
+        $trophy_list .= $this->students[$i]->get_name() . "\n";
+        $trophy_list .= "Level " . $this->students[$i]->get_skill_level() . " - ";
+        switch ($result) {
+          case 'SD':
+            $trophy_list .= "Superior with Distinction\n\n";
+          break;
+
+          case 'S':
+            $trophy_list .= "Superior\n\n";
+          break;
+
+          case 'CP':
+            // todo
+          break;
+        }
       }
     }
   }
@@ -1071,7 +1083,9 @@ class Section {
         $student_list .= '"' . $result . '",';
         $student_list .= '"' . $this->students[$i]->get_command_performance_song() . '",';
         $student_list .= '"' . $this->students[$i]->get_command_performance_song_composer() . '",';
-        $student_list .= '"' . $this->students[$i]->get_preferred_command_performance_time(). '"' . "\n";
+        $student_list .= '"' . $this->students[$i]->get_preferred_command_performance_time(). '",';
+        $student_list .= '"' . $this->students[$i]->get_teacher_name(). '",';
+        $student_list .= '"' . $this->students[$i]->get_parent_email(). '"' . "\n";
       }
     }
   }
