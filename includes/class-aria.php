@@ -296,6 +296,14 @@ class ARIA {
       'ARIA_Form_Hooks', 'aria_after_teacher_submission', 10, 2);
 
     /*
+    The filter that performs form validation on the student registration form.
+    */
+    /*
+    $this->loader->add_filter('gform_form_validation', 'ARIA_Create_Competition',
+      'aria_student_form_validation', 10, 4);
+    */
+
+    /*
     The filter that makes sure that the teacher pages have correct hashes.
     */
     $this->loader->add_filter('gform_enqueue_scripts',
@@ -305,7 +313,6 @@ class ARIA {
 
     $this->loader->add_action( 'gform_after_update_entry',
         'ARIA_Form_Hooks', 'aria_student_master_post_update_entry', 10, 3 );
-
 
 
     /*

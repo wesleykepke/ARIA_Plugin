@@ -41,10 +41,7 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_competition_activation() {
-
-    // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
-
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
       ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
@@ -1082,7 +1079,7 @@ class ARIA_Create_Competition {
         'value' => strval($i),
         'isSelected' => false
       );
-      $timing_choices[] = $single_choice; 
+      $timing_choices[] = $single_choice;
     }
     $timing_of_pieces_field->choices = $timing_choices;
     $teacher_form->fields[] = $timing_of_pieces_field;
@@ -1152,6 +1149,17 @@ class ARIA_Create_Competition {
     $parent_email_field->isRequired = true;
     $student_form->fields[] = $parent_email_field;
     $ariaFieldIds['parent_email'] = $parent_email_field->id;
+
+    // parent email confirmation
+    $parent_email_confirmation = new GF_Field_Email();
+    $parent_email_confirmation->label = "Parent's Email (confirmation)";
+    $parent_email_confirmation->id = $field_id_array['parent_email_confirmation'];
+    $parent_email_confirmation->isRequired = true;
+    $parent_email_confirmation->description = "This email must match the email
+    entered in the previous box above (Parent's Email).";
+    $parent_email_confirmation->descriptionPlacement = "above";
+    $student_form->fields[] = $parent_email_confirmation;
+    $ariaFieldIds['parent_email_confirmation'] = $parent_email_confirmation->id;
 
     // student name
     $student_name_field = new GF_Field_Name();
@@ -1408,5 +1416,36 @@ class ARIA_Create_Competition {
     }
 
     return $new_form_id;
+  }
+
+  /**
+   * This function will perform form validation on the student form.
+   *
+   *
+   *
+   * @param   $result   Array   The validation result to be filtered.
+   * @param   $value  String/Array  The field value to be validated.
+   * @param   $form   Form Object   The current form object.
+   * @param   $field  Field Object  The current field object.
+   */
+  public static function aria_student_form_validation($result, $value, $form, $field) {
+    // only perform processing if it's the student registration form
+    if (!array_key_exists('isStudentPublicForm', $form)
+        || !$form['isStudentPublicForm']) {
+          return $result;
+    }
+
+    $field_mapping = ARIA_API::aria_student_field_id_array();
+    $parent_email = trim(rgar($value, $field_mapping['parent_email']));
+    $parent_email_confirmation = trim(rgar($value, $field_mapping['parent_email_confirmation']));
+
+    // check to see if email fields match
+    if (strcmp($parent_email, $parent_email_confirmation) !== 0) {
+      $result['is_valid'] = false;
+      $result['message'] = "The email in the 'Parent's Email' field must match the email in
+      the 'Parent's Email (confirmation)' field.";
+    }
+
+    return $result;
   }
 }
