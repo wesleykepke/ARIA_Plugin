@@ -166,10 +166,8 @@ class ARIA_Registration_Handler {
    * @author KREW
 	 */
   public static function aria_find_teacher_entry($teacher_master_form_id, $teacher_hash) {
-
+    // prepare search criteria
     $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
-
-    // check to see if any of the entries in the teacher master have $teacher_hash
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -183,40 +181,58 @@ class ARIA_Registration_Handler {
 			)
 		);
 
-    $entries = GFAPI::get_entries($teacher_master_form_id, $search_criteria, $sorting, $paging, $total_count);
+    // search through the associated teacher master using the above search criteria
+    $entries = GFAPI::get_entries($teacher_master_form_id,
+                                  $search_criteria, $sorting,
+                                  $paging, $total_count);
 
-
+    // exactly one teacher was found that has the corresponding hash value
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
-      // it's reaching this wp_die()
-      //wp_die("After get_entries, inside if statement: " . print_r($entries));
       return $entries[0];
     }
 
+    // otherwise, no such teacher was found
     return false;
   }
 
 	/**
 	 * Function to check if a student is assigned to a teacher.
+   *
+   * This function will check if the incoming student and teacher hashes have a
+   * relationship. If they do, that means that the student registered under the
+   * teacher and the teacher should continue to perform registration. Otherwise,
+   * this student does not belong with the associated teacher and there is a
+   * problem.
+   *
+   * @param   $related_forms  Array   The associative array of related forms.
+   * @param   $student_hash   String  The student's hash value.
+   * @param   $teacher_hash   String  The teacher's hash value.
+   *
+   * @since 1.0.0
+   * @author KREW
 	 */
-   public static function aria_check_student_teacher_relationship($related_forms, $student_hash, $teacher_hash) {
-     // Get field ids
-		 $students_field_id = ARIA_API::aria_master_teacher_field_id_array()['students'];
+  public static function aria_check_student_teacher_relationship($related_forms, $student_hash, $teacher_hash) {
+    // get field ids
+		$students_field_id = ARIA_API::aria_master_teacher_field_id_array()['students'];
 
-     // Get the teacher entry
-     $teacher_entry = self::aria_find_teacher_entry($related_forms['teacher_master_form_id'], $teacher_hash);
+    // get the teacher entry
+    $teacher_entry = self::aria_find_teacher_entry($related_forms['teacher_master_form_id'], $teacher_hash);
+    if ($teacher_entry == false) {
+      return false;
+    }
 
-     // return if teacher entry does not exist.
-     if($teacher_entry == false) return false;
+    // get the array of students the teacher is assigned
+    $students = unserialize(rgar($teacher_entry, (string) $students_field_id));
 
-     // get the array of students the teacher is assigned.
-     $students = unserialize(rgar($teacher_entry, (string) $students_field_id));
+    // find the student name in the array of students.
+    foreach ($students as $student) {
+      if ($student == $student_hash) {
+        return true;
+      }
+    }
 
-     // find the student name in the array of students.
-     foreach($students as $student) {
-       if ($student == $student_hash) return true;
-     }
-     return false;
-   }
+    return false;
+  }
 
 	/**
 	 * Function to get pre-populate values based on teacher-master.

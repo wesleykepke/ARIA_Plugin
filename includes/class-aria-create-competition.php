@@ -250,17 +250,15 @@ class ARIA_Create_Competition {
     $field_mappings = ARIA_API::aria_competition_field_id_array();
 
     // description
-    $form->description = 'Welcome! Please submit information for all of the';
-    $form->description .= ' fields in the form below in order to create a new';
-    $form->description .= '  NNMTA music competition.';
+    $form->description = "Welcome! Please submit information for all of the
+    fields in the form below in order to create a new NNMTA music festival.";
 
     // Festival Chairman Email
     $fc_email_field = new GF_Field_Email();
-    $fc_email_field->label = "Festival Chairman's Email";
+    $fc_email_field->label = "Festival Chairman Email";
     $fc_email_field->id = $field_mappings['competition_festival_chairman_email'];
-    $fc_email_field->description = "Please enter your email address. This address";
-    $fc_email_field->description .= " will be used in the event you need to be";
-    $fc_email_field->description .= " contacted.";
+    $fc_email_field->description = "Please enter your email address. This address
+    will be used in the event you need to be contacted.";
     $fc_email_field->descriptionPlacement = "above";
     $fc_email_field->isRequired = true;
 
@@ -1214,9 +1212,9 @@ class ARIA_Create_Competition {
     $student_form->fields[] = $student_name;
 
     // store the student name field in array of field id's
-    $ariaFieldIds['student_name'] = $student_name_field->id;
-    $ariaFieldIds['student_first_name'] = "{$student_name_field->id}.3";
-    $ariaFieldIds['student_last_name'] = "{$student_name_field->id}.6";
+    $ariaFieldIds['student_name'] = $student_name->id;
+    $ariaFieldIds['student_first_name'] = "{$student_name->id}.3";
+    $ariaFieldIds['student_last_name'] = "{$student_name->id}.6";
 
     // create the student birthday field
     $student_birthday = new GF_Field_Date();
@@ -1279,7 +1277,7 @@ class ARIA_Create_Competition {
     $student_form->fields[] = $available_festival_days;
 
     // store the available festival days in array of field id's
-    $ariaFieldIds['available_festival_days'] = $available_times->id;
+    $ariaFieldIds['available_festival_days'] = $available_festival_days->id;
     for ($i = 1; $i <= count($available_festival_days->inputs); $i++) {
       $ariaFieldIds["available_festival_days_option_{$i}"] = "{$available_festival_days->id}.{$i}";
     }
@@ -1303,15 +1301,15 @@ class ARIA_Create_Competition {
     if (is_array($command_options_array)) {
       $index = 1;
       foreach ($command_options_array as $command_time) {
-        $command_times->choices[] = array('text' => $command_time,
-                                          'value' => $command_time,
-                                          'isSelected' => false);
+        $preferred_command_performance->choices[] = array('text' => $command_time,
+                                                          'value' => $command_time,
+                                                          'isSelected' => false);
       }
     }
 
     $student_form->fields[] = $preferred_command_performance;
-    for ($i=1; $i <= count($command_times->inputs); $i++) {
-      $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$command_times->id}.{$i}";
+    for ($i=1; $i <= count($preferred_command_performance->inputs); $i++) {
+      $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$preferred_command_performance->id}.{$i}";
     }
 
     // store the preferred command performance in array of field id's
@@ -1370,7 +1368,7 @@ class ARIA_Create_Competition {
     for ($i = 1; $i <= 11; $i++) {
       $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
       if($price != 0) {
-        $product_field->choices[] = array('text' => (string)$i,
+        $student_level->choices[] = array('text' => (string)$i,
                                           'value' => (string)$i,
                                           'isSelected' => false,
                                           'price' => $price);
@@ -1382,7 +1380,7 @@ class ARIA_Create_Competition {
     $ariaFieldIds['student_level'] = $student_level->id;
 
     // create the compliance field checkbox for parents
-    $compliance_statement = new GF_Field_Checkbox();
+    $compliance_statement = new GF_Field_checkbox();
     $compliance_statement->label = "Compliance Statement";
     $compliance_statement->id = $student_field_mapping['compliance_statement'];
     $compliance_statement->isRequired = true;
@@ -1398,8 +1396,9 @@ class ARIA_Create_Competition {
     $compliance_statement->descriptionPlacement = 'above';
     $compliance_statement->choices = array(
       array('text' => 'I have read and agree with the above statement.',
-      'value' => 'Agree',
-      'isSelected' => false),
+            'value' => 'Agree',
+            'isSelected' => false
+      ),
     );
     $compliance_statement->inputs = array();
     $compliance_statement = self::aria_add_checkbox_input($compliance_statement,
