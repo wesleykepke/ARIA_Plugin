@@ -599,6 +599,19 @@ class ARIA_Create_Competition {
     return $field;
   }
 
+  /**
+   * This function will take a name field and add default (initialized) attributes
+   * to it.
+   *
+   * In order for a name field to be properly displayed on a form, it needs to be
+   * initialized with some default values. This function is responsible for taking
+   * a name field as input and providing initialized values for that name field.
+   *
+   * @param   Field Object  $field  The field used for name input.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
   public static function aria_add_default_name_inputs($field) {
     $field->nameFormat = 'advanced';
     $field->inputs = array(
@@ -680,8 +693,17 @@ class ARIA_Create_Competition {
   }
 
   /**
-
-  */
+   * This function will take a checkbox field and initialize it.
+   *
+   * In order for a checkbox field to be properly displayed on a form, it needs to be
+   * initialized. This function is responsible for taking a checkbox field as input
+   * and providing initialized state for that checkbox field.
+   *
+   * @param   Field Object  $field  The field used for checkbox input.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
   public static function aria_add_checkbox_input($field, $new_input) {
     $next_input = sizeof( $field->inputs ) + 1;
 
@@ -1082,7 +1104,7 @@ class ARIA_Create_Competition {
         'value' => strval($i),
         'isSelected' => false
       );
-      $timing_choices[] = $single_choice; 
+      $timing_choices[] = $single_choice;
     }
     $timing_of_pieces_field->choices = $timing_choices;
     $teacher_form->fields[] = $timing_of_pieces_field;
@@ -1127,77 +1149,104 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-  private static function aria_create_student_form($competition_entry, $teacher_names_and_hashes, $command_options_array, $competition_festival_chairman_email, $paypal_email) {
+  private static function aria_create_student_form($competition_entry,
+                                                   $teacher_names_and_hashes,
+                                                   $command_options_array,
+                                                   $competition_festival_chairman_email,
+                                                   $paypal_email) {
+    // obtain the field mapping arrays for both competition creation and student registration
     $create_comp_field_mapping = ARIA_API::aria_competition_field_id_array();
-    $field_id_array = ARIA_API::aria_student_field_id_array();
+    $student_field_mapping = ARIA_API::aria_student_field_id_array();
+
+    // obtain the name of the competition and initialize a new form
     $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
     $student_form = new GF_Form("{$competition_name} Student Registration", "");
+
+    // create a designated array to hold the field id's of the fields in the student registration form
     $ariaFieldIds = array();
 
-    // parent name
-    $parent_name_field = new GF_Field_Name();
-    $parent_name_field->label = "Parent Name";
-    $parent_name_field->id = $field_id_array['parent_name'];
-    $parent_name_field->isRequired = true;
-    $parent_name_field = self::aria_add_default_name_inputs($parent_name_field);
-    $student_form->fields[] = $parent_name_field;
-    $ariaFieldIds['parent_name'] = $parent_name_field->id;
-    $ariaFieldIds['parent_first_name'] = "{$parent_name_field->id}.3";
-    $ariaFieldIds['parent_last_name'] = "{$parent_name_field->id}.6";
+    // create the parent name field
+    $parent_name = new GF_Field_Name();
+    $parent_name->label = "Parent Name";
+    $parent_name->id = $student_field_mapping['parent_name'];
+    $parent_name->isRequired = true;
+    $parent_name = self::aria_add_default_name_inputs($parent_name);
+    $student_form->fields[] = $parent_name;
 
-    // parent email
-    $parent_email_field = new GF_Field_Email();
-    $parent_email_field->label = "Parent's Email";
-    $parent_email_field->id = $field_id_array['parent_email'];
-    $parent_email_field->isRequired = true;
-    $student_form->fields[] = $parent_email_field;
-    $ariaFieldIds['parent_email'] = $parent_email_field->id;
+    // store the parent name field in array of field id's
+    $ariaFieldIds['parent_name'] = $parent_name->id;
+    $ariaFieldIds['parent_first_name'] = "{$parent_name->id}.3";
+    $ariaFieldIds['parent_last_name'] = "{$parent_name->id}.6";
 
-    // student name
-    $student_name_field = new GF_Field_Name();
-    $student_name_field->label = "Student Name";
-    $student_name_field->description = "Please capitalize your child's first ".
-    "and last names and double check the spelling.  The way you type the name ".
-    "here is the way it will appear on all awards and in the Command ".
-    "Performance program.";
-    $student_name_field->descriptionPlacement = 'above';
-    $student_name_field->id = $field_id_array['student_name'];
-    $student_name_field->isRequired = true;
-    $student_name_field = self::aria_add_default_name_inputs($student_name_field);
-    $student_form->fields[] = $student_name_field;
+    // create the parent email field
+    $parent_email = new GF_Field_Email();
+    $parent_email->label = "Parent Email";
+    $parent_email->id = $student_field_mapping['parent_email'];
+    $parent_email->isRequired = true;
+    $student_form->fields[] = $parent_email;
+
+    // store the parent email field in array of field id's
+    $ariaFieldIds['parent_email'] = $parent_email->id;
+
+    // create the parent email confirmation field
+    $parent_email_confirmation = new GF_Field_Email();
+    $parent_email_confirmation->label = "Parent Email (confirmation)";
+    $parent_email_confirmation->id = $student_field_mapping['parent_email_confirmation'];
+    $parent_email_confirmation->description = "The email you enter here must match
+    the email that was entered in the previous box (Parent Email).";
+    $parent_email_confirmation->descriptionPlacement = 'above';
+    $parent_email_confirmation->isRequired = true;
+    $student_form->fields[] = $parent_email_confirmation;
+
+    // store the parent email confirmation field in array of field id's
+    $ariaFieldIds['parent_email_confirmation'] = $parent_email_confirmation->id;
+
+    // create the student name field
+    $student_name = new GF_Field_Name();
+    $student_name->label = "Student Name";
+    $student_name->id = $student_field_mapping['student_name'];
+    $student_name->description = "Please enter your child's name here using
+    appropriate capitalization. The text you submit here will be used on all
+    competition documents and awards.";
+    $student_name->descriptionPlacement = 'above';
+    $student_name->isRequired = true;
+    $student_name = self::aria_add_default_name_inputs($student_name);
+    $student_form->fields[] = $student_name;
+
+    // store the student name field in array of field id's
     $ariaFieldIds['student_name'] = $student_name_field->id;
     $ariaFieldIds['student_first_name'] = "{$student_name_field->id}.3";
     $ariaFieldIds['student_last_name'] = "{$student_name_field->id}.6";
 
-    // student birthday
-    $student_birthday_date_field = new GF_Field_Date();
-    $student_birthday_date_field->label = "Student Birthday";
-    $student_birthday_date_field->id = $field_id_array['student_birthday'];
-    $student_birthday_date_field->isRequired = true;
-    $student_birthday_date_field->calendarIconType = 'calendar';
-    $student_birthday_date_field->dateType = 'datepicker';
-    $student_form->fields[] = $student_birthday_date_field;
-    $ariaFieldIds['student_birthday'] = $student_birthday_date_field->id;
+    // create the student birthday field
+    $student_birthday = new GF_Field_Date();
+    $student_birthday->label = "Student Birthday";
+    $student_birthday->id = $student_field_mapping['student_birthday'];
+    $student_birthday->isRequired = true;
+    $student_birthday->calendarIconType = 'calendar';
+    $student_birthday->dateType = 'datefield';
+    $student_form->fields[] = $student_birthday;
 
-    // student's piano teacher
-    $piano_teachers_field = new GF_Field_Select();
-    $piano_teachers_field->label = "Piano Teacher's Name";
-    $piano_teachers_field->id = $field_id_array['teacher_name'];
-    $piano_teachers_field->isRequired = true;
-    $piano_teachers_field->description = "Please select your teachers name";
-    $piano_teachers_field->description .= " from the drop-down below. ";
-    $piano_teachers_field->description .= "If your teacher is not listed, please ";
-    $piano_teachers_field->description .= 'contact the festival chairman at '.$competition_festival_chairman_email.'.';
-    $piano_teachers_field->descriptionPlacement = 'above';
+    // store the student birthday field in array of field id's
+    $ariaFieldIds['student_birthday'] = $student_birthday->id;
 
-    // add all of the piano teachers that are competing in this competition
-    $formatted_teacher_names = array();
+    // create the student's piano teacher field
+    $teacher_name = new GF_Field_Select();
+    $teacher_name->label = "Teacher Name";
+    $teacher_name->id = $student_field_mapping['teacher_name'];
+    $teacher_name->isRequired = true;
+    $teacher_name->description = "Please select your teacher's name from the
+    drop-down below. If your teacher is not listed, please contact the festival
+    chairman at $competition_festival_chairman_email.";
+    $teacher_name->descriptionPlacement = 'above';
 
     // alphabetize teachers
     usort($teacher_names_and_hashes, function($a, $b) {
         return strcmp($a[1], $b[1]);
     });
 
+    // add all of the piano teachers that are competing in this competition to an array
+    $formatted_teacher_names = array();
     foreach ($teacher_names_and_hashes as $key => $value) {
       $single_teacher = array(
         'text' => $value[0] . ' ' . $value[1],
@@ -1208,76 +1257,71 @@ class ARIA_Create_Competition {
       unset($single_teacher);
     }
 
-    $piano_teachers_field->choices = $formatted_teacher_names;
-    $student_form->fields[] = $piano_teachers_field;
-    $ariaFieldIds['teacher_name'] = $piano_teachers_field->id;
+    $teacher_name->choices = $formatted_teacher_names;
+    $student_form->fields[] = $teacher_name;
 
-/*
-    // student's piano teacher does not exist
-    $teacher_missing_field_name = new GF_Field_Text();
-    $teacher_missing_field_name->label = "If your teacher's name is not listed, " .
-    "please enter your teacher's name below.";
-    $teacher_missing_field_name->id = $field_id_array['not_listed_teacher_name'];
-    $teacher_missing_field_name->isRequired = false;
-    $student_form->fields[] = $teacher_missing_field_name;
-    $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_name->id;
+    // store the teacher name field in array of field id's
+    $ariaFieldIds['teacher_name'] = $teacher_name->id;
 
-    // student's piano teacher does not exist
-    $teacher_missing_field_email = new GF_Field_Email();
-    $teacher_missing_field_email->label = "If your teacher's name is not listed, " .
-    "please enter your teacher's email below.";
-    $teacher_missing_field_email->id = $field_id_array['not_listed_teacher_email'];
-    $teacher_missing_field_email->isRequired = false;
-    $student_form->fields[] = $teacher_missing_field_email;
-    $ariaFieldIds['not_listed_teacher_name'] = $teacher_missing_field_email->id;
-*/
-    // student's available times to compete
-    $available_times = new GF_Field_Radio();
-    $available_times->label = "Available Festival Days";
-    $available_times->id = $field_id_array['available_festival_days'];
-    $available_times->isRequired = true;
-    $available_times->description = "There is no guarantee that scheduling ".
-    "requests will be honored.";
-    $available_times->descriptionPlacement = 'above';
-    $available_times->choices = array(
+    // create student's available times to compete field
+    $available_festival_days = new GF_Field_Radio();
+    $available_festival_days->label = "Available Festival Days";
+    $available_festival_days->id = $student_field_mapping['available_festival_days'];
+    $available_festival_days->isRequired = true;
+    $available_festival_days->description = "There is no guarantee that scheduling
+    requests will be honored.";
+    $available_festival_days->descriptionPlacement = 'above';
+    $available_festival_days->choices = array(
       array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false),
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
       array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false)
     );
-    $student_form->fields[] = $available_times;
+    $student_form->fields[] = $available_festival_days;
+
+    // store the available festival days in array of field id's
     $ariaFieldIds['available_festival_days'] = $available_times->id;
-    for ($i=1; $i <= count($available_times->inputs); $i++) {
-      $ariaFieldIds["available_festival_days_option_{$i}"] = "{$available_times->id}.{$i}";
+    for ($i = 1; $i <= count($available_festival_days->inputs); $i++) {
+      $ariaFieldIds["available_festival_days_option_{$i}"] = "{$available_festival_days->id}.{$i}";
     }
 
-    // student's available times to compete for command performance
-    $command_times = new GF_Field_Radio();
-    $command_times->label = "Preferred Command Performance Time";
-    $command_times->id = $field_id_array['preferred_command_performance'];
-    $command_times->isRequired = true;
-    $command_times->description = "Please select the Command Performance time ".
-    "that you prefer in the event that your child receives a superior rating.";
-    $command_times->descriptionPlacement = 'above';
-    $command_times->choices = array();
-    $command_times->choices[]
-          = array('text' => 'Any time', 'value' => 'Any time', 'isSelected' => false);
+    // create student's preferred command performance field
+    $preferred_command_performance = new GF_Field_Radio();
+    $preferred_command_performance->label = "Preferred Command Performance Time";
+    $preferred_command_performance->id = $student_field_mapping['preferred_command_performance'];
+    $preferred_command_performance->isRequired = true;
+    $preferred_command_performance->description = "If your child receives either a
+    Superior with Distinction or Superior rating from festival, he/she is elligible
+    to compete in the command performance. Please select your preferred command
+    performance time below.";
+    $preferred_command_performance->descriptionPlacement = 'above';
+    $preferred_command_performance->choices = array();
+    $preferred_command_performance->choices[] = array('text' => 'Any time',
+                                                      'value' => 'Any time',
+                                                      'isSelected' => false);
+
+    // add the command performance times that were input by the festival chairman
     if (is_array($command_options_array)) {
       $index = 1;
-      foreach( $command_options_array as $command_time ) {
-        $command_times->choices[]
-          = array('text' => $command_time, 'value' => $command_time, 'isSelected' => false);
+      foreach ($command_options_array as $command_time) {
+        $command_times->choices[] = array('text' => $command_time,
+                                          'value' => $command_time,
+                                          'isSelected' => false);
       }
     }
-    $student_form->fields[] = $command_times;
-    $ariaFieldIds['preferred_command_performance'] = $command_times->id;
+
+    $student_form->fields[] = $preferred_command_performance;
     for ($i=1; $i <= count($command_times->inputs); $i++) {
       $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$command_times->id}.{$i}";
     }
 
+    // store the preferred command performance in array of field id's
+    $ariaFieldIds['preferred_command_performance'] = $preferred_command_performance->id;
+
     // student's festival level
+    /*
     $student_level_field = new GF_Field_Select();
     $student_level_field->label = "Student Level";
-    $student_level_field->id = $field_id_array['student_level'];
+    $student_level_field->id = $student_field_mapping['student_level'];
     $student_level_field->isRequired = false;
     $student_level_field->choices = array(
 
@@ -1302,111 +1346,115 @@ class ARIA_Create_Competition {
     $student_level_field->hidden = true;
     $student_form->fields[] = $student_level_field;
     $ariaFieldIds['student_level'] = $student_level_field->id;
+    */
 
-    $product_field = new GF_Field_Product();
-    $product_field->label = "Student Level";
-    $product_field->id = $field_id_array['level_pricing'];
-    $product_field->isRequired = true;
-    $product_field->size = "small";
-    $product_field->inputs = null;
-    $product_field->inputType = "select";
-    $product_field->enablePrice = true;
-    $product_field->basePrice = "$1.00";
-    $product_field->disableQuantity = true;
-    $product_field->displayAllCategories = false;
-    $product_field->description = "Please enter your student's festival level.";
-    $product_field->description .= " If you do not know this value, please do";
-    $product_field->description .= " not submit this form until your child";
-    $product_field->description .= " contacts his/her instructor and can verify";
-    $product_field->description .= " this value.";
-    $product_field->descriptionPlacement = 'above';
+    // create the student level field
+    $student_level = new GF_Field_Product();
+    $student_level->label = "Student Level";
+    $student_level->id = $student_field_mapping['student_level'];
+    $student_level->isRequired = true;
+    $student_level->size = "small";
+    $student_level->inputs = null;
+    $student_level->inputType = "select";
+    $student_level->enablePrice = true;
+    $student_level->basePrice = "$1.00";
+    $student_level->disableQuantity = true;
+    $student_level->displayAllCategories = false;
+    $student_level->description = "Please enter your child's festival level.
+    If you do not know this value, please do not submit this form until your child
+    contacts his/her instructor and can verify this value.";
+    $student_level->descriptionPlacement = 'above';
 
-    $product_field->choices = array();
-    for( $i = 1; $i <= 11; $i++ )
-    {
-        $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
-        if($price != 0)
-        {
-          $product_field->choices[] = array('text' => (string)$i,
-                                            'value' => (string)$i,
-                                            'isSelected' => false,
-                                            'price' => $price);
-        }
+    // add the prices to the student level field
+    $student_level->choices = array();
+    for ($i = 1; $i <= 11; $i++) {
+      $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
+      if($price != 0) {
+        $product_field->choices[] = array('text' => (string)$i,
+                                          'value' => (string)$i,
+                                          'isSelected' => false,
+                                          'price' => $price);
+      }
     }
-    $student_form->fields[] = $product_field;
+    $student_form->fields[] = $student_level;
 
-    // the compliance field for parents
-    $compliance_field = new GF_Field_checkbox();
-    $compliance_field->label = "Compliance Statement";
-    $compliance_field->id = $field_id_array['compliance_statement'];
-    $compliance_field->isRequired = true;
-    $compliance_field->description = "As a parent, I understand and agree to ".
-    "comply with all rules, regulations, and amendments as stated in the ".
-    "Festival syllabus. I am in full compliance with the laws regarding ".
-    "photocopies and can provide verification of authentication of any legally ".
-    "printed music. I understand that adjudicator decisions are final and ".
-    "will not be contested. I know that small children may not remain in the ".
-    "room during performances of non-family members. I understand that ".
-    "requests for specific days/times will be scheduled if possible but cannot".
-    " be guaranteed.";
-    $compliance_field->descriptionPlacement = 'above';
-    $compliance_field->choices = array(
+    // store the student's level in array of field id's
+    $ariaFieldIds['student_level'] = $student_level->id;
+
+    // create the compliance field checkbox for parents
+    $compliance_statement = new GF_Field_Checkbox();
+    $compliance_statement->label = "Compliance Statement";
+    $compliance_statement->id = $student_field_mapping['compliance_statement'];
+    $compliance_statement->isRequired = true;
+    $compliance_statement->description = "As a parent, I understand and agree to
+    comply with all rules, regulations, and amendments as stated in the
+    Festival syllabus. I am in full compliance with the laws regarding
+    photocopies and can provide verification of authentication of any legally
+    printed music. I understand that adjudicator decisions are final and
+    will not be contested. I know that small children may not remain in the
+    room during performances of non-family members. I understand that
+    requests for specific days/times will be scheduled if possible but cannot
+    be guaranteed.";
+    $compliance_statement->descriptionPlacement = 'above';
+    $compliance_statement->choices = array(
       array('text' => 'I have read and agree with the above statement.',
       'value' => 'Agree',
       'isSelected' => false),
     );
-    $compliance_field->inputs = array();
-    $compliance_field = self::aria_add_checkbox_input( $compliance_field, 'I have read and agree with the following statement:' );
-    $student_form->fields[] = $compliance_field;
-    $ariaFieldIds['compliance_statement'] = $compliance_field->id;
-    for ($i=1; $i <= count($compliance_field->inputs); $i++) {
-      $ariaFieldIds["compliance_statement_option_{$i}"] = "{$compliance_field->id}.{$i}";
+    $compliance_statement->inputs = array();
+    $compliance_statement = self::aria_add_checkbox_input($compliance_statement,
+                                                          'I have read and agree with the following statement:');
+    $student_form->fields[] = $compliance_statement;
+
+    // store the compliance statement in array of field id's
+    $ariaFieldIds['compliance_statement'] = $compliance_statement->id;
+    for ($i = 1; $i <= count($compliance_statement->inputs); $i++) {
+      $ariaFieldIds["compliance_statement_option_{$i}"] = "{$compliance_statement->id}.{$i}";
     }
 
+    // create the total pricing field (dependent on student's level)
+    $registration_total = new GF_Field_Total();
+    $registration_total->label = "Total Registration Cost";
+    $registration_total->id = $student_field_mapping['registration_total'];
+    $registration_total->isRequired = false;
+    $student_form->fields[] = $registration_total;
 
-    $total_field = new GF_Field_Total();
-    $total_field->label = "Total Registration Cost";
-    $total_field->id = $field_id_array['registration_total'];
-    $total_field->isRequired = false;
-    $student_form->fields[] = $total_field;
+    // store the registration total in array of field id's
+    $ariaFieldIds['registration_total'] = $registration_total->id;
 
-
-    // custom submission message to let the festival chairman know the creation was
-    // a success
-
-    $successful_submission_message = 'Congratulations! You have just';
-    $successful_submission_message .= ' successfully registered your child.';
+    // custom submission message to let the parent know registration was a success
+    $successful_submission_message = "Congratulations! You have just successfully
+    registered your child.";
     $student_form->confirmation['type'] = 'message';
     $student_form->confirmation['message'] = $successful_submission_message;
 
+    // create the student form and add it to the WP dashboard
     $student_form_arr = $student_form->createFormArray();
     $student_form_arr['isStudentPublicForm'] = true;
     $student_form_arr['ariaFieldIds'] = $ariaFieldIds;
-    // add the new form to the festival chairman's dashboard
     $new_form_id = GFAPI::add_form($student_form_arr);
-
-    // make sure the new form was added without error
     if (is_wp_error($new_form_id)) {
       wp_die($new_form_id->get_error_message());
     }
 
-    // create feed for payment
+    // create feed for payment (PayPal)
     $feed_meta = array(
-            'feedName' => 'Student Registration Feed',
-            'paypalEmail' => $paypal_email,
-            'mode' => 'production',
-            'transactionType' => 'product',
-            'paymentAmount' => 'form_total',
-            'disableShipping' => 1,
-            'disableNote' => 0,
-            'type' => 'product'
-        );
+      'feedName' => 'Student Registration Feed',
+      'paypalEmail' => $paypal_email,
+      'mode' => 'production',
+      'transactionType' => 'product',
+      'paymentAmount' => 'form_total',
+      'disableShipping' => 1,
+      'disableNote' => 0,
+      'type' => 'product'
+    );
     $feed_slug = 'gravityformspaypal';
     $new_feed_id = GFAPI::add_feed( $new_form_id, $feed_meta, $feed_slug);
     if (is_wp_error($new_feed_id)) {
       wp_die($new_feed_id->get_error_message());
     }
 
+    // pass back the newly created student form id to the caller
     return $new_form_id;
   }
 }

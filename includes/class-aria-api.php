@@ -519,20 +519,17 @@ class ARIA_API {
 			'parent_first_name' => 1.3,
 			'parent_last_name' => 1.6,
       'parent_email' => 2,
-      'student_name' => 3,
-			'student_first_name' => 3.3,
-			'student_last_name' => 3.6,
-      'student_birthday' => 4,
-      'teacher_name' => 5,
-      'not_listed_teacher_name' => 6,
-      'not_listed_teacher_email' => 7,
-      'available_festival_days' => 8,
-      'preferred_command_performance' => 9,
-      'student_level' => 10,
-      'compliance_statement' => 11,
-      'compliance_statement_agreement' => 12,
-      'level_pricing' => 13,
-      'registration_total' => 14
+      'parent_email_confirmation' => 3,
+      'student_name' => 4,
+			'student_first_name' => 4.3,
+			'student_last_name' => 4.6,
+      'student_birthday' => 5,
+      'teacher_name' => 6,
+      'available_festival_days' => 7,
+      'preferred_command_performance' => 8,
+      'student_level' => 9,
+      'compliance_statement' => 10,
+      'registration_total' => 11
     );
   }
 
