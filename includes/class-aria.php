@@ -307,7 +307,6 @@ class ARIA {
         'ARIA_Form_Hooks', 'aria_student_master_post_update_entry', 10, 3 );
 
 
-
     /*
     The action registered for this hook if for adding music upload/download
     functionality.
