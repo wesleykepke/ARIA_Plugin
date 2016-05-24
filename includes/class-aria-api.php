@@ -733,6 +733,7 @@ class ARIA_API {
    * The function will search through the given array of fields and
    * locate the field with the given ID number. The ID of the field
    * is then returned.
+   *
    * @param $fields   Array   The array of fields to search through
    * @param $id       Float     The id of the array to search for
    *
