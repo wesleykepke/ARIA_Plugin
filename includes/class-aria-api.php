@@ -516,13 +516,13 @@ class ARIA_API {
     */
     return array(
       'parent_name' => 1,
-			'parent_first_name' => 1.3,
-			'parent_last_name' => 1.6,
+      'parent_first_name' => 1.3,
+      'parent_last_name' => 1.6,
       'parent_email' => 2,
       'parent_email_confirmation' => 3,
       'student_name' => 4,
-			'student_first_name' => 4.3,
-			'student_last_name' => 4.6,
+      'student_first_name' => 4.3,
+      'student_last_name' => 4.6,
       'student_birthday' => 5,
       'teacher_name' => 6,
       'available_festival_days' => 7,
