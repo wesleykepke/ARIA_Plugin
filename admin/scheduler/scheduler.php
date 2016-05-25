@@ -486,6 +486,29 @@ class Scheduling_Algorithm {
     $date_2->dateType = 'datepicker';
     $form->fields[] = $date_2;
 
+
+
+    // theory score required for special recognition
+    /*
+    $theory_score_field = new GF_Field_Select();
+    $theory_score_field->label = "Theory Score for Recognition (70-100)";
+    $theory_choices = array();
+    for ($i = 70; $i <= 100; $i++) {
+      $single_theory_choice = array();
+      $single_theory_choice['text'] = strval($i);
+      $single_theory_choice['value'] = strval($i);
+      $single_theory_choice['isSelected'] = false;
+      $theory_choices[] = $single_theory_choice;
+      unset($single_theory_choice);
+    }
+    $theory_score_field->choices = $theory_choices;
+    $theory_score_field->id = $field_mappings['competition_theory_score'];
+    $theory_score_field->isRequired = true;
+    */
+
+
+
+
     // add a default submission message for the schedule competition form
     $successful_submission_message = '';
     $form->confirmation['type'] = 'message';
