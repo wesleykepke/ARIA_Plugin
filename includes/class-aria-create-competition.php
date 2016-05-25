@@ -237,52 +237,202 @@ class ARIA_Create_Competition {
   /**
    * This function will create a new form for creating music competitions.
    *
-   * This function is responsible for creating and adding all of the
-   * associated fields that are necessary for the festival chairman to
-   * create new music competitions.
+   * This function is responsible for creating and adding all of the associated
+   * fields that are necessary for the festival chairman to create new music
+   * competitions.
    *
    * @since 1.0.0
    * @author KREW
    */
   private static function aria_create_competition_form() {
-    // create the new competition form and generate the field mappings
+    // create the new competition form and generate the field mapping
     $form = new GF_Form(CREATE_COMPETITION_FORM_NAME, "");
-    $field_mappings = ARIA_API::aria_competition_field_id_array();
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
 
-    // description
+    // description of create competition form
     $form->description = "Welcome! Please submit information for all of the
     fields in the form below in order to create a new NNMTA music festival.";
 
-    // Festival Chairman Email
-    $fc_email_field = new GF_Field_Email();
-    $fc_email_field->label = "Festival Chairman Email";
-    $fc_email_field->id = $field_mappings['competition_festival_chairman_email'];
-    $fc_email_field->description = "Please enter your email address. This address
-    will be used in the event you need to be contacted.";
-    $fc_email_field->descriptionPlacement = "above";
-    $fc_email_field->isRequired = true;
+    // festival chairman email field
+    $chairman_email = new GF_Field_Email();
+    $chairman_email->label = "Festival Chairman Email";
+    $chairman_email->id = $field_mapping['chairman_email'];
+    $chairman_email->description = "Please enter your email address. This email
+    address will be used in the event where you need to be contacted.";
+    $chairman_email->descriptionPlacement = "above";
+    $chairman_email->isRequired = true;
+    $form->fields[] = $chairman_email;
 
-    // Notifications enabled
+    // email confirmation field here
+    $chairman_email_confirmation = new GF_Field_Email();
+    $chairman_email_confirmation->label = "Festival Chairman Email (confirmation)";
+    $chairman_email_confirmation->id = $field_mapping['chairman_email_confirmation'];
+    $chairman_email_confirmation->description = "This email address must match
+    the email address entered in the previous field (Festival Chairman Email).";
+    $chairman_email_confirmation->descriptionPlacement = "above";
+    $chairman_email_confirmation->isRequired = true;
+    $form->fields[] = $chairman_email_confirmation;
+
+    // competition name field
+    $name = new GF_Field_Text();
+    $name->label = "Competition Name";
+    $name->id = $field_mapping['name'];
+    $name->isRequired = true;
+    $form->fields[] = $name;
+
+    // field for start date of the competition
+    $start_date = new GF_Field_Date();
+    $start_date->label = "Competition Start Date";
+    $start_date->id = $field_mapping['start_date'];
+    $start_date->isRequired = true;
+    $start_date->calendarIconType = 'calendar';
+    $start_date->dateType = 'datedropdown';
+    $form->fields[] = $start_date;
+
+    // field for end date of the competition
+    $end_date = new GF_Field_Date();
+    $end_date->label = "Competition End Date";
+    $end_date->id = $field_mapping['end_date'];
+    $end_date->isRequired = true;
+    $end_date->calendarIconType = 'calendar';
+    $end_date->dateType = 'datedropdown';
+    $form->fields[] = $end_date;
+
+    // main location field
+    $main_location = new GF_Field_Address();
+    $main_location->label = "Competition Location";
+    $main_location->id = $field_mapping['main_location'];
+    $main_location->isRequired = true;
+    $main_location = self::aria_add_default_address_inputs($main_location);
+    $form->fields[] = $main_location;
+
+    // second location field
+    $second_location = new GF_Field_Address();
+    $second_location->label = "Secondary Competition Location";
+    $second_location->id = $field_mapping['second_location'];
+    $second_location->isRequired = false;
+    $second_location->description = "Use this field to enter a secondary
+    competition location (if the venue for the competition changes from day
+    to day).";
+    $second_location->descriptionPlacement = 'above';
+    $second_location = self::aria_add_default_address_inputs($second_location);
+    $form->fields[] = $second_location;
+
+    // field for student registration begin date
+    $student_registration_start = new GF_Field_Date();
+    $student_registration_start->label = "Student Registration Start Date";
+    $student_registration_start->id = $field_mapping['student_registration_start'];
+    $student_registration_start->isRequired = true;
+    $student_registration_start->description = "The date entered here will be
+    when the student registration form becomes available to the public.";
+    $student_registration_start->descriptionPlacement = "above";
+    $student_registration_start->calendarIconType = 'calendar';
+    $student_registration_start->dateType = 'datedropdown';
+    $form->fields[] = $student_registration_start;
+
+    // field for student registration deadline
+    $student_registration_end = new GF_Field_Date();
+    $student_registration_end->label = "Student Registration End Date";
+    $student_registration_end->id = $field_mapping['student_registration_end'];
+    $student_registration_end->isRequired = true;
+    $student_registration_end->description = "The date entered here will be
+    when the student registration form becomes unavailable to the public.";
+    $student_registration_end->descriptionPlacement = "above";
+    $student_registration_end->calendarIconType = 'calendar';
+    $student_registration_end->dateType = 'datedropdown';
+    $form->fields[] = $student_registration_end;
+
+    // field for teacher registration begin date
+    $teacher_registration_start = new GF_Field_Date();
+    $teacher_registration_start->label = "Teacher Registration Start Date";
+    $teacher_registration_start->id = $field_mapping['teacher_registration_start'];
+    $teacher_registration_start->isRequired = true;
+    $teacher_registration_start->description = "The date entered here will be
+    when the teacher registration form becomes available to the teachers.";
+    $teacher_registration_start->descriptionPlacement = "above";
+    $teacher_registration_start->calendarIconType = 'calendar';
+    $teacher_registration_start->dateType = 'datedropdown';
+    $form->fields[] = $teacher_registration_start;
+
+    // field for teacher registration deadline
+    $teacher_registration_end = new GF_Field_Date();
+    $teacher_registration_end->label = "Teacher Registration End Date";
+    $teacher_registration_end->id = $field_mapping['teacher_registration_end'];
+    $teacher_registration_end->isRequired = true;
+    $teacher_registration_end->description = "The date entered here will be
+    when the teacher registration form becomes unavailable to the teachers.";
+    $teacher_registration_end->descriptionPlacement = "above";
+    $teacher_registration_end->calendarIconType = 'calendar';
+    $teacher_registration_end->dateType = 'datedropdown';
+    $form->fields[] = $teacher_registration_end;
+
+    // teacher volunteer options field
+
+    // teacher volunteer time options field
+    $teacher_volunteer_times_field = new GF_Field_List();
+    $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
+    $teacher_volunteer_times_field->id = $field_mapping['competition_volunteer_times'];
+    $teacher_volunteer_times_field->isRequired = true;
+    $teacher_volunteer_times_field->description = "Enter at least two times for teachers to volunteer ";
+    $teacher_volunteer_times_field->description .= "e.g. Saturday (10am-4pm), Sunday night, etc.";
+    $teacher_volunteer_times_field->descriptionPlacement = 'above';
+
+    // teacher csv file upload field
+    $teacher_csv_file_upload_field = new GF_Field_FileUpload();
+    $teacher_csv_file_upload_field->label = CSV_TEACHER_FIELD_NAME;
+    $teacher_csv_file_upload_field->id = $field_mapping['competition_teacher_csv_upload'];
+    $teacher_csv_file_upload_field->isRequired = true;
+    $teacher_csv_file_upload_field->description = "Browse your computer for a CSV
+    file of teachers that will be participating in this music competition. If
+    a teacher decides that he/she wants to participate in this competition later,
+    you will have the opportunity to add more teachers using the 'ARIA: Add Teacher'
+    page (located in the 'Pages' section of the WordPress dashboard). <b>Please
+    note that the CSV file should be in the following format: First Name, Last Name,
+    Phone, Email</b>";
+    $teacher_csv_file_upload_field->descriptionPlacement = 'above';
+
+    // command performance options field
+    $command_performance_option_field = new GF_Field_List();
+    $command_performance_option_field->label = "Command Performance Time Options For Students";
+    $command_performance_option_field->id = $field_mapping['competition_command_performance_opt'];
+    $command_performance_option_field->isRequired = true;
+    $command_performance_option_field->description = "These are the options that will
+    be shown to the students when registering (e.g. Thursday at 5:30pm, 7PM on Jan 1, etc.).";
+    $command_performance_option_field->descriptionPlacement = 'above';
+
+    // master class registration option field
+    $has_master_class = new GF_Field_Radio();
+    $has_master_class->label = "Master Class Sections?";
+    $has_master_class->id = $field_mapping['competition_has_master_class'];
+    $has_master_class->isRequired = true;
+    $has_master_class->description = "Should students be allowed to register
+    for a master class section in this competition?";
+    $has_master_class->choices = array(
+        array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
+        array('text' => 'No', 'value' => 'No', 'isSelected' => false)
+    );
+
+    // field for enabling email notifications to festival chairman
     $notification_field = new GF_Field_Radio();
     $notification_field->label = "Would you like to be notified when students register?";
-    $notification_field->id = $field_mappings['notification_enabled'];
+    $notification_field->id = $field_mapping['notification_enabled'];
     $notification_field->isRequired = true;
     $notification_field->choices = array(
         array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
 
-    // Notifications Email
+    // notification email field
     $notification_email_field = new GF_Field_Email();
     $notification_email_field->label = "Notification Email";
-    $notification_email_field->id = $field_mappings['notification_email'];
-    $notification_email_field->description = "Please enter the email address you would like";
-    $notification_email_field->description .= " notificiation emails to be sent to.";
+    $notification_email_field->id = $field_mapping['notification_email'];
+    $notification_email_field->description = "Please enter the email address you
+    would like notificiation emails to be sent to.";
     $notification_email_field->descriptionPlacement = "above";
     $notification_email_field->isRequired = true;
     $conditionalRules = array();
     $conditionalRules[] = array(
-      'fieldId' => $field_mappings['notification_enabled'],
+      'fieldId' => $field_mapping['notification_enabled'],
       'operator' => 'is',
       'value' => 'Yes'
     );
@@ -292,220 +442,35 @@ class ARIA_Create_Competition {
       'rules' => $conditionalRules
     );
 
-    // name
-    $name_field = new GF_Field_Text();
-    $name_field->label = "Competition Name";
-    $name_field->id = $field_mappings['competition_name'];
-    $name_field->isRequired = true;
-
-    // start date of the competition
-    $start_date_field = new GF_Field_Date();
-    $start_date_field->label = "Competition Start Date";
-    $start_date_field->id = $field_mappings['competition_start_date'];
-    $start_date_field->isRequired = true;
-    $start_date_field->calendarIconType = 'calendar';
-    $start_date_field->dateType = 'datepicker';
-
-    // end date of the competition
-    $end_date_field = new GF_Field_Date();
-    $end_date_field->label = "Competition End Date";
-    $end_date_field->id = $field_mappings['competition_end_date'];
-    $end_date_field->isRequired = true;
-    $end_date_field->calendarIconType = 'calendar';
-    $end_date_field->dateType = 'datepicker';
-
-    // location
-    $location_field = new GF_Field_Address();
-    $location_field->label = "Competition Location";
-    $location_field->id = $field_mappings['competition_location'];
-    $location_field->isRequired = true;
-    $location_field = self::aria_add_default_address_inputs($location_field);
-
-    // second location
-    $location_field_2 = new GF_Field_Address();
-
-    $location_field_2->label = "Sunday Competition Location (If different from above)";
-    $location_field_2->id = $field_mappings['competition_2_address'];
-    $location_field_2->isRequired = false;
-    $location_field_2->description = 'If different location for second day.';
-    $location_field_2->descriptionPlacement = 'above';
-    $location_field_2 = self::aria_add_default_address_inputs($location_field_2);
-
-
-    // student registration begin date
-    $student_registration_start_date_field = new GF_Field_Date();
-    $student_registration_start_date_field->label = "Student Registration Start Date";
-    $student_registration_start_date_field->id = $field_mappings['competition_student_reg_start'];
-    $student_registration_start_date_field->isRequired = true;
-    $student_registration_start_date_field->calendarIconType = 'calendar';
-    $student_registration_start_date_field->dateType = 'datepicker';
-
-    // student registration deadline
-    $student_registration_end_date_field = new GF_Field_Date();
-    $student_registration_end_date_field->label = "Student Registration Deadline";
-    $student_registration_end_date_field->id = $field_mappings['competition_student_reg_end'];
-    $student_registration_end_date_field->isRequired = true;
-    $student_registration_end_date_field->calendarIconType = 'calendar';
-    $student_registration_end_date_field->dateType = 'datepicker';
-
-    // teacher registration start date
-    $teacher_registration_start_date_field = new GF_Field_Date();
-    $teacher_registration_start_date_field->label = "Teacher Registration Start Date";
-    $teacher_registration_start_date_field->id = $field_mappings['competition_teacher_reg_start'];
-    $teacher_registration_start_date_field->isRequired = true;
-    $teacher_registration_start_date_field->calendarIconType = 'calendar';
-    $teacher_registration_start_date_field->dateType = 'datepicker';
-
-    // teacher registration deadline
-    $teacher_registration_end_date_field = new GF_Field_Date();
-    $teacher_registration_end_date_field->label = "Teacher Registration Deadline";
-    $teacher_registration_end_date_field->id = $field_mappings['competition_teacher_reg_end'];
-    $teacher_registration_end_date_field->isRequired = true;
-    $teacher_registration_end_date_field->calendarIconType = 'calendar';
-    $teacher_registration_end_date_field->dateType = 'datepicker';
-
-    // teacher volunteer options
-    $teacher_volunteer_times_field = new GF_Field_List();
-    $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
-    $teacher_volunteer_times_field->id = $field_mappings['competition_volunteer_times'];
-    $teacher_volunteer_times_field->isRequired = true;
-    $teacher_volunteer_times_field->description = "Enter at least two times for teachers to volunteer ";
-    $teacher_volunteer_times_field->description .= "e.g. Saturday (10am-4pm), Sunday night, etc.";
-    $teacher_volunteer_times_field->descriptionPlacement = 'above';
-
-    // teacher csv file upload
-    $teacher_csv_file_upload_field = new GF_Field_FileUpload();
-    $teacher_csv_file_upload_field->label = CSV_TEACHER_FIELD_NAME;
-    $teacher_csv_file_upload_field->id = $field_mappings['competition_teacher_csv_upload'];
-    $teacher_csv_file_upload_field->isRequired = true;
-    $teacher_csv_file_upload_field->description = 'Browse your computer for a CSV';
-    $teacher_csv_file_upload_field->description .= ' file of teachers that';
-    $teacher_csv_file_upload_field->description .= ' will be participating in';
-    $teacher_csv_file_upload_field->description .= ' this music competition.';
-    $teacher_csv_file_upload_field->description .= ' Don\'t worry, you will have';
-    $teacher_csv_file_upload_field->description .= ' the opportunity to add more';
-    $teacher_csv_file_upload_field->description .= ' teachers to this competition later.</br>';
-    $teacher_csv_file_upload_field->description .= ' <b>The CSV file should be in the';
-    $teacher_csv_file_upload_field->description .= ' following format:</br>First Name, ';
-    $teacher_csv_file_upload_field->description .= ' Last Name, Phone, Email</b>';
-    $teacher_csv_file_upload_field->descriptionPlacement = 'above';
-
-/*
-
-
-    // number of judges per sections
-    $num_judges_per_section_field = new GF_Field_Number();
-    $num_judges_per_section_field->label = "Number of Judges per Section";
-    $num_judges_per_section_field->id = $field_mappings['competition_num_judges_per_section'];
-    $num_judges_per_section_field->isRequired = false;
-
-    // judge upload form
-    $judge_csv_file_upload_field = new GF_Field_FileUpload();
-    $judge_csv_file_upload_field->label = CSV_JUDGE_FIELD_NAME;
-    $judge_csv_file_upload_field->id = $field_mappings['competition_judge_csv_upload'];
-    $judge_csv_file_upload_field->isRequired = false;
-    $judge_csv_file_upload_field->description = 'Browse your computer for a CSV';
-    $judge_csv_file_upload_field->description .= ' file of judges that';
-    $judge_csv_file_upload_field->description .= ' will be participating in';
-    $judge_csv_file_upload_field->description .= ' this music competition.';
-    $judge_csv_file_upload_field->description .= ' Don\'t worry, you will have';
-    $judge_csv_file_upload_field->description .= ' the opportunity to add more';
-    $judge_csv_file_upload_field->description .= ' judges to this competition later.';
-    $judge_csv_file_upload_field->descriptionPlacement = 'above';
-
-    // number of students per section per level (needed for lower level where
-    // times aren't provided during registration)
-      // not sure how to handle this at the moment
-
-    // number of command performances
-
-    $num_command_performance_field = new GF_Field_Number();
-    $num_command_performance_field->label = "Number of Command Performance Performances";
-    $num_command_performance_field->id = $field_mappings['competition_num_command_performances'];
-    $num_command_performance_field->isRequired = false;
-
-
-    // date of command performance
-    $command_perf_date_field = new GF_Field_Date();
-    $command_perf_date_field->label = "Command Performance Date";
-    $command_perf_date_field->id = $field_mappings['competition_command_performance_date'];
-    $command_perf_date_field->isRequired = false;
-    $command_perf_date_field->calendarIconType = 'calendar';
-    $command_perf_date_field->dateType = 'datepicker';
-
-    // time of command performance
-    $command_performance_time_field = new GF_Field_Time();
-    $command_performance_time_field->label = "Command Performance Start Time";
-    $command_performance_time_field->id = $field_mappings['competition_command_performance_time'];
-    $command_performance_time_field->isRequired = false;
-    */
-
-    // command performance options
-    $command_performance_option_field = new GF_Field_List();
-    $command_performance_option_field->label = "Command Performance Time Options For Students";
-    $command_performance_option_field->id = $field_mappings['competition_command_performance_opt'];
-    $command_performance_option_field->isRequired = true;
-    $command_performance_option_field->description = "These are the options given to the students when registering. ";
-    $command_performance_option_field->description .= "e.g. Thursday at 5:30pm, 7PM on Jan 1, etc.";
-    $command_performance_option_field->descriptionPlacement = 'above';
-
-    // theory score required for special recognition
-    $theory_score_field = new GF_Field_Select();
-    $theory_score_field->label = "Theory Score for Recognition (70-100)";
-    $theory_choices = array();
-    for ($i = 70; $i <= 100; $i++) {
-      $single_theory_choice = array();
-      $single_theory_choice['text'] = strval($i);
-      $single_theory_choice['value'] = strval($i);
-      $single_theory_choice['isSelected'] = false;
-      $theory_choices[] = $single_theory_choice;
-      unset($single_theory_choice);
-    }
-    $theory_score_field->choices = $theory_choices;
-    $theory_score_field->id = $field_mappings['competition_theory_score'];
-    $theory_score_field->isRequired = true;
-
-    // master class
-    $has_master_class = new GF_Field_Radio();
-    $has_master_class->label = "Allow students to register for master class?";
-    $has_master_class->id = $field_mappings['competition_has_master_class'];
-    $has_master_class->isRequired = true;
-    $has_master_class->choices = array(
-        array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
-        array('text' => 'No', 'value' => 'No', 'isSelected' => false)
-    );
-
-    // Pricing section break
+    // add a section break and begin pricing
     $section_break = new GF_Field_Section();
     $section_break->label = "Pricing";
-    $section_break->description = "Enter prices only for levels eligible to";
-    $section_break->description .= " participate in this competition.";
+    $section_break->description = "Enter prices only for levels eligible to
+    participate in this competition.";
 
-    // PayPal Email
+    // PayPal email field
     $paypal_email_field = new GF_Field_Email();
     $paypal_email_field->label = "Paypal Account Email";
-    $paypal_email_field->id = $field_mappings['paypal_email'];
-    $paypal_email_field->description = "Please enter the email address associated";
-    $paypal_email_field->description .= " with your PayPal account. Please make sure this";
-    $paypal_email_field->description .= " PayPal is setup according to the Gravity Forms";
-    $paypal_email_field->description .= " PayPal Add On directions.";
+    $paypal_email_field->id = $field_mapping['paypal_email'];
+    $paypal_email_field->description = "Please enter the email address associated
+    with your PayPal account. Please make sure this PayPal is setup according to
+    the Gravity Forms PayPal Add-On directions.";
     $paypal_email_field->descriptionPlacement = "above";
     $paypal_email_field->isRequired = true;
 
 
-    // level price
+    // level pricing field
     $pricing = array();
-   for( $i = 1; $i <= 11; $i++ )
-    {
-        $level_price = new GF_Field_Number();
-        $level_price->label = "Price for Level " . $i . " Student";
-        $level_price->id = $field_mappings['level_' . $i . '_price'];
-        $level_price->defaultValue = '0.00';
-        $level_price->size = 'small';
-        $level_price->isRequired = false;
-        $level_price->numberFormat = 'currency';
-        $pricing[] = $level_price;
-        unset($level_price);
+    for ($i = 1; $i <= 11; $i++) {
+      $level_price = new GF_Field_Number();
+      $level_price->label = "Price for Level " . $i . " Student";
+      $level_price->id = $field_mapping['level_' . $i . '_price'];
+      $level_price->defaultValue = '0.00';
+      $level_price->size = 'small';
+      $level_price->isRequired = false;
+      $level_price->numberFormat = 'currency';
+      $pricing[] = $level_price;
+      unset($level_price);
     }
 
     // assign all of the previous attributes to our newly created form
@@ -521,19 +486,6 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end_date_field;
     $form->fields[] = $teacher_volunteer_times_field;
     $form->fields[] = $teacher_csv_file_upload_field;
-
-    /*
-    $form->fields[] = $num_traditional_sections_field;
-    $form->fields[] = $num_master_sections_field;
-    $form->fields[] = $beginning_time_buffer_field;
-    $form->fields[] = $ending_time_buffer_field;
-    $form->fields[] = $lunch_break_field;
-    $form->fields[] = $num_judges_per_section_field;
-    $form->fields[] = $judge_csv_file_upload_field;
-    $form->fields[] = $command_perf_date_field;
-    $form->fields[] = $command_performance_time_field;
-    */
-
     $form->fields[] = $command_performance_option_field;
     $form->fields[] = $theory_score_field;
     $form->fields[] = $has_master_class;
@@ -567,7 +519,7 @@ class ARIA_Create_Competition {
   * This function is used to pre-populate the address fields of a gravity form
   * with some generic, default values.
   *
-  * @param Field Object $field  The name of field used for addressing
+  * @param  $field  Field Object  The name of field used for addressing.
   *
   * @since 1.0.0
   * @author KREW
@@ -575,22 +527,22 @@ class ARIA_Create_Competition {
   private static function aria_add_default_address_inputs($field) {
     $field->inputs = array(
       array("id" => "{$field->id}.1",
-      			"label" => "competition_address_first",
+      			"label" => "street_address",
       			"name" => ""),
       array("id" => "{$field->id}.2",
-      			"label" => "competition_address_second",
+      			"label" => "address_line_2",
       			"name" => ""),
       array("id" => "{$field->id}.3",
-      			"label" => "competition_city",
+      			"label" => "city",
       			"name" => ""),
       array("id" => "{$field->id}.4",
-      			"label" => "State \/ Province",
+      			"label" => "state_province_region",
       			"name" => ""),
       array("id" => "{$field->id}.5",
-      			"label" => "ZIP \/ Postal Code",
+      			"label" => "zip_postal_code",
       			"name" => ""),
       array("id" => "{$field->id}.6",
-      			"label" => "competition_country",
+      			"label" => "country",
       			"name" => ""),
     );
 
@@ -1141,8 +1093,11 @@ class ARIA_Create_Competition {
    * fields that are necessary for students to enter data about their upcoming
    * music competition.
    *
-   * @param $competition_entry Entry Object The entry of the newly created music competition
-   * @param $teacher_names_and_hashes Array The array of teacher names in this competition
+   * @param   $competition_entry  Entry Object  The entry of the newly created music competition.
+   * @param   $teacher_names_and_hashes   Array   The array of teacher names in this competition.
+   * @param   $command_options_array  Array   The array of command performance options.
+   * @param   $competition_festival_chairman_email  String  The email of the festival chairman.
+   * @param   $paypal_email   String  The email used to link to the paypal account.
    *
    * @since 1.0.0
    * @author KREW
@@ -1159,6 +1114,13 @@ class ARIA_Create_Competition {
     // obtain the name of the competition and initialize a new form
     $competition_name = $competition_entry[$create_comp_field_mapping['competition_name']];
     $student_form = new GF_Form("{$competition_name} Student Registration", "");
+
+    // add a description to the student form
+    $student_form->description = "Welcome! Use this form to submit your child's
+    information for the upcoming NNMTA festival. Once this form has been submitted,
+    your child's teacher will receive an email with a link that they will use to
+    complete the registration process. Within a few weeks, you will receive an
+    email stating when your child has been registered to perform.";
 
     // create a designated array to hold the field id's of the fields in the student registration form
     $ariaFieldIds = array();
@@ -1222,7 +1184,7 @@ class ARIA_Create_Competition {
     $student_birthday->id = $student_field_mapping['student_birthday'];
     $student_birthday->isRequired = true;
     $student_birthday->calendarIconType = 'calendar';
-    $student_birthday->dateType = 'datefield';
+    $student_birthday->dateType = 'datedropdown';
     $student_form->fields[] = $student_birthday;
 
     // store the student birthday field in array of field id's
@@ -1237,6 +1199,7 @@ class ARIA_Create_Competition {
     drop-down below. If your teacher is not listed, please contact the festival
     chairman at $competition_festival_chairman_email.";
     $teacher_name->descriptionPlacement = 'above';
+    $teacher_name->placeholder = "Select teacher from below..";
 
     // alphabetize teachers
     usort($teacher_names_and_hashes, function($a, $b) {
