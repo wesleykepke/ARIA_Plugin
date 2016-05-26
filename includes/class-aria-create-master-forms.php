@@ -1,10 +1,11 @@
 <?php
 
 /**
- * The file that defines create master forms functionality. Master forms will
- * serve as the systems source of truth for each competition.
+ * The file that defines the functionality for creating the student and teacher
+ * master forms. Master forms will serve as the sources of truth for each
+ * competition.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA
