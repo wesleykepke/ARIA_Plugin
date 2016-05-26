@@ -348,6 +348,15 @@ class ARIA {
 
     $this->loader->add_filter( 'wp_mail_content_type', 'ARIA_API',
       'set_content_type', 10, 1);
+
+    /*
+    The filter registered for this hook performs form validation on the create
+    competition form.
+    */
+    $this->loader->add_filter('gform_validation',
+                              'ARIA_Create_Competition',
+                              'aria_create_competition_validation',
+                              10, 1);
   }
 
   /**

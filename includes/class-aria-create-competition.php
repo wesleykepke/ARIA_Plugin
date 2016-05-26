@@ -119,34 +119,34 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_teacher_and_student_forms($confirmation, $form, $entry, $ajax) {
-echo "Displaying entry from create competition:<br>";
-wp_die(print_r($entry));
-
-
     // only perform processing if it's the create competition form
     if (!array_key_exists('isCompetitionCreationForm', $form)
         || !$form['isCompetitionCreationForm']) {
           return $confirmation;
     }
 
-    // check to see if the given competition name has already been used. if it has,
-    // throw an error and make the festival chairman remove the old competition or rename
-    // the current competition.
+    // check to see if the given competition name has already been used
     $field_mapping = ARIA_API::aria_competition_field_id_array();
-    $competition_name = $entry[$field_mapping['competition_name']];
-    $all_forms = GFAPI::get_forms(true, false);
+    $competition_name = $entry[$field_mapping['name']];
+    $all_forms = GFAPI::get_forms();
     foreach ($all_forms as $single_form) {
       if (strpos($single_form['title'], $competition_name) !== false) {
-        wp_die("<h1>ERROR: A competition with the name '$competition_name' already
+        // instruct user on how to proceed if there are duplicate names
+        wp_die("<h1>Oh no! A competition with the name '$competition_name' already
             exists. Please remove all of the forms and pages for '$competition_name'
-            and try creating the competition again or change the name of
-            the competition you're trying to create.</h1>");
+            in the WordPress dashboard and try creating the competition again <i>or</i>
+            change the name of the competition you're trying to create.</h1>");
       }
     }
 
     // create the student and teacher (master) forms
-    $student_master_form_id = ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]), $entry[(string) $field_mapping['competition_has_master_class']]);
-    $teacher_master_form_id = ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name, unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+    $student_master_form_id =
+      ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name,
+                                                                unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]),
+                                                                $entry[(string) $field_mapping['competition_has_master_class']]);
+    $teacher_master_form_id =
+      ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name,
+                                                                unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
 
     // upload content of the teacher csv file into the teacher master form
     $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
@@ -479,7 +479,6 @@ wp_die(print_r($entry));
     $form->fields[] = $paypal_email;
 
     // level pricing field for PayPal
-    //$pricing = array();
     for ($i = 1; $i <= 11; $i++) {
       $level_price = new GF_Field_Number();
       $level_price->label = "Price for Level " . strval($i) . " Student";
@@ -492,7 +491,6 @@ wp_die(print_r($entry));
       //$pricing[] = $level_price;
       unset($level_price);
     }
-    //$form->fields[] = array_merge($form->fields, $pricing);
 
     // add a default message for successful creation
     $successful_submission_message = "Congratulations! You have just successfully
@@ -513,6 +511,56 @@ wp_die(print_r($entry));
     else {
       return $new_form_id;
     }
+  }
+
+  /**
+   * This function will perform validation on the input obtain from the create
+   * competition form.
+   *
+   * Various validation checks will be performed to ensure that the data input
+   * into the create competition form is accurate and valid.
+   *
+   * @param   $validation_result  Array   Contains the validation result and the current Form Object.
+   *
+   * @return  $validation_result  Array   Contains the validation result and the current Form Object.
+   *
+   * @since 2.0.0
+   * @author KREW
+   */
+  public static function aria_create_competition_validation($validation_result) {
+    // obtain the form object and the field mapping for this object
+    $form = $validation_result['form'];
+    $field_mapping = ARIA_API::aria_competition_field_id_array();
+
+    // obtain the input for festival chairman email and the confirmation email
+    $chairman_email = "input_" . strval($field_mapping['chairman_email']);
+    $chairman_email_confirmation = "input_" . strval($field_mapping['chairman_email_confirmation']);
+    $chairman_email = rgpost($chairman_email);
+    $chairman_email_confirmation = rgpost($chairman_email_confirmation);
+
+    // obtain the start and end dates for student registration
+    //$s
+
+    // obtain the start and end dates for teacher registration
+
+    // compare the festival chairman email with the festival chairman confirmation email
+    if (strcmp($chairman_email, $chairman_email_confirmation) !== 0) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // festival chairman confirmation email field
+        if ($field->id == strval($field_mapping['chairman_email_confirmation'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "This email must match the email in the
+          field titled 'Festival Chairman Email'.";
+        }
+      }
+    }
+
+    // check registration dates to ensure they occur in chronological order
+
+
+    $validation_result['form'] = $form;
+    return $validation_result;
   }
 
   /**
