@@ -8,17 +8,17 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              http://wesleykepke.github.io/ARIA/
+ * @link              http://wesleykepke.github.io/ARIA_Plugin/
  * @since             1.0.0
  * @package           ARIA
  *
  * @wordpress-plugin
  * Plugin Name:       ARIA (Administration, Registration, and Information Assistant)
- * Plugin URI:        http://wesleykepke.github.io/ARIA/
- * Description:       This plugin allows the NNMTA to create, schedule, and manage music competitions.
- * Version:           1.1.0
+ * Plugin URI:        http://wesleykepke.github.io/ARIA_Plugin/
+ * Description:       This plugin allows the NNMTA to create, schedule, manage, and create documents for their music festivals.
+ * Version:           2.0.0
  * Author:            KREW (Kyle Lee, Renee Iinuma, Ernest Landrito, and Wesley Kepke)
- * Author URI:        http://wesleykepke.github.io/ARIA/
+ * Author URI:        http://wesleykepke.github.io/ARIA_Plugin/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       ARIA
