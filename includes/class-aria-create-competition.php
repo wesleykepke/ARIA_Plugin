@@ -125,6 +125,9 @@ class ARIA_Create_Competition {
           return $confirmation;
     }
 
+echo "Displaying entry below: <br>";
+wp_die(print_r($entry));
+
     // check to see if the given competition name has already been used
     $field_mapping = ARIA_API::aria_competition_field_id_array();
     $competition_name = $entry[$field_mapping['name']];
@@ -447,8 +450,8 @@ class ARIA_Create_Competition {
     $notification_email->isRequired = true;
 
     // add the conditional rules for the notification email field
-    $conditional_rules = array();
-    $conditional_rules[] = array(
+    $notification_email_conditional_rules = array();
+    $notification_email_conditional_rules[] = array(
       'fieldId' => $field_mapping['notification_option'],
       'operator' => 'is',
       'value' => 'Yes'
@@ -456,9 +459,26 @@ class ARIA_Create_Competition {
     $notification_email->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
-      'rules' => $conditional_rules
+      'rules' => $notification_email_conditional_rules
     );
     $form->fields[] = $notification_email;
+
+    // notification email confirmation field
+    $notification_email_confirmation = new GF_Field_Email();
+    $notification_email_confirmation->label = "Notification Email (confirmation)";
+    $notification_email_confirmation->id = $field_mapping['notification_email_confirmation'];
+    $notification_email_confirmation->description = "This email address must match
+    the email address entered in the previous field (Notification Email).";
+    $notification_email_confirmation->descriptionPlacement = "above";
+    $notification_email_confirmation->isRequired = true;
+
+    // add the conditional rules for the notification email confirmation field
+    $notification_email_confirmation->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $notification_email_conditional_rules
+    );
+    $form->fields[] = $notification_email_confirmation;
 
     // add a section break and begin pricing
     $section_break = new GF_Field_Section();
@@ -469,7 +489,7 @@ class ARIA_Create_Competition {
 
     // PayPal email field
     $paypal_email = new GF_Field_Email();
-    $paypal_email->label = "Paypal Account Email";
+    $paypal_email->label = "PayPal Account Email";
     $paypal_email->id = $field_mapping['paypal_email'];
     $paypal_email->description = "Please enter the email address associated
     with your PayPal account. Please make sure this PayPal is setup according to
@@ -477,6 +497,16 @@ class ARIA_Create_Competition {
     $paypal_email->descriptionPlacement = "above";
     $paypal_email->isRequired = true;
     $form->fields[] = $paypal_email;
+
+    // PayPal email confirmation field
+    $paypal_email_confirmation = new GF_Field_Email();
+    $paypal_email_confirmation->label = "PayPal Account Email (confirmation)";
+    $paypal_email_confirmation->id = $field_mapping['paypal_email_confirmation'];
+    $paypal_email_confirmation->description = "This email address must match
+    the email address entered in the previous field (PayPal Account Email).";
+    $paypal_email_confirmation->descriptionPlacement = "above";
+    $paypal_email_confirmation->isRequired = true;
+    $form->fields[] = $paypal_email_confirmation;
 
     // level pricing field for PayPal
     for ($i = 1; $i <= 11; $i++) {
@@ -538,10 +568,38 @@ class ARIA_Create_Competition {
     $chairman_email = rgpost($chairman_email);
     $chairman_email_confirmation = rgpost($chairman_email_confirmation);
 
+    // obtain the input for notification email and the confirmation email
+    $notification_email = "input_" . strval($field_mapping['notification_email']);
+    $notification_email_confirmation = "input_" . strval($field_mapping['notification_email_confirmation']);
+    $notification_email = rgpost($notification_email);
+    $notification_email_confirmation = rgpost($notification_email_confirmation);
+
+    // obtain the input for PayPal email and confirmation email
+    $paypal_email = "input_" . strval($field_mapping['paypal_email']);
+    $paypal_email_confirmation = "input_" . strval($field_mapping['paypal_email_confirmation']);
+    $paypal_email = rgpost($paypal_email);
+    $paypal_email_confirmation = rgpost($paypal_email_confirmation);
+
+    // obtain the start and end dates for the festival
+    $month_offset = 0;
+    $day_offset = 1;
+    $year_offset = 2;
+    $start_date = "input_" . strval($field_mapping['start_date']);
+    $end_date = "input_" . strval($field_mapping['end_date']);
+    $start_date = rgpost($start_date);
+    $end_date = rgpost($end_date);
+
     // obtain the start and end dates for student registration
-    //$s
+    $student_registration_start = "input_" . strval($field_mapping['student_registration_start']);
+    $student_registration_end = "input_" . strval($field_mapping['student_registration_end']);
+    $student_registration_start = rgpost($student_registration_start);
+    $student_registration_end = rgpost($student_registration_end);
 
     // obtain the start and end dates for teacher registration
+    $teacher_registration_start = "input_" . strval($field_mapping['teacher_registration_start']);
+    $teacher_registration_end = "input_" . strval($field_mapping['teacher_registration_end']);
+    $teacher_registration_start = rgpost($teacher_registration_start);
+    $teacher_registration_end = rgpost($teacher_registration_end);
 
     // compare the festival chairman email with the festival chairman confirmation email
     if (strcmp($chairman_email, $chairman_email_confirmation) !== 0) {
@@ -556,8 +614,112 @@ class ARIA_Create_Competition {
       }
     }
 
-    // check registration dates to ensure they occur in chronological order
+    // compare the notification email with the notification confirmation email
+    if (strcmp($notification_email, $notification_email_confirmation) !== 0) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // notification confirmation email field
+        if ($field->id == strval($field_mapping['notification_email_confirmation'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "This email must match the email in the
+          field titled 'Notification Email'.";
+        }
+      }
+    }
 
+    // compare the PayPal email with the PayPal confirmation email
+    if (strcmp($paypal_email, $paypal_email_confirmation) !== 0) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // PayPal confirmation email field
+        if ($field->id == strval($field_mapping['paypal_email_confirmation'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "This email must match the email in the
+          field titled 'PayPal Account Email'.";
+        }
+      }
+    }
+
+    // check competition dates to ensure they occur in chronological order
+    $festival_date_incorrect = false;
+    if ($start_date[$year_offset] > $end_date[$year_offset]) {
+      $festival_date_incorrect = true;
+    }
+
+    elseif ($start_date[$month_offset] > $end_date[$month_offset]) {
+      $festival_date_incorrect = true;
+    }
+
+    elseif ($start_date[$month_offset] == $end_date[$month_offset] &&
+            $start_date[$day_offset] > $end_date[$day_offset]) {
+      $festival_date_incorrect = true;
+    }
+
+    if ($festival_date_incorrect) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // end date field
+        if ($field->id == strval($field_mapping['end_date'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "The festival end date must occur on a
+          date after the festival start date.";
+        }
+      }
+    }
+
+    // check student registration dates to ensure they occur in chronological order
+    $student_registration_date_incorrect = false;
+    if ($student_registration_start[$year_offset] > $student_registration_end[$year_offset]) {
+      $student_registration_date_incorrect = true;
+    }
+
+    elseif ($student_registration_start[$month_offset] > $student_registration_end[$month_offset]) {
+      $student_registration_date_incorrect = true;
+    }
+
+    elseif ($student_registration_start[$month_offset] == $student_registration_end[$month_offset] &&
+            $student_registration_start[$day_offset] > $student_registration_end[$day_offset]) {
+      $student_registration_date_incorrect = true;
+    }
+
+    if ($student_registration_date_incorrect) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // end date field
+        if ($field->id == strval($field_mapping['student_registration_end'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "The student registration end date must
+          occur on a date after the student registration start date.";
+        }
+      }
+    }
+
+    // check teacher registration dates to ensure they occur in chronological order
+    $teacher_registration_date_incorrect = false;
+    if ($teacher_registration_start[$year_offset] > $teacher_registration_end[$year_offset]) {
+      $teacher_registration_date_incorrect = true;
+    }
+
+    elseif ($teacher_registration_start[$month_offset] > $teacher_registration_end[$month_offset]) {
+      $teacher_registration_date_incorrect = true;
+    }
+
+    elseif ($teacher_registration_start[$month_offset] == $teacher_registration_end[$month_offset] &&
+            $teacher_registration_start[$day_offset] > $teacher_registration_end[$day_offset]) {
+      $teacher_registration_date_incorrect = true;
+    }
+
+    if ($teacher_registration_date_incorrect) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // teacher registration end date field
+        if ($field->id == strval($field_mapping['teacher_registration_end'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "The teacher registration end date must
+          occur on a date after the teacher registration start date.";
+        }
+      }
+    }
 
     $validation_result['form'] = $form;
     return $validation_result;
