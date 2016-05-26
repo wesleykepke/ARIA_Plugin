@@ -41,10 +41,7 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_competition_activation() {
-
-    // create the new competition form if it doesn't exist
     $form_id = ARIA_API::aria_get_create_competition_form_id();
-
     if ($form_id === -1) {
       $form_id = self::aria_create_competition_form();
       ARIA_API::aria_publish_form(CREATE_COMPETITION_FORM_NAME, $form_id, CHAIRMAN_PASS, true);
@@ -122,7 +119,11 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_create_teacher_and_student_forms($confirmation, $form, $entry, $ajax) {
-    // Only perform processing if it's the create competition form
+echo "Displaying entry from create competition:<br>";
+wp_die(print_r($entry));
+
+
+    // only perform processing if it's the create competition form
     if (!array_key_exists('isCompetitionCreationForm', $form)
         || !$form['isCompetitionCreationForm']) {
           return $confirmation;
@@ -367,135 +368,137 @@ class ARIA_Create_Competition {
     $form->fields[] = $teacher_registration_end;
 
     // teacher volunteer options field
+    $volunteer_options = new GF_Field_List();
+    $volunteer_options->label = "Volunteer Options for Teachers";
+    $volunteer_options->id = $field_mapping['volunteer_options'];
+    $volunteer_options->isRequired = true;
+    $volunteer_options->description = "Enter options for volunteers to participate
+    in (clean up, door monitor, section proctor, etc.).";
+    $volunteer_options->descriptionPlacement = 'above';
+    $form->fields[] = $volunteer_options;
 
     // teacher volunteer time options field
-    $teacher_volunteer_times_field = new GF_Field_List();
-    $teacher_volunteer_times_field->label = "Volunteer Time Options for Teachers";
-    $teacher_volunteer_times_field->id = $field_mapping['competition_volunteer_times'];
-    $teacher_volunteer_times_field->isRequired = true;
-    $teacher_volunteer_times_field->description = "Enter at least two times for teachers to volunteer ";
-    $teacher_volunteer_times_field->description .= "e.g. Saturday (10am-4pm), Sunday night, etc.";
-    $teacher_volunteer_times_field->descriptionPlacement = 'above';
+    $volunteer_time_options = new GF_Field_List();
+    $volunteer_time_options->label = "Volunteer Time Options for Teachers";
+    $volunteer_time_options->id = $field_mapping['volunteer_time_options'];
+    $volunteer_time_options->isRequired = true;
+    $volunteer_time_options->description = "Enter at least two times for teachers
+    to volunteer (Saturday (10am-4pm), Sunday night, etc.).";
+    $volunteer_time_options->descriptionPlacement = 'above';
+    $form->fields[] = $volunteer_time_options;
 
     // teacher csv file upload field
-    $teacher_csv_file_upload_field = new GF_Field_FileUpload();
-    $teacher_csv_file_upload_field->label = CSV_TEACHER_FIELD_NAME;
-    $teacher_csv_file_upload_field->id = $field_mapping['competition_teacher_csv_upload'];
-    $teacher_csv_file_upload_field->isRequired = true;
-    $teacher_csv_file_upload_field->description = "Browse your computer for a CSV
-    file of teachers that will be participating in this music competition. If
-    a teacher decides that he/she wants to participate in this competition later,
-    you will have the opportunity to add more teachers using the 'ARIA: Add Teacher'
-    page (located in the 'Pages' section of the WordPress dashboard). <b>Please
-    note that the CSV file should be in the following format: First Name, Last Name,
+    $teacher_upload = new GF_Field_FileUpload();
+    $teacher_upload->label = CSV_TEACHER_FIELD_NAME;
+    $teacher_upload->id = $field_mapping['teacher_upload'];
+    $teacher_upload->isRequired = true;
+    $teacher_upload->description = "Browse your computer for a CSV file of
+    teachers that will be participating in this music competition. If a teacher
+    decides that he/she wants to participate in this competition later, you will
+    have the opportunity to add more teachers using the 'ARIA: Add Teacher' page
+    (located in the 'Pages' section of the WordPress dashboard). <b>Please note
+    that the CSV file should be in the following format: First Name, Last Name,
     Phone, Email</b>";
-    $teacher_csv_file_upload_field->descriptionPlacement = 'above';
+    $teacher_upload->descriptionPlacement = 'above';
+    $form->fields[] = $teacher_upload;
 
     // command performance options field
-    $command_performance_option_field = new GF_Field_List();
-    $command_performance_option_field->label = "Command Performance Time Options For Students";
-    $command_performance_option_field->id = $field_mapping['competition_command_performance_opt'];
-    $command_performance_option_field->isRequired = true;
-    $command_performance_option_field->description = "These are the options that will
-    be shown to the students when registering (e.g. Thursday at 5:30pm, 7PM on Jan 1, etc.).";
-    $command_performance_option_field->descriptionPlacement = 'above';
+    $command_performance_options = new GF_Field_List();
+    $command_performance_options->label = "Command Performance Time Options For Students";
+    $command_performance_options->id = $field_mapping['command_performance_options'];
+    $command_performance_options->isRequired = true;
+    $command_performance_options->description = "These are the options that will
+    be shown to the students when registering (e.g. Thursday at 5:30pm,
+    7PM on Jan 1, etc.).";
+    $command_performance_options->descriptionPlacement = 'above';
+    $form->fields[] = $command_performance_options;
 
     // master class registration option field
-    $has_master_class = new GF_Field_Radio();
-    $has_master_class->label = "Master Class Sections?";
-    $has_master_class->id = $field_mapping['competition_has_master_class'];
-    $has_master_class->isRequired = true;
-    $has_master_class->description = "Should students be allowed to register
-    for a master class section in this competition?";
-    $has_master_class->choices = array(
+    $master_class_registration_option = new GF_Field_Radio();
+    $master_class_registration_option->label = "Master Class Sections?";
+    $master_class_registration_option->id = $field_mapping['master_class_registration_option'];
+    $master_class_registration_option->isRequired = true;
+    $master_class_registration_option->description = "Should students be allowed
+    to register for a master class section in this competition?";
+    $master_class_registration_option->choices = array(
         array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
+    $form->fields[] = $master_class_registration_option;
 
     // field for enabling email notifications to festival chairman
-    $notification_field = new GF_Field_Radio();
-    $notification_field->label = "Would you like to be notified when students register?";
-    $notification_field->id = $field_mapping['notification_enabled'];
-    $notification_field->isRequired = true;
-    $notification_field->choices = array(
+    $notification_option = new GF_Field_Radio();
+    $notification_option->label = "Would you like to be notified when students register?";
+    $notification_option->id = $field_mapping['notification_option'];
+    $notification_option->isRequired = true;
+    $notification_option->choices = array(
         array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
+    $form->fields[] = $notification_option;
 
     // notification email field
-    $notification_email_field = new GF_Field_Email();
-    $notification_email_field->label = "Notification Email";
-    $notification_email_field->id = $field_mapping['notification_email'];
-    $notification_email_field->description = "Please enter the email address you
+    $notification_email = new GF_Field_Email();
+    $notification_email->label = "Notification Email";
+    $notification_email->id = $field_mapping['notification_email'];
+    $notification_email->description = "Please enter the email address you
     would like notificiation emails to be sent to.";
-    $notification_email_field->descriptionPlacement = "above";
-    $notification_email_field->isRequired = true;
-    $conditionalRules = array();
-    $conditionalRules[] = array(
-      'fieldId' => $field_mapping['notification_enabled'],
+    $notification_email->descriptionPlacement = "above";
+    $notification_email->isRequired = true;
+
+    // add the conditional rules for the notification email field
+    $conditional_rules = array();
+    $conditional_rules[] = array(
+      'fieldId' => $field_mapping['notification_option'],
       'operator' => 'is',
       'value' => 'Yes'
     );
-    $notification_email_field->conditionalLogic = array(
+    $notification_email->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
-      'rules' => $conditionalRules
+      'rules' => $conditional_rules
     );
+    $form->fields[] = $notification_email;
 
     // add a section break and begin pricing
     $section_break = new GF_Field_Section();
     $section_break->label = "Pricing";
     $section_break->description = "Enter prices only for levels eligible to
     participate in this competition.";
+    $form->fields[] = $section_break;
 
     // PayPal email field
-    $paypal_email_field = new GF_Field_Email();
-    $paypal_email_field->label = "Paypal Account Email";
-    $paypal_email_field->id = $field_mapping['paypal_email'];
-    $paypal_email_field->description = "Please enter the email address associated
+    $paypal_email = new GF_Field_Email();
+    $paypal_email->label = "Paypal Account Email";
+    $paypal_email->id = $field_mapping['paypal_email'];
+    $paypal_email->description = "Please enter the email address associated
     with your PayPal account. Please make sure this PayPal is setup according to
     the Gravity Forms PayPal Add-On directions.";
-    $paypal_email_field->descriptionPlacement = "above";
-    $paypal_email_field->isRequired = true;
+    $paypal_email->descriptionPlacement = "above";
+    $paypal_email->isRequired = true;
+    $form->fields[] = $paypal_email;
 
-
-    // level pricing field
-    $pricing = array();
+    // level pricing field for PayPal
+    //$pricing = array();
     for ($i = 1; $i <= 11; $i++) {
       $level_price = new GF_Field_Number();
-      $level_price->label = "Price for Level " . $i . " Student";
-      $level_price->id = $field_mapping['level_' . $i . '_price'];
+      $level_price->label = "Price for Level " . strval($i) . " Student";
+      $level_price->id = $field_mapping['level_' . strval($i) . '_price'];
       $level_price->defaultValue = '0.00';
       $level_price->size = 'small';
       $level_price->isRequired = false;
       $level_price->numberFormat = 'currency';
-      $pricing[] = $level_price;
+      $form->fields[] = $level_price;
+      //$pricing[] = $level_price;
       unset($level_price);
     }
+    //$form->fields[] = array_merge($form->fields, $pricing);
 
-    // assign all of the previous attributes to our newly created form
-    $form->fields[] = $fc_email_field;
-    $form->fields[] = $name_field;
-    $form->fields[] = $start_date_field;
-    $form->fields[] = $end_date_field;
-    $form->fields[] = $location_field;
-    $form->fields[] = $location_field_2;
-    $form->fields[] = $student_registration_start_date_field;
-    $form->fields[] = $student_registration_end_date_field;
-    $form->fields[] = $teacher_registration_start_date_field;
-    $form->fields[] = $teacher_registration_end_date_field;
-    $form->fields[] = $teacher_volunteer_times_field;
-    $form->fields[] = $teacher_csv_file_upload_field;
-    $form->fields[] = $command_performance_option_field;
-    $form->fields[] = $theory_score_field;
-    $form->fields[] = $has_master_class;
-    $form->fields[] = $notification_field;
-    $form->fields[] = $notification_email_field;
-    $form->fields[] = $section_break;
-    $form->fields[] = $paypal_email_field;
-    $form->fields = array_merge($form->fields, $pricing);
+    // add a default message for successful creation
+    $successful_submission_message = "Congratulations! You have just successfully
+    registered your student.";
     $form->confirmation['type'] = 'message';
-    $form->confirmation['message'] = 'Successful';
+    $form->confirmation['message'] = $successful_submission_message;
 
     // identify form as necessary
     $form_array = $form->createFormArray();
@@ -510,7 +513,6 @@ class ARIA_Create_Competition {
     else {
       return $new_form_id;
     }
-
   }
 
   /**
@@ -1067,8 +1069,8 @@ class ARIA_Create_Competition {
     $competition_creation_form->confirmation['type'] = 'message';
     $competition_creation_form->confirmation['message'] = $successful_submission_message;
 */
-    $successful_submission_message = 'Congratulations! You have just';
-    $successful_submission_message .= ' successfully registered your student.';
+    $successful_submission_message = "Congratulations! You have just successfully
+    registered your student.";
     $teacher_form->confirmation['type'] = 'message';
     $teacher_form->confirmation['message'] = $successful_submission_message;
 
