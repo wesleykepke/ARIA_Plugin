@@ -26,70 +26,65 @@ class ARIA_Create_Master_Forms {
 
   /**
    * This function will create the form that will be the source of truth for
-   * a certain competitions students.
+   * a certain competition's students.
    *
    * This function is called in "class-aria-create-competition.php" and is
    * responsible for creating the student master form. This form is the absolute
    * source of truth for the students of any given competition. Entries in other
    * forms will update entries in this form.
 	 *
-	 * @param 	$competition_name 	String 	The competition name
+	 * @param 	$competition_name 	String 	The competition name.
+   * @param   $command_options_array  Array   The command performance options (from create competition).
+   * @param   $has_master_class   String  Determines whether or not the student can register as master class.
    *
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_create_student_master_form($competition_name, $command_options_array, $has_master_class) {
-    $student_master_form
-        = new GF_Form($competition_name . " Student Master", "");
-    $field_id_array = ARIA_API::aria_master_student_field_id_array();
+  public static function aria_create_student_master_form($competition_name,
+                                                         $command_options_array,
+                                                         $has_master_class) {
+    // create the form and obtain the field mapping for student master forms
+    $form = new GF_Form($competition_name . " Student Master", "");
+    $field_mapping = ARIA_API::aria_master_student_field_id_array();
 
-    // parent name
-    $parent_name_field = new GF_Field_Name();
-    $parent_name_field->label = "Parent Name";
-    $parent_name_field->id = $field_id_array['parent_name'];
-    $parent_name_field->isRequired = false;
-    $parent_name_field = ARIA_Create_Competition::aria_add_default_name_inputs($parent_name_field);
-    $student_master_form->fields[] = $parent_name_field;
+    // parent name field
+    $parent_name = new GF_Field_Name();
+    $parent_name->label = "Parent Name";
+    $parent_name->id = $field_mapping['parent_name'];
+    $parent_name->isRequired = false;
+    $parent_name = ARIA_Create_Competition::aria_add_default_name_inputs($parent_name);
+    $form->fields[] = $parent_name;
 
-    // parent email
-    $parent_email_field = new GF_Field_Email();
-    $parent_email_field->label = "Parent's Email";
-    $parent_email_field->id = $field_id_array['parent_email'];
-    $parent_email_field->isRequired = false;
-    $student_master_form->fields[] = $parent_email_field;
+    // parent email field
+    $parent_email = new GF_Field_Email();
+    $parent_email->label = "Parent Email";
+    $parent_email->id = $field_mapping['parent_email'];
+    $parent_email->isRequired = false;
+    $form->fields[] = $parent_email;
 
-    // student name
-    $student_name_field = new GF_Field_Name();
-    $student_name_field->label = "Student Name";
-    $student_name_field->id = $field_id_array['student_name'];
-    $student_name_field->isRequired = false;
-    $student_name_field = ARIA_Create_Competition::aria_add_default_name_inputs($student_name_field);
-    $student_master_form->fields[] = $student_name_field;
+    // student name field
+    $student_name = new GF_Field_Name();
+    $student_name->label = "Student Name";
+    $student_name->id = $field_mapping['student_name'];
+    $student_name->isRequired = false;
+    $student_name = ARIA_Create_Competition::aria_add_default_name_inputs($student_name);
+    $form->fields[] = $student_name;
 
-    // student birthday
-    $student_birthday_date_field = new GF_Field_Date();
-    $student_birthday_date_field->label = "Student Birthday";
-    $student_birthday_date_field->id = $field_id_array['student_birthday'];
-    $student_birthday_date_field->isRequired = false;
-    $student_birthday_date_field->calendarIconType = 'calendar';
-    $student_birthday_date_field->dateType = 'datepicker';
-    $student_master_form->fields[] = $student_birthday_date_field;
+    // student birthday field
+    $student_birthday = new GF_Field_Date();
+    $student_birthday->label = "Student Birthday";
+    $student_birthday->id = $field_mapping['student_birthday'];
+    $student_birthday->isRequired = false;
+    $student_birthday->calendarIconType = 'calendar';
+    $student_birthday->dateType = 'datedropdown';
+    $form->fields[] = $student_birthday;
 
-    // student's piano teacher
-    $piano_teachers_field = new GF_Field_Text();
-    $piano_teachers_field->label = "Piano Teacher's Name";
-    $piano_teachers_field->id = $field_id_array['teacher_name'];
-    $piano_teachers_field->isRequired = false;
-    $piano_teachers_field->description = "If modifying teacher name, just enter FirstName LastName";
-    $piano_teachers_field->description .= " (Do not worry about the extra characters).";
-    $student_master_form->fields[] = $piano_teachers_field;
-
-    // student's level
-    $student_level_field = new GF_Field_Select();
-    $student_level_field->label = "Student Level";
-    $student_level_field->id = $field_id_array['student_level'];
-    $student_level_field->isRequired = false;
-    $student_level_field->choices = array(
+    // student level field
+    $student_level = new GF_Field_Select();
+    $student_level->label = "Student Level";
+    $student_level->id = $field_mapping['student_level'];
+    $student_level->isRequired = false;
+    $student_level->choices = array(
       array('text' => '1', 'value' => '1', 'isSelected' => false),
       array('text' => '2', 'value' => '2', 'isSelected' => false),
       array('text' => '3', 'value' => '3', 'isSelected' => false),
@@ -102,143 +97,162 @@ class ARIA_Create_Master_Forms {
       array('text' => '10', 'value' => '10', 'isSelected' => false),
       array('text' => '11', 'value' => '11', 'isSelected' => false)
     );
-    $student_master_form->fields[] = $student_level_field;
+    $form->fields[] = $student_level;
 
-    // student's available times to compete
-    $available_times = new GF_Field_Radio();
-    $available_times->label = "Available Festival Days";
-    $available_times->id = $field_id_array['available_festival_days'];
-    $available_times->isRequired = false;
-    $available_times->description = "There is no guarantee that scheduling ".
-    "requests will be honored.";
-    $available_times->descriptionPlacement = 'above';
-    $available_times->choices = array(
+    // teacher name field
+    $teacher_name = new GF_Field_Text();
+    $teacher_name->label = "Teacher Name";
+    $teacher_name->id = $field_mapping['teacher_name'];
+    $teacher_name->isRequired = false;
+    $form->fields[] = $teacher_name;
+
+    // field for student's available festival times
+    $festival_availability = new GF_Field_Radio();
+    $festival_availability->label = "Festival Availability";
+    $festival_availability->id = $field_mapping['festival_availability'];
+    $festival_availability->isRequired = false;
+    $festival_availability->description = "There is no guarantee that scheduling
+    requests will be honored.";
+    $festival_availability->descriptionPlacement = 'above';
+    $festival_availability->choices = array(
       array('text' => 'Saturday', 'value' => 'Saturday', 'isSelected' => false),
       array('text' => 'Sunday', 'value' => 'Sunday', 'isSelected' => false),
       array('text' => 'Either Saturday or Sunday', 'value' => 'Either Saturday or Sunday', 'isSelected' => false)
     );
-    $student_master_form->fields[] = $available_times;
+    $form->fields[] = $festival_availability;
 
-    // student's available times to compete for command performance
-    $command_times = new GF_Field_Radio();
-    $command_times->label = "Preferred Command Performance Time (check all available times)";
-    $command_times->id = $field_id_array['preferred_command_performance'];
-    $command_times->isRequired = false;
-    $command_times->description = "Please select the Command Performance time ".
-    "that you prefer in the event that your child receives a superior rating.";
-    $command_times->descriptionPlacement = 'above';
-    $command_times->choices = array();
-    $command_times->choices[]
-          = array('text' => 'Any time', 'value' => 'Any time', 'isSelected' => false);
+    // field for student's available command performance times
+    $command_performance_availability = new GF_Field_Radio();
+    $command_performance_availability->label = "Command Performance Availability (check all available times)";
+    $command_performance_availability->id = $field_mapping['command_performance_availability'];
+    $command_performance_availability->isRequired = false;
+    $command_performance_availability->description = "Please select the Command
+    Performance time that you prefer in the event that your child receives a
+    Superior with Distinction or Superior rating.";
+    $command_performance_availability->descriptionPlacement = 'above';
+    $command_performance_availability->choices = array();
+    $command_performance_availability->choices[] = array('text' => 'Any time',
+                                                         'value' => 'Any time',
+                                                         'isSelected' => false);
+
+    // add the choices that were input during create competition
     if (is_array($command_options_array)) {
-      $index = 1;
-      foreach( $command_options_array as $command_time ) {
-        $command_times->choices[]
-          = array('text' => $command_time, 'value' => $command_time, 'isSelected' => false);
+      foreach ($command_options_array as $command_time) {
+        $command_performance_availability->choices[] = array('text' => $command_time,
+                                                             'value' => $command_time,
+                                                             'isSelected' => false);
       }
     }
-    $student_master_form->fields[] = $command_times;
+    $form->fields[] = $command_times;
 
-    // student's first song period
-    $song_one_period_field = new GF_Field_Text();
-    $song_one_period_field->label = "Song 1 Period";
-    $song_one_period_field->id = $field_id_array['song_1_period'];
-    $song_one_period_field->isRequired = false;
-    $student_master_form->fields[] = $song_one_period_field;
+    // field for student's first song period
+    $song_one_period = new GF_Field_Text();
+    $song_one_period->label = "Song 1 Period";
+    $song_one_period->id = $field_mapping['song_1_period'];
+    $song_one_period->isRequired = false;
+    $form->fields[] = $song_one_period;
 
-    // student's first song composer
-    $song_one_composer_field = new GF_Field_Text();
-    $song_one_composer_field->label = "Song 1 Composer";
-    $song_one_composer_field->id = $field_id_array['song_1_composer'];
-    $song_one_composer_field->isRequired = false;
-    $student_master_form->fields[] = $song_one_composer_field;
+    // field for student's first song composer
+    $song_one_composer = new GF_Field_Text();
+    $song_one_composer->label = "Song 1 Composer";
+    $song_one_composer->id = $field_mapping['song_1_composer'];
+    $song_one_composer->isRequired = false;
+    $form->fields[] = $song_one_composer;
 
-    // student's first song selection
-    $song_one_selection_field = new GF_Field_Text();
-    $song_one_selection_field->label = "Song 1 Selection";
-    $song_one_selection_field->id = $field_id_array['song_1_selection'];
-    $song_one_selection_field->isRequired = false;
-    $student_master_form->fields[] = $song_one_selection_field;
+    // field for student's first song selection
+    $song_one_selection = new GF_Field_Text();
+    $song_one_selection->label = "Song 1 Selection";
+    $song_one_selection->id = $field_mapping['song_1_selection'];
+    $song_one_selection->isRequired = false;
+    $form->fields[] = $song_one_selection;
 
-    // student's second song period
-    $song_two_period_field = new GF_Field_Text();
-    $song_two_period_field->label = "Song 2 Period";
-    $song_two_period_field->id = $field_id_array['song_2_period'];
-    $song_two_period_field->isRequired = false;
-    $student_master_form->fields[] = $song_two_period_field;
+    // field for student's second song period
+    $song_two_period = new GF_Field_Text();
+    $song_two_period->label = "Song 2 Period";
+    $song_two_period->id = $field_mapping['song_2_period'];
+    $song_two_period->isRequired = false;
+    $form->fields[] = $song_two_period;
 
-    // student's second song composer
-    $song_two_composer_field = new GF_Field_Text();
-    $song_two_composer_field->label = "Song 2 Composer";
-    $song_two_composer_field->id = $field_id_array['song_2_composer'];
-    $song_two_composer_field->isRequired = false;
-    $student_master_form->fields[] = $song_two_composer_field;
+    // field for student's second song composer
+    $song_two_composer = new GF_Field_Text();
+    $song_two_composer->label = "Song 2 Composer";
+    $song_two_composer->id = $field_mapping['song_2_composer'];
+    $song_two_composer->isRequired = false;
+    $form->fields[] = $song_two_composer;
 
-    // student's second song selection
-    $song_two_selection_field = new GF_Field_Text();
-    $song_two_selection_field->label = "Song 2 Selection";
-    $song_two_selection_field->id = $field_id_array['song_2_selection'];
-    $song_two_selection_field->isRequired = false;
-    $student_master_form->fields[] = $song_two_selection_field;
+    // field for student's second song selection
+    $song_two_selection = new GF_Field_Text();
+    $song_two_selection->label = "Song 2 Selection";
+    $song_two_selection->id = $field_mapping['song_2_selection'];
+    $song_two_selection->isRequired = false;
+    $form->fields[] = $song_two_selection;
 
-    // student's theory score
-    $student_theory_score = new GF_Field_Number();
-    $student_theory_score->label = "Theory Score (percentage)";
-    $student_theory_score->id = $field_id_array['theory_score'];
-    $student_theory_score->isRequired = false;
-    $student_theory_score->numberFormat = "decimal_dot";
-    $student_theory_score->rangeMin = 0;
-    $student_theory_score->rangeMax = 100;
-    $student_master_form->fields[] = $student_theory_score;
+    // field for student's theory score
+    $theory_score = new GF_Field_Number();
+    $theory_score->label = "Theory Score (percentage)";
+    $theory_score->id = $field_mapping['theory_score'];
+    $theory_score->isRequired = false;
+    $theory_score->numberFormat = "decimal_dot";
+    $theory_score->rangeMin = 0;
+    $theory_score->rangeMax = 100;
+    $form->fields[] = $theory_score;
 
-    // student's alternate theory
-    $alternate_theory_field = new GF_Field_Checkbox();
-    $alternate_theory_field->label = "Check if alternate theory exam was completed.";
-    $alternate_theory_field->id = $field_id_array['alternate_theory'];
-    $alternate_theory_field->isRequired = false;
-    $alternate_theory_field->choices = array(
+    // field for student's alternate theory
+    $alternate_theory = new GF_Field_Checkbox();
+    $alternate_theory->label = "Check if alternate theory exam was completed.";
+    $alternate_theory->id = $field_mapping['alternate_theory'];
+    $alternate_theory->isRequired = false;
+    $alternate_theory->choices = array(
       array('text' => 'Alternate theory exam completed',
-      'value' => 'Alternate theory exam completed',
-      'isSelected' => false)
+            'value' => 'Alternate theory exam completed',
+            'isSelected' => false
+      )
     );
-    $alternate_theory_field->inputs = array();
-    $alternate_theory_field = ARIA_Create_Competition::aria_add_checkbox_input($alternate_theory_field, 'Alternate theory exam completed');
-    $student_master_form->fields[] = $alternate_theory_field;
+    $alternate_theory->inputs = array();
+    $alternate_theory = ARIA_Create_Competition::aria_add_checkbox_input($alternate_theory,
+                                                                         'Alternate theory exam completed');
+    $form->fields[] = $alternate_theory;
 
-    // competition format
-    $competition_format_field = new GF_Field_Radio();
-    $competition_format_field->label = "Format of Competition";
-    $competition_format_field->id = $field_id_array['competition_format'];
-    $competition_format_field->isRequired = false;
-    $competition_format_field->choices = array(
+    // field for the type of competition format that the student registered as
+    $competition_format = new GF_Field_Radio();
+    $competition_format->label = "Format of Competition";
+    $competition_format->id = $field_mapping['competition_format'];
+    $competition_format->isRequired = false;
+    $competition_format->choices = array(
       array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
       array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false)
     );
-    if( $has_master_class == "Yes" )
-    {
-        $competition_format_field->choices[] = array('text' => 'Master Class', 'value' => 'Master Class', 'isSelected' => false);
+    if ($has_master_class == "Yes") {
+        $competition_format->choices[] = array('text' => 'Master Class',
+                                               'value' => 'Master Class',
+                                               'isSelected' => false);
     }
-    $student_master_form->fields[] = $competition_format_field;
+    $form->fields[] = $competition_format;
 
-    // timing field
-    $timing_of_pieces_field = new GF_Field_Number();
-    $timing_of_pieces_field->label = "Timing of pieces (minutes)";
-    $timing_of_pieces_field->id = $field_id_array['timing_of_pieces'];
-    $timing_of_pieces_field->isRequired = false;
-    $timing_of_pieces_field->numberFormat = "decimal_dot";
-    $student_master_form->fields[] = $timing_of_pieces_field;
+    // field for timing of student's pieces
+    $timing_of_pieces = new GF_Field_Number();
+    $timing_of_pieces->label = "Timing of Pieces (minutes)";
+    $timing_of_pieces->id = $field_mapping['timing_of_pieces'];
+    $timing_of_pieces->isRequired = false;
+    $timing_of_pieces->numberFormat = "decimal_dot";
+    $form->fields[] = $timing_of_pieces;
 
-    // student's hash
-    $student_hash_field = new GF_Field_Text();
-    $student_hash_field->label = "Hash ID";
-    $student_hash_field->id = $field_id_array['hash'];
-    $student_hash_field->isRequired = false;
-    $student_master_form->fields[] = $student_hash_field;
+    // field for student's hash
+    $student_hash = new GF_Field_Text();
+    $student_hash->label = "Student Hash";
+    $student_hash->id = $field_mapping['student_hash'];
+    $student_hash->isRequired = false;
+    $form->fields[] = $student_hash;
 
-    $student_master_form_array = $student_master_form->createFormArray();
-    $student_master_form_array['isStudentMasterForm'] = true;
+    // create the form based on the previous field definitions
+    $form_array = $form->createFormArray();
+    $form_array['isStudentMasterForm'] = true;
+    $result = GFAPI::add_form($form_array);
+    if (is_wp_error($result)) {
+      wp_die($result->get_error_message());
+    }
 
-    return GFAPI::add_form($student_master_form_array);
+    return $result;
   }
 
 	/**
@@ -257,18 +271,18 @@ class ARIA_Create_Master_Forms {
 	 */
   public static function aria_create_teacher_master_form($competition_name, $volunteer_time_options_array) {
     $teacher_master_form = new GF_Form($competition_name . " Teacher Master", "");
-    $field_id_array = ARIA_API::aria_master_teacher_field_id_array();
+    $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
 
     // Students
     $parent_name_field = new GF_Field_List();
     $parent_name_field->label = "Students";
-    $parent_name_field->id = $field_id_array['students'];
+    $parent_name_field->id = $field_mapping['students'];
     $teacher_master_form->fields[] = $parent_name_field;
 
     // teacher name
     $teacher_name_field = new GF_Field_Name();
     $teacher_name_field->label = "Name";
-    $teacher_name_field->id = $field_id_array['name'];
+    $teacher_name_field->id = $field_mapping['name'];
     $teacher_name_field->isRequired = false;
     $teacher_name_field = ARIA_Create_Competition::aria_add_default_name_inputs($teacher_name_field);
     $teacher_master_form->fields[] = $teacher_name_field;
@@ -276,35 +290,35 @@ class ARIA_Create_Master_Forms {
     // teacher email
     $teacher_email_field = new GF_Field_Email();
     $teacher_email_field->label = "Email";
-    $teacher_email_field->id = $field_id_array['email'];
+    $teacher_email_field->id = $field_mapping['email'];
     $teacher_email_field->isRequired = false;
     $teacher_master_form->fields[] = $teacher_email_field;
 
     // teacher phone
     $teacher_phone_field = new GF_Field_Phone();
     $teacher_phone_field->label = "Phone";
-    $teacher_phone_field->id = $field_id_array['phone'];
+    $teacher_phone_field->id = $field_mapping['phone'];
     $teacher_phone_field->isRequired = false;
     $teacher_master_form->fields[] = $teacher_phone_field;
 
     // teacher's hash
     $teacher_hash_field = new GF_Field_Text();
     $teacher_hash_field->label = 'Teacher Hash';
-    $teacher_hash_field->id = $field_id_array['teacher_hash'];
+    $teacher_hash_field->id = $field_mapping['teacher_hash'];
     $teacher_hash_field->isRequired = false;
     $teacher_master_form->fields[] = $teacher_hash_field;
 
     // student's hash
     $student_hash_field = new GF_Field_Text();
     $student_hash_field->label = 'Student Hash';
-    $student_hash_field->id = $field_id_array['student_hash'];
+    $student_hash_field->id = $field_mapping['student_hash'];
     $student_hash_field->isRequired = false;
     $teacher_master_form->fields[] = $student_hash_field;
 
     // teacher is judging
     $teacher_judging_field = new GF_Field_Radio();
     $teacher_judging_field->label = "Are you scheduled to judge for the festival?";
-    $teacher_judging_field->id = $field_id_array['is_judging'];
+    $teacher_judging_field->id = $field_mapping['is_judging'];
     $teacher_judging_field->isRequired = false;
     $teacher_judging_field->choices = array(
     	array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
@@ -312,7 +326,7 @@ class ARIA_Create_Master_Forms {
     );
     $conditionalRules = array();
     $conditionalRules[] = array(
-    	'fieldId' => $field_id_array['is_judging'],
+    	'fieldId' => $field_mapping['is_judging'],
     	'operator' => 'is',
     	'value' => 'No'
     );
@@ -321,7 +335,7 @@ class ARIA_Create_Master_Forms {
     // teacher volunteer preference
     $volunteer_preference_field = new GF_Field_Checkbox();
     $volunteer_preference_field->label = "Volunteer Preference";
-    $volunteer_preference_field->id = $field_id_array['volunteer_preference'];
+    $volunteer_preference_field->id = $field_mapping['volunteer_preference'];
     $volunteer_preference_field->isRequired = false;
     $volunteer_preference_field->choices = array(
       array('text' => 'Proctor sessions', 'value' => 'Proctor sessions', 'isSelected' => false),
@@ -359,7 +373,7 @@ class ARIA_Create_Master_Forms {
     // volunteer time
     $volunteer_time_field = new GF_Field_Checkbox();
     $volunteer_time_field->label = "Times Available for Volunteering";
-    $volunteer_time_field->id = $field_id_array['volunteer_time'];
+    $volunteer_time_field->id = $field_mapping['volunteer_time'];
     $volunteer_time_field->isRequired = false;
     $volunteer_time_field->description = "Please check at least two times you are"
     ."available to volunteer during Festival weekend.";
@@ -388,7 +402,7 @@ class ARIA_Create_Master_Forms {
     $volunteer_with_students->description .= " monitor for a session in which one of your";
     $volunteer_with_students->description .= " own students is playing?";
     $volunteer_with_students->descriptionPlacement = 'above';
-    $volunteer_with_students->id = $field_id_array['schedule_with_students'];
+    $volunteer_with_students->id = $field_mapping['schedule_with_students'];
     $volunteer_with_students->isRequired = false;
     $volunteer_with_students->choices = array(
       array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),

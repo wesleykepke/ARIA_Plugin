@@ -556,10 +556,10 @@ class ARIA_API {
 			'student_first_name' => 3.3,
 			'student_last_name' => 3.6,
       'student_birthday' => 4,
-      'teacher_name' => 5,
-      'not_listed_teacher_name' => 6,
-      'available_festival_days' => 7,
-      'preferred_command_performance' => 8,
+      'student_level' => 5,
+      'teacher_name' => 6,
+      'festival_availability' => 7,
+      'command_performance_availability' => 8,
 	    'song_1_period' => 9,
 	    'song_1_composer' => 10,
 	    'song_1_selection' => 11,
@@ -570,8 +570,7 @@ class ARIA_API {
 	    'alternate_theory' => 16,
 	    'competition_format' => 17,
 	    'timing_of_pieces' => 18,
-      'hash' => 19,
-      'student_level' => 20
+      'student_hash' => 19,
 	  );
 	}
 
