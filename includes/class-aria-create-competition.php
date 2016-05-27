@@ -999,7 +999,7 @@ wp_die(print_r($entry));
         );
       }
     }
-    
+
     // add the volunteer options as inputs to the checkbox
     $volunteer_preference = self::aria_add_checkbox_input($volunteer_preference,
                                                           $volunteer_options_array);
@@ -1008,7 +1008,7 @@ wp_die(print_r($entry));
     // finish adding the volunteer options field into the form
     $conditional_volunteer_preference_rules = array();
     $conditional_volunteer_preference_rules[] = array(
-      'fieldId' => $field_mapping['volunteer_preference'],
+      'fieldId' => $teacher_field_mapping['volunteer_preference'],
       'operator' => 'is',
       'value' => 'No'
     );
@@ -1017,9 +1017,6 @@ wp_die(print_r($entry));
       'logicType' => 'all',
       'rules' => $conditional_volunteer_preference_rules
     );
-
-
-
     $form->fields[] = $volunteer_preference;
     $ariaFieldIds['volunteer_preference'] = $volunteer_preference->id;
     for ($i = 1; $i <= count($volunteer_preference->inputs); $i++) {
