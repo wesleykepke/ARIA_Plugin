@@ -452,8 +452,10 @@ class ARIA_API {
 			'last_name' => 1.6,
       'email' => 2,
       'phone' => 3,
-      'volunteer_preference' => 4,
-      'volunteer_time' => 5,
+      'is_judging' => 4,
+      'volunteer_preference' => 5,
+      'volunteer_time' => 6,
+
       'student_name' => 6,
 			'student_first_name' => 6.3,
 			'student_last_name' => 6.6,
@@ -467,7 +469,7 @@ class ARIA_API {
       'alternate_theory' => 14,
       'competition_format' => 15,
       'timing_of_pieces' => 16,
-      'is_judging' => 17,
+
       'student_level' => 18,
       'alt_song_2_composer' => 19,
       'alt_song_2_selection' => 20,

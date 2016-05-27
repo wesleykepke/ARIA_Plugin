@@ -350,8 +350,7 @@ class ARIA_Create_Master_Forms {
     }
 
     // add the volunteer options as inputs to the checkbox
-    $volunteer_preference->inputs = array();
-    $volunteer_preference = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_preference_field,
+    $volunteer_preference = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_preference,
                                                                              $volunteer_options);
 
     // finish adding the volunteer options field into the form
