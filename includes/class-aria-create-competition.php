@@ -142,14 +142,24 @@ wp_die(print_r($entry));
       }
     }
 
-    // create the student and teacher (master) forms
+    // create the student master form
+    $command_performance_options = $entry[strval($field_mapping['command_performance_options'])];
+    $command_performance_options = unserialize($command_performance_options);
+    $master_class_registration_option = $entry[strval($field_mapping['master_class_registration_option'])];
     $student_master_form_id =
       ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name,
-                                                                unserialize($entry[(string) $field_mapping['competition_command_performance_opt']]),
-                                                                $entry[(string) $field_mapping['competition_has_master_class']]);
+                                                                $command_performance_options,
+                                                                $master_class_registration_option);
+
+    // create the teacher master form
+    $volunteer_options = $entry[strval($field_mapping['volunteer_options'])];
+    $volunteer_options = unserialize($volunteer_options);
+    $volunteer_time_options = $entry[strval($field_mapping['volunteer_time_options'])];
+    $volunteer_time_options = unserialize($volunteer_time_options);
     $teacher_master_form_id =
       ARIA_Create_Master_Forms::aria_create_teacher_master_form($competition_name,
-                                                                unserialize($entry[(string) $field_mapping['competition_volunteer_times']]));
+                                                                $volunteer_options,
+                                                                $volunteer_time_options);
 
     // upload content of the teacher csv file into the teacher master form
     $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);

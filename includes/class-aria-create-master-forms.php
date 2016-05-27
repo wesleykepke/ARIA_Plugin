@@ -257,87 +257,119 @@ class ARIA_Create_Master_Forms {
 
 	/**
 	 * This function will create the form that will be the source of truth for
-	 * a certain competitions teachers.
+	 * a certain competition's teachers.
 	 *
 	 * This function is called in "class-aria-create-competition.php" and is
 	 * responsible for creating the teacher master form. This form is the absolute
 	 * source of truth for the teachers of any given competition. Entries in other
 	 * forms will update entries in this form.
 	 *
-	 * @param 	$competition_name 	String 	The competition name
+	 * @param 	$competition_name 	String 	The competition name.
+   * @param   $volunteer_options  Array   The available volunteer_options.
+   * @param   $volunteer_time_options   Array   The available volunteer times.
 	 *
 	 * @since 1.0.0
 	 * @author KREW
 	 */
-  public static function aria_create_teacher_master_form($competition_name, $volunteer_time_options_array) {
-    $teacher_master_form = new GF_Form($competition_name . " Teacher Master", "");
+  public static function aria_create_teacher_master_form($competition_name,
+                                                         $volunteer_options,
+                                                         $volunteer_time_options) {
+    // create the form and obtain it's field mapping
+    $form = new GF_Form($competition_name . " Teacher Master", "");
     $field_mapping = ARIA_API::aria_master_teacher_field_id_array();
 
-    // Students
-    $parent_name_field = new GF_Field_List();
-    $parent_name_field->label = "Students";
-    $parent_name_field->id = $field_mapping['students'];
-    $teacher_master_form->fields[] = $parent_name_field;
+    // teacher name field
+    $name = new GF_Field_Name();
+    $name->label = "Name";
+    $name->id = $field_mapping['name'];
+    $name->isRequired = false;
+    $name = ARIA_Create_Competition::aria_add_default_name_inputs($name);
+    $form->fields[] = $name;
 
-    // teacher name
-    $teacher_name_field = new GF_Field_Name();
-    $teacher_name_field->label = "Name";
-    $teacher_name_field->id = $field_mapping['name'];
-    $teacher_name_field->isRequired = false;
-    $teacher_name_field = ARIA_Create_Competition::aria_add_default_name_inputs($teacher_name_field);
-    $teacher_master_form->fields[] = $teacher_name_field;
+    // teacher email field
+    $teacher_email = new GF_Field_Email();
+    $teacher_email->label = "Email";
+    $teacher_email->id = $field_mapping['email'];
+    $teacher_email->isRequired = false;
+    $form->fields[] = $teacher_email;
 
-    // teacher email
-    $teacher_email_field = new GF_Field_Email();
-    $teacher_email_field->label = "Email";
-    $teacher_email_field->id = $field_mapping['email'];
-    $teacher_email_field->isRequired = false;
-    $teacher_master_form->fields[] = $teacher_email_field;
-
-    // teacher phone
-    $teacher_phone_field = new GF_Field_Phone();
-    $teacher_phone_field->label = "Phone";
-    $teacher_phone_field->id = $field_mapping['phone'];
-    $teacher_phone_field->isRequired = false;
-    $teacher_master_form->fields[] = $teacher_phone_field;
+    // teacher phone field
+    $teacher_phone = new GF_Field_Phone();
+    $teacher_phone->label = "Phone";
+    $teacher_phone->id = $field_mapping['phone'];
+    $teacher_phone->isRequired = false;
+    $form->fields[] = $teacher_phone;
 
     // teacher's hash
-    $teacher_hash_field = new GF_Field_Text();
-    $teacher_hash_field->label = 'Teacher Hash';
-    $teacher_hash_field->id = $field_mapping['teacher_hash'];
-    $teacher_hash_field->isRequired = false;
-    $teacher_master_form->fields[] = $teacher_hash_field;
+    $hash = new GF_Field_Text();
+    $hash->label = 'Teacher Hash';
+    $hash->id = $field_mapping['hash'];
+    $hash->isRequired = false;
+    $form->fields[] = $hash;
 
-    // student's hash
-    $student_hash_field = new GF_Field_Text();
-    $student_hash_field->label = 'Student Hash';
-    $student_hash_field->id = $field_mapping['student_hash'];
-    $student_hash_field->isRequired = false;
-    $teacher_master_form->fields[] = $student_hash_field;
+    // list of students field
+    $students = new GF_Field_List();
+    $students->label = "Students";
+    $students->id = $field_mapping['students'];
+    $students->isRequired = false;
+    $form->fields[] = $students;
 
-    // teacher is judging
-    $teacher_judging_field = new GF_Field_Radio();
-    $teacher_judging_field->label = "Are you scheduled to judge for the festival?";
-    $teacher_judging_field->id = $field_mapping['is_judging'];
-    $teacher_judging_field->isRequired = false;
-    $teacher_judging_field->choices = array(
+    // list of students hash field ?
+    $student_hashes = new GF_Field_Text();
+    $student_hashes->label = 'Student Hashes';
+    $student_hashes->id = $field_mapping['student_hashes'];
+    $student_hashes->isRequired = false;
+    $form->fields[] = $student_hashes;
+
+    // field for teacher to identify as judging
+    $is_judging = new GF_Field_Radio();
+    $is_judging->label = "Are you scheduled to judge for the festival?";
+    $is_judging->id = $field_mapping['is_judging'];
+    $is_judging->isRequired = false;
+    $is_judging->choices = array(
     	array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
     	array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
-    $conditionalRules = array();
-    $conditionalRules[] = array(
-    	'fieldId' => $field_mapping['is_judging'],
-    	'operator' => 'is',
-    	'value' => 'No'
-    );
-    $teacher_master_form->fields[] = $teacher_judging_field;
+    $form->fields[] = $is_judging;
 
-    // teacher volunteer preference
-    $volunteer_preference_field = new GF_Field_Checkbox();
-    $volunteer_preference_field->label = "Volunteer Preference";
-    $volunteer_preference_field->id = $field_mapping['volunteer_preference'];
-    $volunteer_preference_field->isRequired = false;
-    $volunteer_preference_field->choices = array(
+    // teacher volunteer preference field
+    $volunteer_preference = new GF_Field_Checkbox();
+    $volunteer_preference->label = "Volunteer Preference";
+    $volunteer_preference->id = $field_mapping['volunteer_preference'];
+    $volunteer_preference->isRequired = false;
+
+    // add the volunteer preferences that were input during competition creation
+    $volunteer_preference->choices = array();
+    if (is_array($volunteer_options)) {
+      foreach ($volunteer_options as $volunteer_option) {
+        $volunteer_preference->choices[] = array('text' => $volunteer_option,
+                                                 'value' => $volunteer_option,
+                                                 'isSelected' => false
+        );
+      }
+    }
+
+    // add the volunteer options as inputs to the checkbox
+    $volunteer_preference->inputs = array();
+    $volunteer_preference = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_preference_field,
+                                                                             $volunteer_options);
+
+    // finish adding the volunteer options field into the form
+    $conditional_volunteer_preference_rules = array();
+    $conditional_volunteer_preference_rules[] = array(
+      'fieldId' => $field_mapping['volunteer_preference'],
+      'operator' => 'is',
+      'value' => 'No'
+    );
+    $volunteer_preference->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $conditional_volunteer_preference_rules
+    );
+    $form->fields[] = $volunteer_preference;
+
+    /*
+    $volunteer_preference->choices = array(
       array('text' => 'Proctor sessions', 'value' => 'Proctor sessions', 'isSelected' => false),
       array('text' => 'Monitor door during sessions', 'value' => 'Monitor door during sessions', 'isSelected' => false),
       array('text' => 'Greet students and parents', 'value' => 'Greet students and parents', 'isSelected' => false),
@@ -360,64 +392,79 @@ class ARIA_Create_Master_Forms {
           'Clean up',
           'Help with food for judges and volunteers',
         ));
-    $volunteer_preference_field->description = "Please check at least two volunteer job"
-    ."preferences for this year's Festival. You will be notified by email of your"
-    ."volunteer assignments as Festival approaches.";
-   $volunteer_preference_field->conditionalLogic = array(
-    	'actionType' => 'show',
-    	'logicType' => 'all',
-    	'rules' => $conditionalRules
-    );
-    $teacher_master_form->fields[] = $volunteer_preference_field;
+    */
 
-    // volunteer time
-    $volunteer_time_field = new GF_Field_Checkbox();
-    $volunteer_time_field->label = "Times Available for Volunteering";
-    $volunteer_time_field->id = $field_mapping['volunteer_time'];
-    $volunteer_time_field->isRequired = false;
-    $volunteer_time_field->description = "Please check at least two times you are"
-    ."available to volunteer during Festival weekend.";
-    $volunteer_time_field->choices = array();
+    // volunteer time field
+    $volunteer_time = new GF_Field_Checkbox();
+    $volunteer_time->label = "Times Available for Volunteering";
+    $volunteer_time->id = $field_mapping['volunteer_time'];
+    $volunteer_time->isRequired = false;
+    $volunteer_time->description = "Please check at least two times you are
+    available to volunteer during Festival weekend.";
 
-    $volunteer_time_field->inputs = array();
+    // add the volunteer times that were input during competition creation
+    $volunteer_time->choices = array();
     if (is_array($volunteer_time_options_array)) {
-      $index = 1;
-      foreach( $volunteer_time_options_array as $volunteer_time ) {
-        $volunteer_time_field->choices[]
-          = array('text' => $volunteer_time, 'value' => $volunteer_time, 'isSelected' => false);
-        $volunteer_time_field = ARIA_Create_Competition::aria_add_checkbox_input( $volunteer_time_field, $volunteer_time );
+      foreach ($volunteer_time_options_array as $volunteer_time) {
+        $volunteer_time->choices[] = array('text' => $volunteer_time,
+                                           'value' => $volunteer_time,
+                                           'isSelected' => false);
       }
     }
-    $volunteer_time_field->conditionalLogic = array(
+
+    // add the volunteer options as inputs to the checkbox
+    $volunteer_time->inputs = array();
+    $volunteer_time = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_time,
+                                                                       $volunteer_time_options_array);
+
+    // finish adding the volunteer options field into the form
+    $conditional_volunteer_time_rules = array();
+    $conditional_volunteer_time_rules[] = array(
+      'fieldId' => $field_mapping['volunteer_time'],
+      'operator' => 'is',
+      'value' => 'No'
+    );
+    $volunteer_time->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
-    	'rules' => $conditionalRules
+    	'rules' => $conditional_volunteer_time_rules
     );
-    $teacher_master_form->fields[] = $volunteer_time_field;
+    $form->fields[] = $volunteer_time;
 
-        // teacher is judging
-    $volunteer_with_students = new GF_Field_Radio();
-    $volunteer_with_students->label = "Volunteer in student's section";
-    $volunteer_with_students->description = "Do you wish to be scheduled as a proctor or door";
-    $volunteer_with_students->description .= " monitor for a session in which one of your";
-    $volunteer_with_students->description .= " own students is playing?";
-    $volunteer_with_students->descriptionPlacement = 'above';
-    $volunteer_with_students->id = $field_mapping['schedule_with_students'];
-    $volunteer_with_students->isRequired = false;
-    $volunteer_with_students->choices = array(
+    // option for being assigned to section with students field
+    $schedule_with_students = new GF_Field_Radio();
+    $schedule_with_students->label = "Volunteer with Students";
+    $schedule_with_students->description = "Do you wish to be scheduled as a
+    proctor or door monitor for a session in which one of your own students is
+    playing?";
+    $schedule_with_students->descriptionPlacement = 'above';
+    $schedule_with_students->id = $field_mapping['schedule_with_students'];
+    $schedule_with_students->isRequired = false;
+    $schedule_with_students->choices = array(
       array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
       array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
-    $volunteer_with_students->conditionalLogic = array(
+    $conditional_schedule_with_students_rules = array();
+    $conditional_schedule_with_students_rules[] = array(
+      'fieldId' => $field_mapping['schedule_with_students'],
+      'operator' => 'is',
+      'value' => 'No'
+    );
+    $schedule_with_students->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
-      'rules' => $conditionalRules
+      'rules' => $conditional_schedule_with_students_rules
     );
-    $teacher_master_form->fields[] = $volunteer_with_students;
+    $form->fields[] = $schedule_with_students;
 
-    $teacher_master_form_array = $teacher_master_form->createFormArray();
-    $teacher_master_form_array['isTeacherMasterForm'] = true;
+    // create form based on the previous field definitions
+    $form_array = $form->createFormArray();
+    $form_array['isTeacherMasterForm'] = true;
+    $result = GFAPI::add_form($form_array);
+    if (is_wp_error($result)) {
+      wp_die($result->get_error_message());
+    }
 
-    return GFAPI::add_form($teacher_master_form_array);
+    return $result;
   }
 }
