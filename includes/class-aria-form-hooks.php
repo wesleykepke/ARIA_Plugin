@@ -1,10 +1,10 @@
 <?php
 
 /**
- * The file that defines the functionality that should take place after
- * particular forms are submitted by students and teachers.
+ * The file that defines the functionality that should take place before and
+ * after particular forms are submitted by students and teachers.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA

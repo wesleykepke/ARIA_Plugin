@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions that allow the
  * festival chairman to create new music competitions for NNMTA.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA
@@ -1588,7 +1588,7 @@ class ARIA_Create_Competition {
     $ariaFieldIds['student_level'] = $student_level->id;
 
     // create the compliance field checkbox for parents
-    $compliance_statement = new GF_Field_checkbox();
+    $compliance_statement = new GF_Field_Checkbox();
     $compliance_statement->label = "Compliance Statement";
     $compliance_statement->id = $student_field_mapping['compliance_statement'];
     $compliance_statement->isRequired = true;

@@ -264,7 +264,7 @@ class Scheduling_Algorithm {
   /**
    * This function defines and creates the scheduling page (front-end).
    *
-   * @link       http://wesleykepke.github.io/ARIA/
+   * @link       http://wesleykepke.github.io/ARIA_Plugin/
    * @since      1.0.0
    *
    * @package    ARIA

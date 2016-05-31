@@ -3,7 +3,7 @@
 /**
  * Fired during plugin activation.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA

@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions that allow the
  * festival chairman to upload and download music.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA

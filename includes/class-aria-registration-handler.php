@@ -7,7 +7,7 @@
  * registration (of students and teachers) for NNMTA competitions to operate
  * seamlessly.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA

@@ -7,7 +7,7 @@
  * to upload music teachers to the teacher-master form  of a specific music
  * competition.
  *
-* @link       http://wesleykepke.github.io/ARIA/
+* @link       http://wesleykepke.github.io/ARIA_Plugin/
 * @since      1.0.0
 *
 * @package    ARIA

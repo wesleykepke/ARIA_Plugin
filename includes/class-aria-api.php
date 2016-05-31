@@ -7,7 +7,7 @@
  * used throughout ARIA. Simply require_once() this file and the all of the
  * associated functionality will be available.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA

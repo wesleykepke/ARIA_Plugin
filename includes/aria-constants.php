@@ -7,7 +7,7 @@
  * purpose of this file is to be a single source of truth for all constants
  * used throughout the program.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA
