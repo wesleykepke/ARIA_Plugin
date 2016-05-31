@@ -77,30 +77,30 @@ class ARIA_Create_Competition {
   /**
    * This function will read the content of a competition entry object from a file.
    *
-   * Using the entry object that is returned from the create competition form,
-   * this function will serialize the entry object and save it to a file location
-   * on the server so that it can be referenced in the event that the user removes
-   * the create competition form on the WordPress dashboard.
+   * Using name of a given competition, this function will search the upload
+   * location for a file of the essentially the same name (will have _Entry.txt).
+   * If located, this function will read the serialized contents of that file,
+   * unserialize this content, and return an Entry object that was submitted from
+   * the create competition form. If no such competition was found, this function
+   * will return -1.
    *
-   * @param   Entry Object  $entry  The entry object that is about to be serialized to file.
+   * @param   String  $title   The title of the competition to search for.
+   *
+   * @return  Will return the associated Entry object (if found) or -1 (not found).
    *
    * @since 1.0.0
    * @author KREW
    */
-  /*
-  public static function aria_save_comp_to_file($entry) {
-    $field_mapping = ARIA_API::aria_competition_field_id_array();
-    $title = $entry[strval($field_mapping['competition_name'])];
+  public static function aria_read_comp_from_file($title) {
     $title = str_replace(' ', '_', $title);
     $file_path = ARIA_FILE_UPLOAD_LOC . $title . "_Entry.txt";
-    $entry_data = serialize($entry);
-    $fp = fopen($file_path, 'w+');
-    if ($fp) {
-      fwrite($fp, $entry_data);
-      fclose($fp);
+    if (file_exists($file_path)) {
+      $entry = file_get_contents($file_path);
+      $entry = unserialize($entry);
+      return $entry;
     }
+    return -1;
   }
-  */
 
   /**
    * This function will create new registration forms for students and parents.
@@ -125,12 +125,9 @@ class ARIA_Create_Competition {
           return $confirmation;
     }
 
-echo "Displaying entry below: <br>";
-wp_die(print_r($entry));
-
     // check to see if the given competition name has already been used
     $field_mapping = ARIA_API::aria_competition_field_id_array();
-    $competition_name = $entry[$field_mapping['name']];
+    $competition_name = $entry[strval($field_mapping['name'])];
     $all_forms = GFAPI::get_forms();
     foreach ($all_forms as $single_form) {
       if (strpos($single_form['title'], $competition_name) !== false) {
@@ -177,8 +174,6 @@ wp_die(print_r($entry));
     $teacher_form_url = ARIA_API::aria_publish_form("{$competition_name} Teacher Registration",
                                                     $teacher_form_id);
 
-    // create the teacher public form
-
     // associate all of the related forms
     $related_forms = array(
       'student_public_form_id' => $student_form_id,
@@ -187,10 +182,11 @@ wp_die(print_r($entry));
       'teacher_master_form_id' => $teacher_master_form_id,
       'student_public_form_url' => $student_form_url,
       'teacher_public_form_url' => $teacher_form_url,
-      'festival_chairman_email' => $entry[strval($field_mapping['competition_festival_chairman_email'])]
+      'festival_chairman_email' => $entry[strval($field_mapping['chairman_email'])]
     );
-    if($entry[strval($field_mapping['notification_enabled'])] == 'Yes')
-    {
+
+    // if requested, add the notification email
+    if ($entry[strval($field_mapping['notification_option'])] == 'Yes') {
       $related_forms['notification_email'] = $entry[strval($field_mapping['notification_email'])];
     }
 
@@ -206,34 +202,35 @@ wp_die(print_r($entry));
     $student_master_form['aria_relations'] = $related_forms;
     $teacher_master_form['aria_relations'] = $related_forms;
 
-    // add time limits
+    // add time limits to the student public form (from competition creation)
     $student_public_form['scheduleForm'] = true;
-    $student_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_student_reg_start']];
+    $student_public_form['scheduleStart'] = $entry[strval($field_mapping['student_registration_start'])];
     $student_public_form['scheduleStartHour'] = 12;
     $student_public_form['scheduleStartMinute'] = 0;
     $student_public_form['scheduleStartAmpm'] = 'am';
-
-    $student_public_form['scheduleEnd'] = $entry[(string) $field_mapping['competition_student_reg_end']];
+    $student_public_form['scheduleEnd'] = $entry[strval($field_mapping['student_registration_end'])];
     $student_public_form['scheduleEndHour'] = 11;
     $student_public_form['scheduleEndMinute'] = 59;
     $student_public_form['scheduleEndAmpm'] = 'pm';
+    $student_public_form['scheduleMessage'] = "Please be patient as we wait for
+    Festival Registration to open. The deadline will be extended if necessary to
+    allow every student an opportunity to register.";
+    $student_public_form['schedulePendingMessage'] = $student_public_form['scheduleMessage'];
 
-    $student_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
-    $student_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
-
+    // add time limits to the teacher public form (from competition creation)
     $teacher_public_form['scheduleForm'] = true;
-    $teacher_public_form['scheduleStart'] = $entry[(string) $field_mapping['competition_teacher_reg_start']];
+    $teacher_public_form['scheduleStart'] = $entry[strval($field_mapping['teacher_registration_start'])];
     $teacher_public_form['scheduleStartHour'] = 12;
     $teacher_public_form['scheduleStartMinute'] = 0;
     $teacher_public_form['scheduleStartAmpm'] = 'am';
-
-    $teacher_public_form['scheduleEnd'] = $entry[(string) $field_mapping['competition_teacher_reg_end']];
+    $teacher_public_form['scheduleEnd'] = $entry[strval($field_mapping['teacher_registration_end'])];
     $teacher_public_form['scheduleEndHour'] = 11;
     $teacher_public_form['scheduleEndMinute'] = 59;
     $teacher_public_form['scheduleEndAmpm'] = 'pm';
-
-    $teacher_public_form['scheduleMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
-    $teacher_public_form['schedulePendingMessage'] = 'Please be patient as we wait for Festival Registration to open.  The deadline will be extended if necessary to allow every student an opportunity to register.';
+    $teacher_public_form['scheduleMessage'] = "Please be patient as we wait for
+    Festival Registration to open. The deadline will be extended if necessary to
+    allow every teacher an opportunity to register his/her students.";
+    $teacher_public_form['schedulePendingMessage'] = $teacher_public_form['scheduleMessage'];
 
     // update the related forms
     GFAPI::update_form($student_public_form);
@@ -244,15 +241,14 @@ wp_die(print_r($entry));
     // save the entry object to a file on the server in case it is deleted
     self::aria_save_comp_to_file($entry);
 
-    // change the confirmation message that the festival chairman sees
-    // after competition creation
-    $confirmation = 'Congratulations! A new music competition has been ';
-    $confirmation .= 'created. The following forms are now available for ';
-    $confirmation .= ' students and teachers to use for registration: </br>';
-    $confirmation .= "<a href={$student_form_url}>{$competition_name} Student Registration</a>";
-    $confirmation .= " was published. </br>";
-    $confirmation .= "<a href={$teacher_form_url}> {$competition_name} Teacher Registration </a>";
-    $confirmation .= " was published.";
+    // add a custom verification message that competition creation was successful
+    $confirmation = "Congratulations! A new music competition has been created.
+    The following forms are now available for students and teachers to use for
+    registration:</br>
+    <a href={$student_form_url}>{$competition_name} Student Registration</a> was
+    published.</br>
+    <a href={$teacher_form_url}>{$competition_name} Teacher Registration</a> was
+    published.";
     return $confirmation;
   }
 
