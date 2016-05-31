@@ -245,10 +245,9 @@ class ARIA_Create_Competition {
     $confirmation = "Congratulations! A new music competition has been created.
     The following forms are now available for students and teachers to use for
     registration:</br>
-    <a href={$student_form_url}>{$competition_name} Student Registration</a> was
-    published.</br>
-    <a href={$teacher_form_url}>{$competition_name} Teacher Registration</a> was
-    published.";
+    <a href={$student_form_url}>{$competition_name} Student Registration</a>.
+    </br>
+    <a href={$teacher_form_url}>{$competition_name} Teacher Registration</a>.";
     return $confirmation;
   }
 
@@ -576,6 +575,12 @@ class ARIA_Create_Competition {
     $form = $validation_result['form'];
     $field_mapping = ARIA_API::aria_competition_field_id_array();
 
+    // only perform form validation if it's the create competition form
+    if (!array_key_exists('isCompetitionCreationForm', $form)
+        || !$form['isCompetitionCreationForm']) {
+          return $validation_result;
+    }
+
     // obtain the input for festival chairman email and the confirmation email
     $chairman_email = "input_" . strval($field_mapping['chairman_email']);
     $chairman_email_confirmation = "input_" . strval($field_mapping['chairman_email_confirmation']);
@@ -883,7 +888,7 @@ class ARIA_Create_Competition {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_add_checkbox_input($field, $new_input) {
+  public static function aria_add_checkbox_input(&$field, $new_input) {
     // if the field's input data member is not an array yet, create it
     if (!is_array($field->inputs)) {
       $field->inputs = array();
@@ -1360,10 +1365,11 @@ class ARIA_Create_Competition {
 
     // add a description to the student form
     $student_form->description = "Welcome! Use this form to submit your child's
-    information for the upcoming NNMTA festival. Once this form has been submitted,
-    your child's teacher will receive an email with a link that they will use to
-    complete the registration process. Within a few weeks, you will receive an
-    email stating when your child has been registered to perform.";
+    information for the upcoming NNMTA music festival. Once this form has been
+    submitted, your child's teacher will receive an email with a link that they
+    will use to complete the registration process. Within a few weeks, you will
+    receive an email informing you when/where your child has been scheduled to
+    perform.";
 
     // create a designated array to hold the field id's of the fields in the student registration form
     $ariaFieldIds = array();
@@ -1409,8 +1415,8 @@ class ARIA_Create_Competition {
     $student_name->label = "Student Name";
     $student_name->id = $student_field_mapping['student_name'];
     $student_name->description = "Please enter your child's name here using
-    appropriate capitalization. The text you submit here will be used on all
-    competition documents and awards.";
+    appropriate capitalization. <b>The text you submit here will be used on all
+    competition documents and awards.</b>";
     $student_name->descriptionPlacement = 'above';
     $student_name->isRequired = true;
     $student_name = self::aria_add_default_name_inputs($student_name);
@@ -1491,6 +1497,7 @@ class ARIA_Create_Competition {
 
     // create student's preferred command performance field
     $command_performance_options = $competition_entry[strval($create_comp_field_mapping['command_performance_options'])];
+    $command_performance_options = unserialize($command_performance_options);
     $preferred_command_performance = new GF_Field_Radio();
     $preferred_command_performance->label = "Preferred Command Performance Time";
     $preferred_command_performance->id = $student_field_mapping['preferred_command_performance'];
@@ -1507,7 +1514,6 @@ class ARIA_Create_Competition {
 
     // add the command performance times that were input by the festival chairman
     if (is_array($command_performance_options)) {
-      $index = 1;
       foreach ($command_performance_options as $command_time) {
         $preferred_command_performance->choices[] = array('text' => $command_time,
                                                           'value' => $command_time,
@@ -1516,12 +1522,12 @@ class ARIA_Create_Competition {
     }
 
     $student_form->fields[] = $preferred_command_performance;
-    for ($i=1; $i <= count($preferred_command_performance->inputs); $i++) {
+    $ariaFieldIds['preferred_command_performance'] = $preferred_command_performance->id;
+    for ($i = 1; $i <= count($preferred_command_performance->inputs); $i++) {
       $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$preferred_command_performance->id}.{$i}";
     }
 
     // store the preferred command performance in array of field id's
-    $ariaFieldIds['preferred_command_performance'] = $preferred_command_performance->id;
 
     // student's festival level
     /*
@@ -1575,9 +1581,9 @@ class ARIA_Create_Competition {
     $student_level->choices = array();
     for ($i = 1; $i <= 11; $i++) {
       $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
-      if($price != 0) {
-        $student_level->choices[] = array('text' => (string)$i,
-                                          'value' => (string)$i,
+      if ($price != 0) {
+        $student_level->choices[] = array('text' => strval($i),
+                                          'value' => strval($i),
                                           'isSelected' => false,
                                           'price' => $price);
       }
@@ -1603,9 +1609,10 @@ class ARIA_Create_Competition {
     be guaranteed.";
     $compliance_statement->descriptionPlacement = 'above';
     $compliance_statement->choices = array(
-      array('text' => 'I have read and agree with the above statement.',
-            'value' => 'Agree',
-            'isSelected' => false
+      array(
+        'text' => 'I have read and agree with the above statement.',
+        'value' => 'Agree',
+        'isSelected' => false
       ),
     );
     $compliance_statement->inputs = array();

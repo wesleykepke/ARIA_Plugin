@@ -41,7 +41,7 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_before_student_submission($form, $is_ajax) {
-    // Only perform processing if it's a student form
+    // only perform processing if it's a student public form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
           return;
@@ -52,7 +52,7 @@ class ARIA_Form_Hooks {
 
     // get all of the teachers and sort by last name
     $search = array();
-    $sorting = array('key' => $teacher_master_field_mapping['last_name'],
+    $sorting = array('key' => strval($teacher_master_field_mapping['last_name']),
                      'direction' => 'ASC',
                      'is_numeric' => false);
     $paging = array('offset' => 0, 'page_size' => 2000);
@@ -65,10 +65,10 @@ class ARIA_Form_Hooks {
     foreach ($teacher_entries as $entry) {
       $single_teacher = array(
         'text' => $entry[strval($teacher_master_field_mapping['first_name'])] . " " . $entry[strval($teacher_master_field_mapping['last_name'])],
-        'value' => serialize( array(
+        'value' => serialize(array(
           $entry[strval($teacher_master_field_mapping['first_name'])],
           $entry[strval($teacher_master_field_mapping['last_name'])],
-          $entry[strval($teacher_master_field_mapping['teacher_hash'])]
+          $entry[strval($teacher_master_field_mapping['hash'])]
         )),
         'isSelected' => false
       );
