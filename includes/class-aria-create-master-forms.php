@@ -143,7 +143,7 @@ class ARIA_Create_Master_Forms {
                                                              'isSelected' => false);
       }
     }
-    $form->fields[] = $command_times;
+    $form->fields[] = $command_performance_availability;
 
     // field for student's first song period
     $song_one_period = new GF_Field_Text();
@@ -403,10 +403,10 @@ class ARIA_Create_Master_Forms {
 
     // add the volunteer times that were input during competition creation
     $volunteer_time->choices = array();
-    if (is_array($volunteer_time_options_array)) {
-      foreach ($volunteer_time_options_array as $volunteer_time) {
-        $volunteer_time->choices[] = array('text' => $volunteer_time,
-                                           'value' => $volunteer_time,
+    if (is_array($volunteer_time_options)) {
+      foreach ($volunteer_time_options as $single_volunteer_time_option) {
+        $volunteer_time->choices[] = array('text' => $single_volunteer_time_option,
+                                           'value' => $single_volunteer_time_option,
                                            'isSelected' => false);
       }
     }
@@ -414,7 +414,7 @@ class ARIA_Create_Master_Forms {
     // add the volunteer options as inputs to the checkbox
     $volunteer_time->inputs = array();
     $volunteer_time = ARIA_Create_Competition::aria_add_checkbox_input($volunteer_time,
-                                                                       $volunteer_time_options_array);
+                                                                       $volunteer_time_options);
 
     // finish adding the volunteer options field into the form
     $conditional_volunteer_time_rules = array();

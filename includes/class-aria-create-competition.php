@@ -63,7 +63,7 @@ class ARIA_Create_Competition {
    */
   public static function aria_save_comp_to_file($entry) {
     $field_mapping = ARIA_API::aria_competition_field_id_array();
-    $title = $entry[strval($field_mapping['competition_name'])];
+    $title = $entry[strval($field_mapping['name'])];
     $title = str_replace(' ', '_', $title);
     $file_path = ARIA_FILE_UPLOAD_LOC . $title . "_Entry.txt";
     $entry_data = serialize($entry);
@@ -664,7 +664,8 @@ class ARIA_Create_Competition {
       $festival_date_incorrect = true;
     }
 
-    elseif ($start_date[$month_offset] == $end_date[$month_offset] &&
+    elseif ($start_date[$year_offset] == $end_date[$year_offset] &&
+            $start_date[$month_offset] == $end_date[$month_offset] &&
             $start_date[$day_offset] > $end_date[$day_offset]) {
       $festival_date_incorrect = true;
     }
@@ -691,7 +692,8 @@ class ARIA_Create_Competition {
       $student_registration_date_incorrect = true;
     }
 
-    elseif ($student_registration_start[$month_offset] == $student_registration_end[$month_offset] &&
+    elseif ($student_registration_start[$year_offset] == $student_registration_end[$year_offset] &&
+            $student_registration_start[$month_offset] == $student_registration_end[$month_offset] &&
             $student_registration_start[$day_offset] > $student_registration_end[$day_offset]) {
       $student_registration_date_incorrect = true;
     }
@@ -718,7 +720,8 @@ class ARIA_Create_Competition {
       $teacher_registration_date_incorrect = true;
     }
 
-    elseif ($teacher_registration_start[$month_offset] == $teacher_registration_end[$month_offset] &&
+    elseif ($teacher_registration_start[$year_offset] == $teacher_registration_end[$year_offset] &&
+            $teacher_registration_start[$month_offset] == $teacher_registration_end[$month_offset] &&
             $teacher_registration_start[$day_offset] > $teacher_registration_end[$day_offset]) {
       $teacher_registration_date_incorrect = true;
     }
@@ -881,12 +884,12 @@ class ARIA_Create_Competition {
    * @author KREW
    */
   public static function aria_add_checkbox_input($field, $new_input) {
-    $next_input = sizeof($field->inputs) + 1;
-
     // if the field's input data member is not an array yet, create it
     if (!is_array($field->inputs)) {
       $field->inputs = array();
     }
+
+    $next_input = sizeof($field->inputs) + 1;
 
     // for array of checklist items, add every option
     if (is_array($new_input)) {
@@ -995,6 +998,7 @@ class ARIA_Create_Competition {
     }
 
     // add the volunteer options as inputs to the checkbox
+    $volunteer_preference->inputs = array();
     $volunteer_preference = self::aria_add_checkbox_input($volunteer_preference,
                                                           $volunteer_options_array);
 
@@ -1032,10 +1036,10 @@ class ARIA_Create_Competition {
     // add the volunteer time options that were input from create competition
     $volunteer_time->choices = array();
     if (is_array($volunteer_time_options_array)) {
-      foreach( $volunteer_time_options_array as $volunteer_time) {
+      foreach( $volunteer_time_options_array as $single_volunteer_time_option) {
         $volunteer_time->choices[] = array(
-          'text' => $volunteer_time,
-          'value' => $volunteer_time,
+          'text' => $single_volunteer_time_option,
+          'value' => $single_volunteer_time_option,
           'isSelected' => false
         );
 
@@ -1043,13 +1047,14 @@ class ARIA_Create_Competition {
     }
 
     // add the volunteer options as input to the checkbox
+    $volunteer_time->inputs = array();
     $volunteer_time = self::aria_add_checkbox_input($volunteer_time,
                                                     $volunteer_time_options_array);
 
     // finish adding the volunteer options field into the form
     $conditional_volunteer_time_rules = array();
     $conditional_volunteer_time_rules[] = array(
-      'fieldId' => $field_mapping['volunteer_time'],
+      'fieldId' => $teacher_field_mapping['volunteer_time'],
       'operator' => 'is',
       'value' => 'No'
     );
@@ -1060,7 +1065,7 @@ class ARIA_Create_Competition {
     );
     $form->fields[] = $volunteer_time;
     $ariaFieldIds['volunteer_time'] = $volunteer_time->id;
-    for ($i = 1; $i <= count($volunteer_preference->inputs); $i++) {
+    for ($i = 1; $i <= count($volunteer_time->inputs); $i++) {
       $ariaFieldIds["volunteer_time_option_{$i}"] = "{$volunteer_time->id}.{$i}";
     }
 
@@ -1080,7 +1085,7 @@ class ARIA_Create_Competition {
 
     $schedule_with_students_rules = array();
     $schedule_with_students_rules[] = array(
-      'fieldId' => $field_mapping['schedule_with_students'],
+      'fieldId' => $teacher_field_mapping['schedule_with_students'],
       'operator' => 'is',
       'value' => 'No'
     );
@@ -1204,7 +1209,7 @@ class ARIA_Create_Competition {
     );
     $song_two_composer->placeholder = "Select Composer...";
     $form->fields[] = $song_two_composer;
-    $ariaFieldIds['song_two_composer'] = $song_two_composer_field->id;
+    $ariaFieldIds['song_two_composer'] = $song_two_composer->id;
 
     // student's second song selection
     $song_two_selection = new GF_Field_Select();

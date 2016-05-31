@@ -257,14 +257,14 @@ class ARIA_Teacher {
         $single_teacher[strval($field_mappings['last_name'])] = $single_teacher_data[1];
         $single_teacher[strval($field_mappings['phone'])] = $single_teacher_data[2];
         $single_teacher[strval($field_mappings['email'])] = $single_teacher_data[3];
-        $single_teacher[strval($field_mappings['teacher_hash'])] =
-          hash("md5", ($single_teacher_data[0] . ' ' . $single_teacher_data[1]));
+        $single_teacher[strval($field_mappings['hash'])] = hash("md5",
+                                                                ($single_teacher_data[0] . ' ' . $single_teacher_data[1]));
 
         // find the first and last names for the teacher dropdown
         $first_and_last_names_and_hash[0] = $single_teacher_data[0];
         $first_and_last_names_and_hash[1] = $single_teacher_data[1];
-        $first_and_last_names_and_hash[2] = $single_teacher[strval($field_mappings['teacher_hash'])];
-        
+        $first_and_last_names_and_hash[2] = $single_teacher[strval($field_mappings['hash'])];
+
         // add single teacher attributes into a cumulative list of teachers
         $all_teachers_master[] = $single_teacher;
         $all_teachers_form_dropdown[] = $first_and_last_names_and_hash;
