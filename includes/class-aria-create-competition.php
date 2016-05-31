@@ -875,9 +875,9 @@ wp_die(print_r($entry));
   /**
    * This function will take a checkbox field and initialize it.
    *
-   * In order for a checkbox field to be properly displayed on a form, it needs to be
-   * initialized. This function is responsible for taking a checkbox field as input
-   * and providing initialized state for that checkbox field.
+   * In order for a checkbox field to be properly displayed on a form, it needs
+   * to be initialized. This function is responsible for taking a checkbox field
+   * as input and providing initialized state for that checkbox field.
    *
    * @param   Field Object  $field  The field used for checkbox input.
    *
@@ -885,10 +885,16 @@ wp_die(print_r($entry));
    * @author KREW
    */
   public static function aria_add_checkbox_input($field, $new_input) {
-    $next_input = sizeof( $field->inputs ) + 1;
+    $next_input = sizeof($field->inputs) + 1;
 
-    if( is_array($new_input) ){
-      foreach( $new_input as $input ){
+    // if the field's input data member is not an array yet, create it
+    if (!is_array($field->inputs)) {
+      $field->inputs = array();
+    }
+
+    // for array of checklist items, add every option
+    if (is_array($new_input)) {
+      foreach ($new_input as $input) {
         $field->inputs[] = array(
           "id" => "{$field->id}.{$next_input}",
           "label" => $input,
@@ -897,7 +903,9 @@ wp_die(print_r($entry));
         $next_input = $next_input + 1;
       }
     }
-    else{
+
+    // otherwise, just add the single option
+    else {
       $field->inputs[] = array(
         "id" => "{$field->id}.{$next_input}",
         "label" => $new_input,
@@ -963,16 +971,6 @@ wp_die(print_r($entry));
     	array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
     	array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
-
-    // WHAT IS THIS
-    $conditionalRules = array();
-    $conditionalRules[] = array(
-    	'fieldId' => $teacher_field_mapping['is_judging'],
-    	'operator' => 'is',
-    	'value' => 'No'
-    );
-    //
-
     $form->fields[] = $is_judging;
     $ariaFieldIds['is_judging'] = $is_judging->id;
 
@@ -1003,7 +1001,6 @@ wp_die(print_r($entry));
     // add the volunteer options as inputs to the checkbox
     $volunteer_preference = self::aria_add_checkbox_input($volunteer_preference,
                                                           $volunteer_options_array);
-
 
     // finish adding the volunteer options field into the form
     $conditional_volunteer_preference_rules = array();
@@ -1049,12 +1046,21 @@ wp_die(print_r($entry));
       }
     }
 
+    // add the volunteer options as input to the checkbox
     $volunteer_time = self::aria_add_checkbox_input($volunteer_time,
                                                     $volunteer_time_options_array);
+
+    // finish adding the volunteer options field into the form
+    $conditional_volunteer_time_rules = array();
+    $conditional_volunteer_time_rules[] = array(
+      'fieldId' => $field_mapping['volunteer_time'],
+      'operator' => 'is',
+      'value' => 'No'
+    );
     $volunteer_time->conditionalLogic = array(
-    	'actionType' => 'show',
-    	'logicType' => 'all',
-    	'rules' => $conditionalRules
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $conditional_volunteer_time_rules
     );
     $form->fields[] = $volunteer_time;
     $ariaFieldIds['volunteer_time'] = $volunteer_time->id;
@@ -1062,278 +1068,270 @@ wp_die(print_r($entry));
       $ariaFieldIds["volunteer_time_option_{$i}"] = "{$volunteer_time->id}.{$i}";
     }
 
-    // teacher is judging
-    $volunteer_with_students = new GF_Field_Radio();
-    $volunteer_with_students->label = "Volunteer in student's section";
-    $volunteer_with_students->description = "Do you wish to be scheduled as a proctor or door";
-    $volunteer_with_students->description .= " monitor for a session in which one of your";
-    $volunteer_with_students->description .= " own students is playing?";
-    $volunteer_with_students->descriptionPlacement = 'above';
-    $volunteer_with_students->id = $teacher_field_mapping['schedule_with_students'];
-    $volunteer_with_students->isRequired = true;
-    $volunteer_with_students->choices = array(
+    // field for teacher to decide if they want to volunteer in their student's section
+    $schedule_with_students = new GF_Field_Radio();
+    $schedule_with_students->label = "Volunteer in Sections with Your Students";
+    $schedule_with_students->id = $teacher_field_mapping['schedule_with_students'];
+    $schedule_with_students->description = "Do you wish to be scheduled as a
+    proctor or door monitor for a session in which one of your own students
+    is playing?";
+    $schedule_with_students->descriptionPlacement = 'above';
+    $schedule_with_students->isRequired = true;
+    $schedule_with_students->choices = array(
       array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
       array('text' => 'No', 'value' => 'No', 'isSelected' => false)
     );
-    $volunteer_with_students->conditionalLogic = array(
+
+    $schedule_with_students_rules = array();
+    $schedule_with_students_rules[] = array(
+      'fieldId' => $field_mapping['schedule_with_students'],
+      'operator' => 'is',
+      'value' => 'No'
+    );
+    $schedule_with_students->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
-      'rules' => $conditionalRules
+      'rules' => $schedule_with_students_rules
     );
-    $form->fields[] = $volunteer_with_students;
-    $ariaFieldIds['schedule_with_students'] = $volunteer_with_students->id;
+    $form->fields[] = $schedule_with_students;
+    $ariaFieldIds['schedule_with_students'] = $schedule_with_students->id;
 
+    // student name field
+    $student_name = new GF_Field_Name();
+    $student_name->label = "Student Name";
+    $student_name->id = $teacher_field_mapping['student_name'];
+    $student_name->isRequired = false;
+    $student_name = self::aria_add_default_name_inputs($student_name);
+    $form->fields[] = $student_name;
+    $ariaFieldIds['student_name'] = $student_name->id;
+    $ariaFieldIds['student_first_name'] = "{$student_name->id}.3";
+    $ariaFieldIds['student_last_name'] = "{$student_name->id}.6";
 
-    // student name
-    $student_name_field = new GF_Field_Name();
-    $student_name_field->label = "Student Name";
-    $student_name_field->id = $teacher_field_mapping['student_name'];
-    $student_name_field->isRequired = false;
-    $student_name_field = self::aria_add_default_name_inputs($student_name_field);
-    $form->fields[] = $student_name_field;
-    $ariaFieldIds['student_name'] = $student_name_field->id;
-    $ariaFieldIds['student_first_name'] = "{$student_name_field->id}.3";
-    $ariaFieldIds['student_last_name'] = "{$student_name_field->id}.6";
-
-
-    // !!!student level
-    $student_level_field = new GF_Field_Select();
-    $student_level_field->label = "Student Level";
-    $student_level_field->id = $teacher_field_mapping['student_level'];
-    $student_level_field->isRequired = false;
+    // student level field
+    $student_level = new GF_Field_Select();
+    $student_level->label = "Student Level";
+    $student_level->id = $teacher_field_mapping['student_level'];
+    $student_level->isRequired = false;
+    $student_level->placeholder = "Select level...";
     // !!! replace
-    $student_level_field->choices = array(
-      array('text' => '1', 'value' => '1', 'isSelected' => false),
-      array('text' => '2', 'value' => '2', 'isSelected' => false),
-      array('text' => '3', 'value' => '3', 'isSelected' => false),
-      array('text' => '4', 'value' => '4', 'isSelected' => false),
-      array('text' => '5', 'value' => '5', 'isSelected' => false),
-      array('text' => '6', 'value' => '6', 'isSelected' => false),
-      array('text' => '7', 'value' => '7', 'isSelected' => false),
-      array('text' => '8', 'value' => '8', 'isSelected' => false),
-      array('text' => '9', 'value' => '9', 'isSelected' => false),
-      array('text' => '10', 'value' => '10', 'isSelected' => false),
-      array('text' => '11', 'value' => '11', 'isSelected' => false)
-    );
-    $form->fields[] = $student_level_field;
-    $ariaFieldIds['student_level'] = $student_level_field->id;
+    $student_level->choices = array();
+    for ($i = 1; $i <= 11; $i++) {
+      $student_level->choices[] = array(
+        'text' => strval($i),
+        'value' => strval($i),
+        'isSelected' => false
+      );
+    }
+    $form->fields[] = $student_level;
+    $ariaFieldIds['student_level'] = $student_level->id;
 
-
-    // student's first song period
-    $song_one_period_field = new GF_Field_Select();
-    $song_one_period_field->label = "Song 1 Period";
-    $song_one_period_field->id = $teacher_field_mapping['song_1_period'];
-    $song_one_period_field->choices = array(
+    // field for student's first song period
+    $song_one_period = new GF_Field_Select();
+    $song_one_period->label = "Song 1 Period";
+    $song_one_period->id = $teacher_field_mapping['song_1_period'];
+    $song_one_period->choices = array(
       array('text' => 'Baroque', 'value' => '1', 'isSelected' => false),
       array('text' => 'Classical', 'value' => '2', 'isSelected' => false),
       array('text' => 'Romantic', 'value' => '3', 'isSelected' => false),
       array('text' => 'Contemporary', 'value' => '4', 'isSelected' => false),
    );
-    $song_one_period_field->isRequired = true;
-    $song_one_period_field->placeholder = "Select Period...";
-    $form->fields[] = $song_one_period_field;
-    $ariaFieldIds['song_one_period'] = $song_one_period_field->id;
+    $song_one_period->isRequired = true;
+    $song_one_period->placeholder = "Select Period...";
+    $form->fields[] = $song_one_period;
+    $ariaFieldIds['song_one_period'] = $song_one_period->id;
 
-    // student's first song composer
-    $song_one_composer_field = new GF_Field_Select();
-    $song_one_composer_field->label = "Song 1 Composer";
-    $song_one_composer_field->id = $teacher_field_mapping['song_1_composer'];
-    $song_one_composer_field->isRequired = true;
-    $form->fields[] = $song_one_composer_field;
-    $ariaFieldIds['song_one_composer'] = $song_one_composer_field->id;
+    // field for student's first song composer
+    $song_one_composer = new GF_Field_Select();
+    $song_one_composer->label = "Song 1 Composer";
+    $song_one_composer->id = $teacher_field_mapping['song_1_composer'];
+    $song_one_composer->isRequired = true;
+    $song_one_composer->placeholder = "Select Composer...";
+    $form->fields[] = $song_one_composer;
+    $ariaFieldIds['song_one_composer'] = $song_one_composer->id;
 
-    // student's first song selection
-    $song_one_selection_field = new GF_Field_Select();
-    $song_one_selection_field->label = "Song 1 Selection";
-    $song_one_selection_field->id = $teacher_field_mapping['song_1_selection'];
-    $song_one_selection_field->isRequired = true;
-    $form->fields[] = $song_one_selection_field;
-    $ariaFieldIds['song_one_selection'] = $song_one_selection_field->id;
+    // field for student's first song selection
+    $song_one_selection = new GF_Field_Select();
+    $song_one_selection->label = "Song 1 Selection";
+    $song_one_selection->id = $teacher_field_mapping['song_1_selection'];
+    $song_one_selection->isRequired = true;
+    $song_one_selection->placeholder = "Select Song...";
+    $form->fields[] = $song_one_selection;
+    $ariaFieldIds['song_one_selection'] = $song_one_selection->id;
 
     // !!! need to add column E (conflict resolution)
+      // idk what this is or means
 
-    // !!! if level is not 11
-     $is_11_rule = array();
+    // define some rules for level 11 students
+    $is_11_rule = array();
     $is_11_rule[] = array(
     	'fieldId' => $teacher_field_mapping['student_level'],
     	'operator' => 'is',
     	'value' => '11'
     );
+
     $is_not_11_rule = array();
     $is_not_11_rule[] = array(
     	'fieldId' => $teacher_field_mapping['student_level'],
     	'operator' => 'isnot',
     	'value' => '11'
     );
-    // student's second song period
-    $song_two_period_field = new GF_Field_Select();
-    $song_two_period_field->label = "Song 2 Period";
-    $song_two_period_field->id = $teacher_field_mapping['song_2_period'];
-    $song_two_period_field->isRequired = true;
-    $song_two_period_field->choices = array(
+
+    // field for student's second song period
+    $song_two_period = new GF_Field_Select();
+    $song_two_period->label = "Song 2 Period";
+    $song_two_period->id = $teacher_field_mapping['song_2_period'];
+    $song_two_period->isRequired = true;
+    $song_two_period->choices = array(
       array('text' => 'Baroque', 'value' => '1', 'isSelected' => false),
       array('text' => 'Classical', 'value' => '2', 'isSelected' => false),
       array('text' => 'Romantic', 'value' => '3', 'isSelected' => false),
       array('text' => 'Contemporary', 'value' => '4', 'isSelected' => false),
     );
-    $song_two_period_field->conditionalLogic = array(
+    $song_two_period->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
-    $song_two_period_field->placeholder = "Select Period...";
-    $form->fields[] = $song_two_period_field;
-    $ariaFieldIds['song_two_period'] = $song_two_period_field->id;
+    $song_two_period->placeholder = "Select Period...";
+    $form->fields[] = $song_two_period;
+    $ariaFieldIds['song_two_period'] = $song_two_period->id;
 
-    // student's second song composer
-    $song_two_composer_field = new GF_Field_Select();
-    $song_two_composer_field->label = "Song 2 Composer";
-    $song_two_composer_field->id = $teacher_field_mapping['song_2_composer'];
-    $song_two_composer_field->isRequired = true;
-    $song_two_composer_field->conditionalLogic = array(
+    // field for student's second song composer
+    $song_two_composer = new GF_Field_Select();
+    $song_two_composer->label = "Song 2 Composer";
+    $song_two_composer->id = $teacher_field_mapping['song_2_composer'];
+    $song_two_composer->isRequired = true;
+    $song_two_composer->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
-    $form->fields[] = $song_two_composer_field;
+    $song_two_composer->placeholder = "Select Composer...";
+    $form->fields[] = $song_two_composer;
     $ariaFieldIds['song_two_composer'] = $song_two_composer_field->id;
 
     // student's second song selection
-    $song_two_selection_field = new GF_Field_Select();
-    $song_two_selection_field->label = "Song 2 Selection";
-    $song_two_selection_field->id = $teacher_field_mapping['song_2_selection'];
-    $song_two_selection_field->isRequired = true;
-    $song_two_selection_field->conditionalLogic = array(
+    $song_two_selection = new GF_Field_Select();
+    $song_two_selection->label = "Song 2 Selection";
+    $song_two_selection->id = $teacher_field_mapping['song_2_selection'];
+    $song_two_selection->isRequired = true;
+    $song_two_selection->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
-    $form->fields[] = $song_two_selection_field;
-    $ariaFieldIds['song_two_selection'] = $song_two_selection_field->id;
+    $song_two_selection->placeholder = "Select Song...";
+    $form->fields[] = $song_two_selection;
+    $ariaFieldIds['song_two_selection'] = $song_two_selection->id;
 
-    // !!! need to add column E (conflict resolution)
-
-    // if level is 11
-    // Composer
-    $alt_song_two_composer_field = new GF_Field_Text();
-    $alt_song_two_composer_field->label = "Song 2 Composer";
-    $alt_song_two_composer_field->id = $teacher_field_mapping['alt_song_2_composer'];
-    $alt_song_two_composer_field->isRequired = true;
-    $alt_song_two_composer_field->conditionalLogic = array(
-    	'actionType' => 'show',
-    	'logicType' => 'all',
-    	'rules' => $is_11_rule
-    );
-    $form->fields[] = $alt_song_two_composer_field;
-    $ariaFieldIds['alt_song_two_composer'] = $alt_song_two_composer_field->id;
-
-    // Piece Title
-    $alt_song_two_selection_field = new GF_Field_Text();
-    $alt_song_two_selection_field->label = "Song 2 Piece Title";
-    $alt_song_two_selection_field->id = $teacher_field_mapping['alt_song_2_selection'];
-    $alt_song_two_selection_field->isRequired = true;
-    $alt_song_two_selection_field->description = "Please be as descriptive as possible.";
-    $alt_song_two_selection_field->description .= "If applicable, include key (D Major, F Minor, etc.), ";
-    $alt_song_two_selection_field->description .= "movement number (1st, 2nd, etc.), ";
-    $alt_song_two_selection_field->description .= "movement description (Adante, Rondo Allegro Comodo, etc.), ";
-    $alt_song_two_selection_field->description .= "identifying number (BWV, Opus, etc.).";
-    $alt_song_two_selection_field->descriptionPlacement = 'above';
-    $alt_song_two_selection_field->conditionalLogic = array(
-      'actionType' => 'show',
-      'logicType' => 'all',
-      'rules' => $is_11_rule
-    );
-    $form->fields[] = $alt_song_two_selection_field;
-    $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection_field->id;
-
-    // student's theory score
-    $student_theory_score = new GF_Field_Number();
-    $student_theory_score->label = "Theory Score (percentage)";
-    $student_theory_score->id = $teacher_field_mapping['theory_score'];
-    $student_theory_score->isRequired = true;
-    $student_theory_score->numberFormat = "decimal_dot";
-    $student_theory_score->rangeMin = 70;
-    $student_theory_score->rangeMax = 100;
-    $form->fields[] = $student_theory_score;
-    $ariaFieldIds['theory_score'] = $student_theory_score->id;
-
-    // student's alternate theory
-    $alternate_theory_field = new GF_Field_Checkbox();
-    $alternate_theory_field->label = "Check if alternate theory exam was completed.";
-    $alternate_theory_field->id = $teacher_field_mapping['alternate_theory'];
-    $alternate_theory_field->isRequired = false;
-    $alternate_theory_field->choices = array(
-      array('text' => 'Alternate theory exam completed',
-      'value' => 'Alternate theory exam completed',
-      'isSelected' => false)
-    );
-    $alternate_theory_field->inputs = array();
-    $alternate_theory_field = self::aria_add_checkbox_input( $alternate_theory_field, 'Alternate theory exam completed' );
-    $form->fields[] = $alternate_theory_field;
-    $ariaFieldIds['alternate_theory'] = $alternate_theory_field->id;
-
-    // competition format
-    $master_class_registration_option = $competition_entry[strval($competition_field_mapping['volunteer_time_options'])];
-    $competition_format_field = new GF_Field_Radio();
-    $competition_format_field->label = "Format of Event";
-    $competition_format_field->id = $teacher_field_mapping['competition_format'];
-    $competition_format_field->isRequired = true;
-    $competition_format_field->choices = array(
-      array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
-      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false)
-    );
-    if( $master_class_registration_option == "Yes" )
-    {
-        $competition_format_field->choices[] = array('text' => 'Master Class', 'value' => 'Master Class', 'isSelected' => false);
-    }
-    $form->fields[] = $competition_format_field;
-    $ariaFieldIds['competition_format'] = $competition_format_field->id;
-
-    // timing field
-
-    $timing_of_pieces_field = new GF_Field_Select();
-    $timing_of_pieces_field->label = "Combined timing of Pieces (minutes)";
-    $timing_of_pieces_field->description = "Please round up to the nearest minute.";
-    $timing_of_pieces_field->descriptionPlacement = "above.";
-    $timing_of_pieces_field->id = $teacher_field_mapping['timing_of_pieces'];
-    $timing_of_pieces_field->isRequired = true;
-    $timing_choices = array();
+    // timing of pieces field
+    $timing_of_pieces = new GF_Field_Select();
+    $timing_of_pieces->label = "Combined Timing of Pieces (minutes)";
+    $timing_of_pieces->description = "Please round up to the nearest minute.";
+    $timing_of_pieces->descriptionPlacement = "above.";
+    $timing_of_pieces->id = $teacher_field_mapping['timing_of_pieces'];
+    $timing_of_pieces->isRequired = true;
     for ($i = 1; $i <= 20; $i++) {
-      $single_choice = array(
+      $timing_of_pieces->choices[] = array(
         'text' => strval($i),
         'value' => strval($i),
         'isSelected' => false
       );
-      $timing_choices[] = $single_choice;
     }
-    $timing_of_pieces_field->choices = $timing_choices;
-    $form->fields[] = $timing_of_pieces_field;
-    $ariaFieldIds['timing_of_pieces'] = $timing_of_pieces_field->id;
+    $form->fields[] = $timing_of_pieces;
+    $ariaFieldIds['timing_of_pieces'] = $timing_of_pieces->id;
 
-    // custom submission message to let the festival chairman know the creation was
-    // a success
-  /*  $successful_submission_message = 'Congratulations! You have just successfully registered';
-    $successful_submission_message .= ' one your students.';
-    $competition_creation_form->confirmation['type'] = 'message';
-    $competition_creation_form->confirmation['message'] = $successful_submission_message;
-*/
+    // student division field
+    $master_class_registration_option = $competition_entry[strval($competition_field_mapping['master_class_registration_option'])];
+    $student_division = new GF_Field_Radio();
+    $student_division->label = "Student Division";
+    $student_division->id = $teacher_field_mapping['student_division'];
+    $student_division->isRequired = true;
+    $student_division->choices = array(
+      array('text' => 'Traditional', 'value' => 'Traditional', 'isSelected' => false),
+      array('text' => 'Non-Competitive', 'value' => 'Non-Competitive', 'isSelected' => false)
+    );
+    if ($master_class_registration_option == "Yes") {
+        $student_division->choices[] = array('text' => 'Master Class', 'value' => 'Master Class', 'isSelected' => false);
+    }
+    $form->fields[] = $student_division;
+    $ariaFieldIds['student_division'] = $student_division->id;
+
+    // field for student's theory score
+    $theory_score = new GF_Field_Number();
+    $theory_score->label = "Theory Score (percentage)";
+    $theory_score->id = $teacher_field_mapping['theory_score'];
+    $theory_score->isRequired = true;
+    $theory_score->numberFormat = "decimal_dot";
+    $theory_score->rangeMin = 70;
+    $theory_score->rangeMax = 100;
+    $form->fields[] = $theory_score;
+    $ariaFieldIds['theory_score'] = $theory_score->id;
+
+    // field for student's alternate theory
+    $alternate_theory = new GF_Field_Checkbox();
+    $alternate_theory->label = "Check if alternate theory exam was completed.";
+    $alternate_theory->id = $teacher_field_mapping['alternate_theory'];
+    $alternate_theory->isRequired = false;
+    $alternate_theory->choices = array(
+      array(
+        'text' => 'Alternate theory exam completed',
+        'value' => 'Alternate theory exam completed',
+        'isSelected' => false
+      )
+    );
+    $alternate_theory->inputs = array();
+    $alternate_theory = self::aria_add_checkbox_input($alternate_theory, 'Alternate theory exam completed');
+    $form->fields[] = $alternate_theory;
+    $ariaFieldIds['alternate_theory'] = $alternate_theory->id;
+
+    // if the student is level 11, we need to obtain an alternate composer
+    $alt_song_two_composer = new GF_Field_Text();
+    $alt_song_two_composer->label = "Song 2 Composer";
+    $alt_song_two_composer->id = $teacher_field_mapping['alt_song_2_composer'];
+    $alt_song_two_composer->isRequired = true;
+    $alt_song_two_composer->conditionalLogic = array(
+    	'actionType' => 'show',
+    	'logicType' => 'all',
+    	'rules' => $is_11_rule
+    );
+    $form->fields[] = $alt_song_two_composer;
+    $ariaFieldIds['alt_song_two_composer'] = $alt_song_two_composer->id;
+
+    // if the student is level 11, we need to obtain an alternate song
+    $alt_song_two_selection = new GF_Field_Text();
+    $alt_song_two_selection->label = "Song 2 Piece Title";
+    $alt_song_two_selection->id = $teacher_field_mapping['alt_song_2_selection'];
+    $alt_song_two_selection->isRequired = true;
+    $alt_song_two_selection->description = "Please be as descriptive as possible.
+    If applicable, include key (D Major, F Minor, etc.), movement number (1st,
+    2nd, etc.), movement description (Adante, Rondo Allegro Comodo, etc.), and
+    identifying number (BWV, Opus, etc.).";
+    $alt_song_two_selection->descriptionPlacement = 'above';
+    $alt_song_two_selection->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $form->fields[] = $alt_song_two_selection;
+    $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection->id;
+
+    // custom submission message to inform teacher registration was successful
     $successful_submission_message = "Congratulations! You have just successfully
     registered your student.";
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
+    // create the new form and publish to the WordPress dashboard
     $teacher_form_array = $form->createFormArray();
     $teacher_form_array['isTeacherPublicForm'] = true;
     $teacher_form_array['ariaFieldIds'] = $ariaFieldIds;
-    // add the new form to the festival chairman's dashboard
-    $new_form_id = GFAPI::add_form($teacher_form_array);
-
-    // make sure the new form was added without error
-    if (is_wp_error($new_form_id)) {
-      wp_die($new_form_id->get_error_message());
+    $result = GFAPI::add_form($teacher_form_array);
+    if (is_wp_error($result)) {
+      wp_die($result->get_error_message());
     }
 
-    return $new_form_id;
+    return $result;
   }
 
   /**

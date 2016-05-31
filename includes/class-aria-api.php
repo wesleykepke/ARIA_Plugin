@@ -455,33 +455,24 @@ class ARIA_API {
       'is_judging' => 4,
       'volunteer_preference' => 5,
       'volunteer_time' => 6,
-
-      'student_name' => 6,
-			'student_first_name' => 6.3,
-			'student_last_name' => 6.6,
-      'song_1_period' => 7,
-      'song_1_composer' => 8,
-      'song_1_selection' => 9,
-      'song_2_period' => 10,
-      'song_2_composer' => 11,
-      'song_2_selection' => 12,
-      'theory_score' => 13,
-      'alternate_theory' => 14,
-      'competition_format' => 15,
+      'schedule_with_students' => 7,
+      'student_name' => 8,
+			'student_first_name' => 8.3,
+			'student_last_name' => 8.6,
+      'student_level' => 9,
+      'song_1_period' => 10,
+      'song_1_composer' => 11,
+      'song_1_selection' => 12,
+      'song_2_period' => 13,
+      'song_2_composer' => 14,
+      'song_2_selection' => 15,
       'timing_of_pieces' => 16,
-
-      'student_level' => 18,
+      'student_division' => 17,
+      'theory_score' => 18,
+      'alternate_theory' => 19,
       'alt_song_2_composer' => 19,
       'alt_song_2_selection' => 20,
-      'schedule_with_students' => 21
     );
-    /*
-    ,
-      'alt_song_2_key' => 21,
-      'alt_song_2_movement_number' => 22,
-      'alt_song_2_movement_description' => 23,
-      'alt_song_2_identifying_number' => 24
-      */
   }
 
   /**
