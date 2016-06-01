@@ -1341,6 +1341,35 @@ class ARIA_Create_Competition {
   }
 
   /**
+   * This function will perform validation on the input obtained from the form
+   * used to register students for an NNMTA festival.
+   *
+   * Various validation checks will be performed to ensure that the data input
+   * into the student registration form is accurate and valid.
+   *
+   * @param   $validation_result  Array   Contains the validation result and the current Form Object.
+   *
+   * @return  $validation_result  Array   Contains the validation result and the current Form Object.
+   *
+   * @since 2.0.0
+   * @author KREW
+   */
+   public static function aria_teacher_form_validation($validation_result) {
+     // obtain the form object and the field mapping for this object
+     $form = $validation_result['form'];
+     $field_mapping = ARIA_API::aria_teacher_field_id_array();
+
+     // only perform form validation if it's the student registration form
+     if (!array_key_exists('isTeacherPublicForm', $form)
+         || !$form['isTeacherPublicForm']) {
+           return $validation_result;
+     }
+
+     $validation_result['form'] = $form;
+     return $validation_result;
+  }
+
+  /**
    * This function will create a new form for student registration.
    *
    * This function is responsible for creating and adding all of the associated
@@ -1662,5 +1691,53 @@ class ARIA_Create_Competition {
 
     // pass back the newly created student form id to the caller
     return $new_form_id;
+  }
+
+  /**
+   * This function will perform validation on the input obtained from the form
+   * used to register students for an NNMTA festival.
+   *
+   * Various validation checks will be performed to ensure that the data input
+   * into the student registration form is accurate and valid.
+   *
+   * @param   $validation_result  Array   Contains the validation result and the current Form Object.
+   *
+   * @return  $validation_result  Array   Contains the validation result and the current Form Object.
+   *
+   * @since 2.0.0
+   * @author KREW
+   */
+  public static function aria_student_form_validation($validation_result) {
+    // obtain the form object and the field mapping for this object
+    $form = $validation_result['form'];
+    $field_mapping = ARIA_API::aria_student_field_id_array();
+
+    // only perform form validation if it's the student registration form
+    if (!array_key_exists('isStudentPublicForm', $form)
+        || !$form['isStudentPublicForm']) {
+          return $validation_result;
+    }
+
+    // obtain the input for parent email and the confirmation email
+    $parent_email = "input_" . strval($field_mapping['parent_email']);
+    $parent_email_confirmation = "input_" . strval($field_mapping['parent_email_confirmation']);
+    $parent_email = rgpost($parent_email);
+    $parent_email_confirmation = rgpost($parent_email_confirmation);
+
+    // compare the parent email with the parent confirmation email
+    if (strcmp($parent_email, $parent_email_confirmation) !== 0) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // parent confirmation email field
+        if ($field->id == strval($field_mapping['parent_email_confirmation'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "This email must match the email in the
+          field titled 'Parent Email'.";
+        }
+      }
+    }
+
+    $validation_result['form'] = $form;
+    return $validation_result;
   }
 }
