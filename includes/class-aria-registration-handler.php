@@ -57,9 +57,9 @@ class ARIA_Registration_Handler {
     $send_url .= "&student_hash=" . $email_info['student_hash'];
 
     // generate the message to send to the teacher
-    $message_teacher = "<html>Hello " . $email_info['teacher_name'] . "!<br />
+    $message_teacher = "<html>Hello " . $email_info['teacher_name'] . "!<br /><br />
     Congratulations. " . $email_info['student_name'] . " has registered for the
-    NNMTA event: " . $email_info['competition_name'] . "<br />Please click on
+    NNMTA event '" . $email_info['competition_name'] . "'.<br />Please click on
     the following link to finish registering your student:
     <a href=\"" . $send_url . "\">" . $email_info['student_name'] . "</a><br />
     Once the event has been scheduled, you will receive an email with this
@@ -72,9 +72,9 @@ class ARIA_Registration_Handler {
     }
 
     // generate the message to send to the parents
-    $message_parent = "<html>Hello " . $email_info['parent_name'] . "!<br />
+    $message_parent = "<html>Hello " . $email_info['parent_name'] . "!<br /><nr />
     Congratulations. " . $email_info['student_name'] . " has registered for the
-    NNMTA event: " . $email_info['competition_name'] . "<br />Once the event has
+    NNMTA event '" . $email_info['competition_name'] . "'.<br />Once the event has
     been scheduled, you will receive an email with your child's scheduled
     performance time.<br /><br />Thank you,<br />NNMTA Festival Chair<br />
     (" . $email_info['festival_chairman_email'] . ")</html>";
@@ -85,13 +85,13 @@ class ARIA_Registration_Handler {
 
     // generate message to send to the festival chairman
     if ($email_info['notification_email'] !== null) {
-      $message_chairman = "<html>Hello,<br />" . $email_info['student_name'] .
-      " has just registered for the NNMTA event: " . $email_info['competition_name'] .
-      " and will have registration completed by " . $email_info['teacher_name'] .
+      $message_chairman = "<html>Hello,<br /><br />" . $email_info['student_name'] .
+      " has just registered for the NNMTA event '" . $email_info['competition_name'] .
+      "' and will have registration completed by " . $email_info['teacher_name'] .
       ".<br /><br />Save this link in case you need to resend it to the teacher
-      to finish registering their student: " . $send_url . "<br />As of this moment,
-      there are " . strval($email_info['num_participants']) . " students that
-      have registered for " . $email_info['competition_name'] . ".</html>";
+      to finish registering their student: " . $send_url . "<br /><br />As of
+      this moment, " . strval($email_info['num_participants']) . " students
+      have registered for '" . $email_info['competition_name'] . "'.</html>";
 
       if (!wp_mail($email_info['notification_email'], $subject, $message_chairman)) {
         wp_die('Teacher registration email failed to send.');
@@ -156,7 +156,7 @@ class ARIA_Registration_Handler {
 	 */
   public static function aria_find_teacher_entry($teacher_master_form_id, $teacher_hash) {
     // prepare search criteria
-    $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
+    $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['hash'];
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -178,6 +178,13 @@ class ARIA_Registration_Handler {
     // exactly one teacher was found that has the corresponding hash value
     if (count($entries) === 1 && rgar($entries[0], (string) $hash_field_id) == $teacher_hash) {
       return $entries[0];
+    }
+    else {
+      echo 'Displaying wp_die on entries variable <br>';
+      echo print_r($entries);
+      echo '<br>';
+      echo 'Displaying teacher hash <br>';
+      echo $teacher_hash;
     }
 
     // otherwise, no such teacher was found
@@ -227,7 +234,7 @@ class ARIA_Registration_Handler {
 	 * Function to get pre-populate values based on teacher-master.
 	 */
 	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
-		$hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['teacher_hash'];
+		$hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['hash'];
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -275,7 +282,7 @@ class ARIA_Registration_Handler {
 			'students' => rgar( $entries[0], (string) $field_ids['students'] ),
 			'is_judging' => rgar( $entries[0], (string) $field_ids['is_judging'] ),
       'schedule_with_students' => rgar( $entries[0], (string) $field_ids['schedule_with_students'] ),
-			'teacher_hash' => rgar( $entries[0], (string) $field_ids['teacher_hash'])
+			'hash' => rgar( $entries[0], (string) $field_ids['hash'])
 
 		);
 	 }

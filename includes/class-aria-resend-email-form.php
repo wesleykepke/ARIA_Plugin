@@ -77,7 +77,7 @@ class ARIA_Resend_Email {
     foreach ($all_active_competitions as $competition) {
       $single_competition = array(
         'text' => $competition['name'],
-        'value' => $competition['name'] . '_' . $competition['aria_relations']['teacher_master_form_id'] . 
+        'value' => $competition['name'] . '_' . $competition['aria_relations']['teacher_master_form_id'] .
                     '_' . $competition['aria_relations']['student_master_form_id'],
         'isSelected' => false
       );
@@ -119,7 +119,7 @@ class ARIA_Resend_Email {
 
       // find teacher in master
       $search = array ( );
-      $search['field_filters'][] = array( 'key' => $teacher_master_field_mapping['teacher_hash'], 
+      $search['field_filters'][] = array( 'key' => $teacher_master_field_mapping['hash'], 
                                           'value' => $entry[$field_mapping['teacher']]);
       $search['field_filters']['mode'] = 'any';
       $sorting = array();

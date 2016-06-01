@@ -215,7 +215,7 @@ class ARIA_Teacher {
       strval($teacher_master_field_mapping['last_name']) => $last_name,
       strval($teacher_master_field_mapping['email']) => $entry[strval($field_mapping['teacher_email'])],
       strval($teacher_master_field_mapping['phone']) => $entry[strval($field_mapping['teacher_phone'])],
-      strval($teacher_master_field_mapping['teacher_hash']) => $teacher_hash
+      strval($teacher_master_field_mapping['hash']) => $teacher_hash
     );
     $result = GFAPI::add_entries(array($new_teacher), $teacher_master_form_id);
     if (is_wp_error($result)) {
@@ -251,6 +251,10 @@ class ARIA_Teacher {
       while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
         $single_teacher = array();
         $first_and_last_names_and_hash = array();
+
+        // preprocess the teacher names
+        $single_teacher_data[0] = trim($single_teacher_data[0]);
+        $single_teacher_data[1] = trim($single_teacher_data[1]);
 
         // assign attributes to teacher from the csv file
         $single_teacher[strval($field_mappings['first_name'])] = $single_teacher_data[0];

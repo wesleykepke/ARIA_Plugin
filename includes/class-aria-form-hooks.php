@@ -132,7 +132,6 @@ class ARIA_Form_Hooks {
                                                                         $teacher_hash);
 
     // if a teacher was located, update that teacher's array of students
-    // THIS SHOULD NEVER HAPPEN
     if ($teacher_entry !== false) {
       // obtain that teacher's array of students
       $students = unserialize($teacher_entry[strval($teacher_master_fields["students"])]);
@@ -155,6 +154,8 @@ class ARIA_Form_Hooks {
 
     // if that teacher was not located, create a new entry for that teacher
     else {
+      // THIS SHOULD NEVER HAPPEN
+
       // process the teacher's name
       $teacher_name = explode(" ", $teacher_name);
       foreach ($teacher_name as &$word) {
@@ -521,7 +522,7 @@ class ARIA_Form_Hooks {
       foreach( $teacher_entries as $teacher ){
         $teacher_first = $teacher[ strval($teacher_master_fields['first_name'])];
         $teacher_last = $teacher[ strval($teacher_master_fields['last_name'])];
-        $teacher_hash =  $teacher[ strval($teacher_master_fields['teacher_hash'])];
+        $teacher_hash =  $teacher[ strval($teacher_master_fields['hash'])];
         $full_name = $teacher_first . ' ' . $teacher_last;
         if($full_name == $teacher_name)
         {
