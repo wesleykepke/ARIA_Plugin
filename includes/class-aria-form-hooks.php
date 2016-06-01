@@ -32,7 +32,7 @@ class ARIA_Form_Hooks {
    *
    * This function is responsible for taking all of the entries that exist
    * in the associated competition's teacher master form and use those entries
-   * to pre-populate the drop-down menu.
+   * to pre-populate the teacher drop-down menu.
    *
    * @param   $form   Form Object   The current form object.
    * @param   $is_ajax  Bool  Specifies if the form is submitted via AJAX.
@@ -98,20 +98,19 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
+    // obtain the form object and the other related forms
+    $form_id = $entry['form_id'];
+    $form = GFAPI::get_form($form_id);
+    $related_forms = $form['aria_relations'];
+
     // only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
           return;
     }
 
-wp_die(print_r($entry));
-
-    // obtain the form object
-    $form_id = $entry['form_id'];
-    $form = GFAPI::get_form($form_id);
-
+//wp_die(print_r($entry));
     // initialize various field mapping arrays
-    $related_forms = $form['aria_relations'];
     $student_fields = ARIA_API::aria_student_field_id_array();
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_API::aria_master_student_field_id_array();
@@ -125,14 +124,15 @@ wp_die(print_r($entry));
     $student_first_name = trim($entry[strval($student_fields["student_first_name"])]);
     $student_last_name = trim($entry[strval($student_fields["student_last_name"])]);
     $student_name = $student_first_name . " " . $student_last_name;
-    $student_name_and_entry = $student_name . $entry["date_created"];
-    $student_hash = hash("md5", $student_name_and_entry);
+    $student_name_and_entry_date = $student_name . $entry["date_created"];
+    $student_hash = hash("md5", $student_name_and_entry_date);
 
     // search through the teacher master form to see if the teacher has an entry made
     $teacher_entry = ARIA_Registration_Handler::aria_find_teacher_entry($related_forms['teacher_master_form_id'],
                                                                         $teacher_hash);
 
     // if a teacher was located, update that teacher's array of students
+    // THIS SHOULD NEVER HAPPEN
     if ($teacher_entry !== false) {
       // obtain that teacher's array of students
       $students = unserialize($teacher_entry[strval($teacher_master_fields["students"])]);
@@ -146,7 +146,7 @@ wp_die(print_r($entry));
       $students[] = $student_hash;
       $teacher_entry[strval($teacher_master_fields["students"])] = serialize($students);
 
-      // update the teacher entry with the new student edition
+      // update the teacher entry with the new student addition
       $result = GFAPI::update_entry($teacher_entry);
       if (is_wp_error($result)) {
         wp_die("Line number: " . __LINE__ . ": " . $result->get_error_message());
@@ -157,22 +157,23 @@ wp_die(print_r($entry));
     else {
       // process the teacher's name
       $teacher_name = explode(" ", $teacher_name);
-      foreach ($teacher_name as $word) {
+      foreach ($teacher_name as &$word) {
         $word = trim($word);
       }
 
       // add default attributes for the teacher
       $new_teacher_entry = array();
       $new_teacher_entry[] = array(
-        strval($teacher_master_fields["students"]) => serialize(array($student_hash)),
         strval($teacher_master_fields["first_name"]) => $teacher_name[0],
         strval($teacher_master_fields["last_name"]) => count($teacher_name) > 1 ? $teacher_name[1] : '',
         strval($teacher_master_fields["email"]) => null,
         strval($teacher_master_fields["phone"]) => null,
+        strval($teacher_master_fields["hash"]) => $teacher_hash,
+        strval($teacher_master_fields["students"]) => serialize(array($student_hash)),
+        strval($teacher_master_fields["is_judging"]) => null,
         strval($teacher_master_fields["volunteer_preference"]) => null,
         strval($teacher_master_fields["volunteer_time"]) => null,
-        strval($teacher_master_fields["is_judging"]) => null,
-        strval($teacher_master_fields["teacher_hash"]) => $teacher_hash
+        strval($teacher_master_fields["schedule_with_students"]) => null,
       );
 
       // add the new teacher to the associated teacher master form
@@ -192,11 +193,11 @@ wp_die(print_r($entry));
       strval($student_master_fields["student_name"]) => null,
       strval($student_master_fields["student_first_name"]) => $entry[strval($student_fields["student_first_name"])],
       strval($student_master_fields["student_last_name"]) => $entry[strval($student_fields["student_last_name"])],
-      strval($student_master_fields["student_level"]) => $entry[strval($student_fields["student_level"])],
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
+      strval($student_master_fields["student_level"]) => $entry[strval($student_fields["student_level"])],
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
-      strval($student_master_fields["available_festival_days"]) => $entry[strval($student_fields["available_festival_days"])],
-      strval($student_master_fields["preferred_command_performance"]) => $entry[strval($student_fields["preferred_command_performance"])],
+      strval($student_master_fields["festival_availability"]) => $entry[strval($student_fields["available_festival_days"])],
+      strval($student_master_fields["command_performance_availability"]) => $entry[strval($student_fields["preferred_command_performance"])],
       strval($student_master_fields["song_1_period"]) => null,
       strval($student_master_fields["song_1_composer"]) => null,
       strval($student_master_fields["song_1_selection"]) => null,
@@ -207,13 +208,13 @@ wp_die(print_r($entry));
       strval($student_master_fields["alternate_theory"]) => null,
       strval($student_master_fields["competition_format"]) => null,
       strval($student_master_fields["timing_of_pieces"]) => null,
-      strval($student_master_fields["hash"]) => $student_hash
+      strval($student_master_fields["student_hash"]) => $student_hash
     );
 
     // add the newly created student to the competition master form
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);
     if (is_wp_error($student_result)) {
-      wp_die("Line number: " . __LINE__ . ": " . $result->get_error_message());
+      wp_die("Line number: " . __LINE__ . ": " . $student_result->get_error_message());
     }
 
     // determine how many students have registered so far
@@ -229,7 +230,6 @@ wp_die(print_r($entry));
     $email_info['teacher_hash'] = $teacher_hash;
     $email_info['teacher_name'] = $teacher_name;
     $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
-    $email_info['notification_email'] = $related_forms["notification_email"];
     $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
     $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
     $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
@@ -241,6 +241,14 @@ wp_die(print_r($entry));
     $comp_name = substr($form['title'], 0, $comp_name - 1);
     $email_info['competition_name'] = $comp_name;
     $email_info['num_participants'] = count($entries);
+
+    // check to see if a notification email was included during competition creation
+    if (!is_null($related_forms["notification_email"])) {
+      $email_info['notification_email'] = $related_forms["notification_email"];
+    }
+    else {
+      $email_info['notification_email'] = null;
+    }
 
     // send emails to various parties (parents, teachers, festival chairman)
     ARIA_Registration_Handler::aria_send_registration_emails($email_info);

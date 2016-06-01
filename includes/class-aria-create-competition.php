@@ -189,6 +189,9 @@ class ARIA_Create_Competition {
     if ($entry[strval($field_mapping['notification_option'])] == 'Yes') {
       $related_forms['notification_email'] = $entry[strval($field_mapping['notification_email'])];
     }
+    else {
+      $related_forms['notification_email'] = null;
+    }
 
     // obtain form objects for each of the four forms
     $student_public_form = GFAPI::get_form($student_form_id);
@@ -447,6 +450,14 @@ class ARIA_Create_Competition {
     $notification_option->label = "Would you like to be notified when students register?";
     $notification_option->id = $field_mapping['notification_option'];
     $notification_option->isRequired = true;
+    $notification_option->description = "This email will be used to send you
+    updates when a student registers for festival and also how many students
+    have registered so far. This information can significantly help during the
+    scheduling phase. Moreover, these emails will also include the links
+    that will be sent to teachers in order to complete the registration process,
+    so if a teacher misplaces his/her student registration email, you can supply
+    them with the necessary registration link.";
+    $notification_option->descriptionPlacement = 'above';
     $notification_option->choices = array(
         array('text' => 'Yes', 'value' => 'Yes', 'isSelected' => false),
         array('text' => 'No', 'value' => 'No', 'isSelected' => false)
@@ -1657,8 +1668,7 @@ class ARIA_Create_Competition {
     $ariaFieldIds['registration_total'] = $registration_total->id;
 
     // custom submission message to let the parent know registration was a success
-    $successful_submission_message = "Congratulations! You have just successfully
-    registered your child.";
+    $successful_submission_message = "Congratulations! You have just successfully registered your child.";
     $student_form->confirmation['type'] = 'message';
     $student_form->confirmation['message'] = $successful_submission_message;
 
