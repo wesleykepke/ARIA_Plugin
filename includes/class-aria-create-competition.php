@@ -1517,7 +1517,7 @@ class ARIA_Create_Competition {
     // create student's available times to compete field
     $available_festival_days = new GF_Field_Radio();
     $available_festival_days->label = "Available Festival Days";
-    $available_festival_days->id = $student_field_mapping['available_festival_days'];
+    $available_festival_days->id = $student_field_mapping['festival_availability'];
     $available_festival_days->isRequired = true;
     $available_festival_days->description = "There is no guarantee that scheduling
     requests will be honored.";
@@ -1530,7 +1530,7 @@ class ARIA_Create_Competition {
     $student_form->fields[] = $available_festival_days;
 
     // store the available festival days in array of field id's
-    $ariaFieldIds['available_festival_days'] = $available_festival_days->id;
+    $ariaFieldIds['festival_availability'] = $available_festival_days->id;
     for ($i = 1; $i <= count($available_festival_days->inputs); $i++) {
       $ariaFieldIds["available_festival_days_option_{$i}"] = "{$available_festival_days->id}.{$i}";
     }
@@ -1540,7 +1540,7 @@ class ARIA_Create_Competition {
     $command_performance_options = unserialize($command_performance_options);
     $preferred_command_performance = new GF_Field_Radio();
     $preferred_command_performance->label = "Preferred Command Performance Time";
-    $preferred_command_performance->id = $student_field_mapping['preferred_command_performance'];
+    $preferred_command_performance->id = $student_field_mapping['command_performance_availability'];
     $preferred_command_performance->isRequired = true;
     $preferred_command_performance->description = "If your child receives either a
     Superior with Distinction or Superior rating from festival, he/she is elligible
@@ -1562,7 +1562,7 @@ class ARIA_Create_Competition {
     }
 
     $student_form->fields[] = $preferred_command_performance;
-    $ariaFieldIds['preferred_command_performance'] = $preferred_command_performance->id;
+    $ariaFieldIds['command_performance_availability'] = $preferred_command_performance->id;
     for ($i = 1; $i <= count($preferred_command_performance->inputs); $i++) {
       $ariaFieldIds["preferred_command_performance_option_{$i}"] = "{$preferred_command_performance->id}.{$i}";
     }

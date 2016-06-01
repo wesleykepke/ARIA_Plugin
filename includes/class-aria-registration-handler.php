@@ -72,7 +72,7 @@ class ARIA_Registration_Handler {
     }
 
     // generate the message to send to the parents
-    $message_parent = "<html>Hello " . $email_info['parent_name'] . "!<br /><nr />
+    $message_parent = "<html>Hello " . $email_info['parent_name'] . "!<br /><br />
     Congratulations. " . $email_info['student_name'] . " has registered for the
     NNMTA event '" . $email_info['competition_name'] . "'.<br />Once the event has
     been scheduled, you will receive an email with your child's scheduled
@@ -230,100 +230,128 @@ class ARIA_Registration_Handler {
     return false;
   }
 
-	/**
-	 * Function to get pre-populate values based on teacher-master.
+  /**
+	 * Function to get pre-populate values based on teacher master.
+   *
+   * This function is called judt prior to when the teacher registration page
+   * is about to be rendered to the screen. Moreover, this function is responsible
+   * for acquiring specific values from the student-master form of a particular
+   * student. These values are then returned to the callee and are used to
+   * perform some initial form prepopulation.
+   *
+   * @param   $related_forms  Array   An associative array that contains information about a group of related forms.
+   * @param   $teacher_hash   String  The teacher's hash value that will be used to search for information.
+   *
+   * @return  Array   Returns an array of information that comes from the teacher master form.
+   *
+   * @since 1.0.0
+   * @author KREW
 	 */
-	 public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
-		$hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['hash'];
+  public static function aria_get_teacher_pre_populate($related_forms, $teacher_hash) {
+    // prepare the search criteria
+    $hash_field_id = ARIA_API::aria_master_teacher_field_id_array()['hash'];
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
-		 $search_criteria = array(
-       'field_filters' => array(
-         'mode' => 'any',
-         array(
-           'key' => (string) $hash_field_id,
-           'value' => $teacher_hash
-         )
-       )
-		 );
+      $search_criteria = array(
+        'field_filters' => array(
+        'mode' => 'any',
+        array(
+          'key' => (string) $hash_field_id,
+          'value' => $teacher_hash
+        )
+      )
+    );
 
-		 $entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
-
-		 if (is_wp_error($entries)) {
- 			wp_die($entries->get_error_message());
+    // find the teacher entry that matches the incoming hash value
+		$entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
+    if (is_wp_error($entries)) {
+ 		  wp_die($entries->get_error_message());
  		}
 
+    // using the teacher entry, obtain needed information by the callee
 		$field_ids = ARIA_API::aria_master_teacher_field_id_array();
 
     $volunteer_pref_array = array();
-    foreach($entries[0] as $key => $value){
-      //wp_die(intval($key));
-      if( intval($key) == (int) $field_ids['volunteer_preference'] ){
+    foreach ($entries[0] as $key => $value) {
+      if (intval($key) == (int) $field_ids['volunteer_preference']) {
         $volunteer_pref_array[$key] = $value;
       }
     }
 
     $volunteer_time_array = array();
-    foreach($entries[0] as $key => $value){
-      //wp_die(intval($key));
-      if( intval($key) == (int) $field_ids['volunteer_time'] ){
+    foreach ($entries[0] as $key => $value) {
+      if (intval($key) == (int) $field_ids['volunteer_time']) {
         $volunteer_time_array[$key] = $value;
       }
     }
 
+    // consolidate all associated information and return to callee
 		return array(
-			'first_name' => rgar( $entries[0], (string) $field_ids['first_name'] ),
-			'last_name' => rgar( $entries[0], (string) $field_ids['last_name'] ),
-			'email' => rgar( $entries[0], (string) $field_ids['email'] ),
-			'phone' => rgar( $entries[0], (string) $field_ids['phone'] ),
+			'first_name' => rgar($entries[0], (string) $field_ids['first_name']),
+			'last_name' => rgar($entries[0], (string) $field_ids['last_name']),
+			'email' => rgar($entries[0], (string) $field_ids['email']),
+			'phone' => rgar($entries[0], (string) $field_ids['phone']),
+      'hash' => rgar($entries[0], (string) $field_ids['hash']),
+      'students' => rgar($entries[0], (string) $field_ids['students']),
+      'is_judging' => rgar($entries[0], (string) $field_ids['is_judging']),
 			'volunteer_preference' => $volunteer_pref_array,
 			'volunteer_time' => $volunteer_time_array,
-			'students' => rgar( $entries[0], (string) $field_ids['students'] ),
-			'is_judging' => rgar( $entries[0], (string) $field_ids['is_judging'] ),
-      'schedule_with_students' => rgar( $entries[0], (string) $field_ids['schedule_with_students'] ),
-			'hash' => rgar( $entries[0], (string) $field_ids['hash'])
-
+      'schedule_with_students' => rgar($entries[0], (string) $field_ids['schedule_with_students']),
 		);
 	 }
 
-	/**
-	 * Function to get pre-populate values based on student-master.
+  /**
+	 * Function to get pre-populate values based on student master.
+   *
+   * This function is called judt prior to when the teacher registration page
+   * is about to be rendered to the screen. Moreover, this function is responsible
+   * for acquiring specific values from the student-master form of a particular
+   * student. These values are then returned to the callee and are used to
+   * perform some initial form prepopulation.
+   *
+   * @param   $related_forms  Array   An associative array that contains information about a group of related forms.
+   * @param   $student_hash   String  The student's hash value that will be used to search for information.
+   *
+   * @return  Array   Returns an array of information that comes from the student master form.
+   *
+   * @since 1.0.0
+   * @author KREW
 	 */
-	 public static function aria_get_student_pre_populate($related_forms, $student_hash) {
-		$hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
+  public static function aria_get_student_pre_populate($related_forms, $student_hash) {
+    // prepare the search criteria
+		$hash_field_id = ARIA_API::aria_master_student_field_id_array()['student_hash'];
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
-		 $search_criteria = array(
-       'field_filters' => array(
-         'mode' => 'any',
-         array(
-           'key' => (string) $hash_field_id,
-           'value' => $student_hash
-         )
-       )
-		 );
+    $search_criteria = array(
+      'field_filters' => array(
+        'mode' => 'any',
+        array(
+          'key' => (string) $hash_field_id,
+          'value' => $student_hash
+        )
+      )
+    );
 
-		 $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
-
-		 if (is_wp_error($entries)) {
- 			wp_die($entries->get_error_message());
+    // find the student entry that matches the incoming hash value
+    $entries = GFAPI::get_entries($related_forms['student_master_form_id'], $search_criteria, $sorting, $paging, $total_count);
+    if (is_wp_error($entries)) {
+ 		  wp_die($entries->get_error_message());
  		}
 
+    // using the student entry, return needed information to the callee
 		$field_ids = ARIA_API::aria_master_student_field_id_array();
-
-		return array(
-			'parent_name' => rgar( $entries[0], (string) $field_ids['parent_name']),
-	    'parent_email' => rgar( $entries[0], (string) $field_ids['parent_email']),
-	    'student_first_name' => rgar( $entries[0], (string) $field_ids['student_first_name']),
-	    'student_last_name' => rgar( $entries[0], (string) $field_ids['student_last_name']),
+    return array(
+			'parent_name' => rgar($entries[0], (string) $field_ids['parent_name']),
+	    'parent_email' => rgar($entries[0], (string) $field_ids['parent_email']),
+	    'student_first_name' => rgar($entries[0], (string) $field_ids['student_first_name']),
+	    'student_last_name' => rgar($entries[0], (string) $field_ids['student_last_name']),
+      'student_birthday' => rgar( $entries[0], (string) $field_ids['student_birthday']),
 	    'student_level' => rgar( $entries[0], (string) $field_ids['student_level']),
-	    'student_birthday' => rgar( $entries[0], (string) $field_ids['student_birthday']),
 	    'teacher_name' => rgar( $entries[0], (string) $field_ids['teacher_name']),
-	    'not_listed_teacher_name' => rgar( $entries[0], (string) $field_ids['not_listed_teacher_name']),
-	    'available_festival_days' => rgar( $entries[0], (string) $field_ids['available_festival_days']),
-	    'preferred_command_performance' => rgar( $entries[0], (string) $field_ids['preferred_command_performance']),
+	    'festival_availability' => rgar( $entries[0], (string) $field_ids['festival_availability']),
+	    'command_performance_availability' => rgar( $entries[0], (string) $field_ids['command_performance_availability']),
 	    'song_1_period' => rgar( $entries[0], (string) $field_ids['song_1_period']),
 	    'song_1_composer' =>  rgar( $entries[0], (string) $field_ids['song_1_composer']),
 	    'song_1_selection' =>  rgar( $entries[0], (string) $field_ids['song_1_selection']),
@@ -334,25 +362,29 @@ class ARIA_Registration_Handler {
 	    'alternate_theory' =>  rgar( $entries[0], (string) $field_ids['alternate_theory']),
 	    'competition_format' =>  rgar( $entries[0], (string) $field_ids['competition_format']),
 	    'timing_of_pieces' =>  rgar( $entries[0], (string) $field_ids['timing_of_pieces']),
-			'hash' => rgar( $entries[0], (string) $field_ids['hash'])
+			'student_hash' => rgar( $entries[0], (string) $field_ids['student_hash'])
 		);
 	}
 
 
-	  /**
-   * This function will prepopulate student and teacher values
-   * @param $form
-   * @param $teacher_prepop_values
-   * @param $student_prepop_values
+  /**
+   * This function will prepopulate student and teacher values for teacher public forms.
+   *
+   * This function is responsible for taking as input a teacher registration form
+   * and performing some form input prior to rendering.
+   *
+   * @param   $form   Form Object   The teacher public form to add info to.
+   * @param   $teacher_prepop_values  Array   The array of teacher information to use in prepopulation.
+   * @param   $student_prepop_values  Array   The array of student information to use in prepopulation.
    *
    * @since 1.0.0
    * @author KREW
   */
-	public static function aria_prepopulate_form( $form, $teacher_prepop_vals, $student_prepop_vals){
-
+	public static function aria_prepopulate_form($form, $teacher_prepop_vals, $student_prepop_vals) {
+    // obtain a field mapping for teacher registration forms
 	  $teacher_public_fields = ARIA_API::aria_teacher_field_id_array();
 
-	  // Prepopulate teacher name
+	  // prepopulate teacher name
 	  $search_field = $teacher_public_fields['name'];
 	  $name_field = self::aria_find_field_by_id($form['fields'], $search_field);
 	  $search_field = $teacher_public_fields['first_name'];
@@ -360,54 +392,59 @@ class ARIA_Registration_Handler {
 	  $search_field = $teacher_public_fields['last_name'];
 	  $last_name_field = self::aria_find_field_by_id($form['fields'][$name_field]['inputs'], $search_field);
 	  $name = $form['fields'][$name_field]['inputs'];
-	  if($first_name_field != null && ($teacher_prepop_vals['first_name'] != "") ){
+
+	  if ($first_name_field != null && ($teacher_prepop_vals['first_name'] != "")) {
 	    $name[$first_name_field]['defaultValue'] = $teacher_prepop_vals['first_name'];
 	  }
-	  if($last_name_field != null && ($teacher_prepop_vals['last_name'] != "")) {
+
+	  if ($last_name_field != null && ($teacher_prepop_vals['last_name'] != "")) {
 	    $name[$last_name_field]['defaultValue'] = $teacher_prepop_vals['last_name'];
 	  }
+
 	  $form['fields'][$name_field]['inputs'] = $name;
 
-    // Prepopulate teacher email
-    //wp_die(print_r($form['fields']));
+    // prepopulate teacher email
     $search_field = $teacher_public_fields['email'];
     $email_field = self::aria_find_field_by_id($form['fields'], $search_field);
-    if($email_field != null && ($teacher_prepop_vals['email'] != "") ){
+    if ($email_field != null && ($teacher_prepop_vals['email'] != "")) {
       $form['fields'][$email_field]['defaultValue'] = $teacher_prepop_vals['email'];
     }
 
-    // Prepopulate teacher phone
+    // prepopulate teacher phone
     $search_field = $teacher_public_fields['phone'];
     $phone_field = self::aria_find_field_by_id($form['fields'], $search_field);
-    if($phone_field != null && ($teacher_prepop_vals['phone'] != "") ){
+    if ($phone_field != null && ($teacher_prepop_vals['phone'] != "")) {
       $form['fields'][$phone_field]['defaultValue'] = $teacher_prepop_vals['phone'];
     }
 
-    // Prepopulate teacher judging
+    // prepopulate teacher judging
     $search_field = $teacher_public_fields['is_judging'];
     $judging_field = self::aria_find_field_by_id($form['fields'], $search_field);
-    if($judging_field != null && ($teacher_prepop_vals['is_judging'] != "") ){
+
+    if ($judging_field != null && ($teacher_prepop_vals['is_judging'] != "")) {
       // loop through each choice
-          $choices = $form['fields'][$judging_field]['choices'];
-      for( $i = 0; $i < count($form['fields'][$judging_field]['choices']); $i++){
-        if($form['fields'][$judging_field]['choices'][$i]['text'] == $teacher_prepop_vals['is_judging']){
+      $choices = $form['fields'][$judging_field]['choices'];
+      for ($i = 0; $i < count($form['fields'][$judging_field]['choices']); $i++) {
+        if ($form['fields'][$judging_field]['choices'][$i]['text'] == $teacher_prepop_vals['is_judging']) {
           // set is selected
           $choices[$i]['isSelected'] = true;
         }
       }
-          $form['fields'][$judging_field]['choices'] = $choices;
+
+      $form['fields'][$judging_field]['choices'] = $choices;
     }
 
-    // Prepopulate teacher volunteer pref
+    // prepopulate teacher volunteer preferences
     $search_field = $teacher_public_fields['volunteer_preference'];
     $preference_field = self::aria_find_field_by_id($form['fields'], $search_field);
     $choices = $form['fields'][$preference_field]['choices'];
-    foreach($teacher_prepop_vals['volunteer_preference'] as $pref){
-      if($pref != null){
+    foreach ($teacher_prepop_vals['volunteer_preference'] as $pref) {
+      if ($pref != null) {
         $choice = self::aria_find_choice_by_val($choices, $pref);
         $choices[$choice]['isSelected'] = true;
       }
     }
+
     $form['fields'][$preference_field]['choices'] = $choices;
 
     // Prepopulate teacher volunteer times
@@ -461,29 +498,43 @@ class ARIA_Registration_Handler {
 	  $form['fields'][$level_field]['choices'] = $level;
 	}
 
-	  /**
+  /**
    * This function will find the field number with the specified ID.
    *
-   * The function will search through the given array of fields and
-   * locate the field with the given ID number. The ID of the field
-   * is then returned.
-   * @param $fields   Array   The array of fields to search through
-   * @param $id       Float     The id of the array to search for
+   * The function will search through the given array of fields and locate the
+   * field with the given ID number. The ID of the field is then returned.
+   *
+   * @param   $fields   Array   The array of fields (of a form) to search through.
+   * @param   $id       Float   The id of the array to search for.
    *
    * @since 1.0.0
    * @author KREW
-  */
+   */
   public static function aria_find_field_by_id( $fields, $id ){
     $field_num = 0;
-    foreach($fields as $key){
-      if($fields[$field_num]['id'] == $id){
+
+    foreach ($fields as $key) {
+      if ($fields[$field_num]['id'] == $id) {
         return $field_num;
       }
       $field_num++;
     }
+
     return null;
   }
 
+  /**
+   * This function will find the
+   *
+   * The function will search through the given array of fields and locate the
+   * field with the given ID number. The ID of the field is then returned.
+   *
+   * @param   $fields   Array   The array of fields (of a form) to search through.
+   * @param   $id       Float   The id of the array to search for.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
   public static function aria_find_choice_by_val( $choices, $val ){
     for($i = 0; $i < count($choices); $i++){
       //wp_die(print_r($choices));

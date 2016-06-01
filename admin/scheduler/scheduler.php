@@ -161,7 +161,7 @@ class Scheduling_Algorithm {
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
 
         // determine student's day preference
-        $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
+        $day_preference = $student[strval($student_master_field_mapping['festival_availability'])];
         if ($day_preference == "Saturday") {
           $day_preference = SAT;
         }
@@ -224,7 +224,7 @@ class Scheduling_Algorithm {
         $modified_student->set_birthday($student[strval($student_master_field_mapping['student_birthday'])]);
 
         // add student's preferred command performance time
-        $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['preferred_command_performance'])]);
+        $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['command_performance_availability'])]);
 
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
@@ -810,7 +810,7 @@ class Scheduling_Algorithm {
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
       foreach ($all_students_per_level as $student) {
-        $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
+        $day_preference = $student[strval($student_master_field_mapping['festival_availability'])];
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
 
         if ($day_preference == "Saturday") {
