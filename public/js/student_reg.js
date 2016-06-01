@@ -3,7 +3,7 @@ function student_reg_init(current_form_id, host)
 	(function($){
 		var field_id_arr = get_student_ids(host);
 		console.log("field_id_arr>>", field_id_arr);
-		var level_pay_field = '#input_' + current_form_id + '_' + field_id_arr['registration_total'];
+		var level_pay_field = '#input_' + current_form_id + '_' + field_id_arr['level_pricing'];
 		var level_field = '#input_' + current_form_id + '_' + field_id_arr['student_level'];
 		var hidden_student_level = '#field_' + current_form_id + '_' + field_id_arr['student_level'];
 		$(hidden_student_level).hide();

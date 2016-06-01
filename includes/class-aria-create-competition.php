@@ -1529,69 +1529,60 @@ class ARIA_Create_Competition {
 
     // store the preferred command performance in array of field id's
 
-    // student's festival level
-    /*
-    $student_level_field = new GF_Field_Select();
-    $student_level_field->label = "Student Level";
-    $student_level_field->id = $student_field_mapping['student_level'];
-    $student_level_field->isRequired = false;
-    $student_level_field->choices = array(
-
-      array('text' => '1', 'value' => '1', 'isSelected' => false),
-      array('text' => '2', 'value' => '2', 'isSelected' => false),
-      array('text' => '3', 'value' => '3', 'isSelected' => false),
-      array('text' => '4', 'value' => '4', 'isSelected' => false),
-      array('text' => '5', 'value' => '5', 'isSelected' => false),
-      array('text' => '6', 'value' => '6', 'isSelected' => false),
-      array('text' => '7', 'value' => '7', 'isSelected' => false),
-      array('text' => '8', 'value' => '8', 'isSelected' => false),
-      array('text' => '9', 'value' => '9', 'isSelected' => false),
-      array('text' => '10', 'value' => '10', 'isSelected' => false),
-      array('text' => '11', 'value' => '11', 'isSelected' => false)
-    );
-    $student_level_field->description = "Please enter your student's festival level.";
-    $student_level_field->description .= " If you do not know this value, please do";
-    $student_level_field->description .= " not submit this form until your child";
-    $student_level_field->description .= " contacts his/her instructor and can verify";
-    $student_level_field->description .= " this value.";
-    $student_level_field->descriptionPlacement = 'above';
-    $student_level_field->hidden = true;
-    $student_form->fields[] = $student_level_field;
-    $ariaFieldIds['student_level'] = $student_level_field->id;
-    */
-
-    // create the student level field
-    $student_level = new GF_Field_Product();
+    // hidden field for student's festival level
+    $student_level = new GF_Field_Select();
     $student_level->label = "Student Level";
     $student_level->id = $student_field_mapping['student_level'];
-    $student_level->isRequired = true;
-    $student_level->size = "small";
-    $student_level->inputs = null;
-    $student_level->inputType = "select";
-    $student_level->enablePrice = true;
-    $student_level->basePrice = "$1.00";
-    $student_level->disableQuantity = true;
-    $student_level->displayAllCategories = false;
+    $student_level->isRequired = false;
+    $student_level->choices = array();
+    for ($i = 1; $i <= 11; $i++) {
+      $student_level->choices[] = array(
+        'text' => strval($i),
+        'value' => strval($i),
+        'isSelected' => false
+      );
+    }
+
     $student_level->description = "Please enter your child's festival level.
     If you do not know this value, please do not submit this form until your child
     contacts his/her instructor and can verify this value.";
     $student_level->descriptionPlacement = 'above';
+    $student_level->hidden = true;
+    $student_form->fields[] = $student_level;
+    $ariaFieldIds['student_level'] = $student_level->id;
 
-    // add the prices to the student level field
-    $student_level->choices = array();
+    // student level pricing field
+    $level_pricing = new GF_Field_Product();
+    $level_pricing->label = "Student Level";
+    $level_pricing->id = $student_field_mapping['level_pricing'];
+    $level_pricing->isRequired = true;
+    $level_pricing->size = "small";
+    $level_pricing->inputs = null;
+    $level_pricing->inputType = "select";
+    $level_pricing->enablePrice = true;
+    $level_pricing->basePrice = "$1.00";
+    $level_pricing->disableQuantity = true;
+    $level_pricing->displayAllCategories = false;
+    $level_pricing->description = "Please enter your child's festival level.
+    If you do not know this value, please do not submit this form until your child
+    contacts his/her instructor and can verify this value.";
+    $level_pricing->descriptionPlacement = 'above';
+
+    // add the prices to the student level pricing field
+    $level_pricing->choices = array();
     for ($i = 1; $i <= 11; $i++) {
       $price = $competition_entry[$create_comp_field_mapping['level_'. $i .'_price']];
       if ($price != 0) {
-        $student_level->choices[] = array('text' => strval($i),
+        $level_pricing->choices[] = array('text' => strval($i),
                                           'value' => strval($i),
                                           'isSelected' => false,
                                           'price' => $price);
       }
     }
-    $student_form->fields[] = $student_level;
+    $student_form->fields[] = $level_pricing;
 
     // store the student's level in array of field id's
-    $ariaFieldIds['student_level'] = $student_level->id;
+    $ariaFieldIds['level_pricing'] = $level_pricing->id;
 
     // create the compliance field checkbox for parents
     $compliance_statement = new GF_Field_Checkbox();

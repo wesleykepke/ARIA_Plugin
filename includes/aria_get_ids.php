@@ -97,7 +97,8 @@
       'preferred_command_performance' => 8,
       'student_level' => 9,
       'compliance_statement' => 10,
-      'registration_total' => 11
+      'registration_total' => 11,
+      'level_pricing' => 12
     );
   }
 ?>
