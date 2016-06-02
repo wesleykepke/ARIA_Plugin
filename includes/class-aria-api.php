@@ -470,8 +470,8 @@ class ARIA_API {
       'student_division' => 17,
       'theory_score' => 18,
       'alternate_theory' => 19,
-      'alt_song_2_composer' => 19,
-      'alt_song_2_selection' => 20,
+      'alt_song_2_composer' => 20,
+      'alt_song_2_selection' => 21,
     );
   }
 

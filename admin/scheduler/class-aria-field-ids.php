@@ -102,8 +102,8 @@ class ARIA_Field_IDs {
     */
     return array(
       'name' => 1,
-      'first_name' => 1.3,
-      'last_name' => 1.6,
+			'first_name' => 1.3,
+			'last_name' => 1.6,
       'email' => 2,
       'phone' => 3,
       'is_judging' => 4,
@@ -111,8 +111,8 @@ class ARIA_Field_IDs {
       'volunteer_time' => 6,
       'schedule_with_students' => 7,
       'student_name' => 8,
-      'student_first_name' => 8.3,
-      'student_last_name' => 8.6,
+			'student_first_name' => 8.3,
+			'student_last_name' => 8.6,
       'student_level' => 9,
       'song_1_period' => 10,
       'song_1_composer' => 11,
@@ -124,8 +124,8 @@ class ARIA_Field_IDs {
       'student_division' => 17,
       'theory_score' => 18,
       'alternate_theory' => 19,
-      'alt_song_2_composer' => 19,
-      'alt_song_2_selection' => 20,
+      'alt_song_2_composer' => 20,
+      'alt_song_2_selection' => 21,
     );
   }
 
