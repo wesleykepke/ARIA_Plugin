@@ -2,9 +2,8 @@
 	//require_once("class-aria-create-competition.php");
 	$teacher_fields = aria_teacher_field_id_array();
 	$music_fields = aria_music_field_id_array();
-	$all_fields = array_merge( $teacher_fields, $music_fields );
+	$all_fields = array_merge($teacher_fields, $music_fields);
 	echo json_encode($all_fields);
-
 
 	/**
    * This function defines an associative array with entry field mappings

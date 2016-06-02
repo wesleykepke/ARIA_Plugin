@@ -1021,7 +1021,7 @@ class ARIA_Create_Competition {
     // finish adding the volunteer options field into the form
     $conditional_volunteer_preference_rules = array();
     $conditional_volunteer_preference_rules[] = array(
-      'fieldId' => $teacher_field_mapping['volunteer_preference'],
+      'fieldId' => $teacher_field_mapping['is_judging'], // dependent on 'is_judging' because if 'no', then need to display options
       'operator' => 'is',
       'value' => 'No'
     );
@@ -1043,16 +1043,16 @@ class ARIA_Create_Competition {
     $volunteer_time->label = "Times Available for Volunteering";
     $volunteer_time->id = $teacher_field_mapping['volunteer_time'];
     $volunteer_time->isRequired = true;
-    $volunteer_time->description = "Please check at least two times you are available
-    to volunteer during Festival weekend. If available, please select every option
-    so that you can be scheduled during the time when there are the most students
-    (where the most help is needed).";
+    $volunteer_time->description = "Please check at least two times that you are
+    available to volunteer during Festival weekend. If possible, please select
+    every option so that you can be scheduled during the time when there are the
+    most students (where the most help is needed).";
     $volunteer_time->descriptionPlacement = 'above';
 
     // add the volunteer time options that were input from create competition
     $volunteer_time->choices = array();
     if (is_array($volunteer_time_options_array)) {
-      foreach( $volunteer_time_options_array as $single_volunteer_time_option) {
+      foreach ($volunteer_time_options_array as $single_volunteer_time_option) {
         $volunteer_time->choices[] = array(
           'text' => $single_volunteer_time_option,
           'value' => $single_volunteer_time_option,
@@ -1070,7 +1070,7 @@ class ARIA_Create_Competition {
     // finish adding the volunteer options field into the form
     $conditional_volunteer_time_rules = array();
     $conditional_volunteer_time_rules[] = array(
-      'fieldId' => $teacher_field_mapping['volunteer_time'],
+      'fieldId' => $teacher_field_mapping['is_judging'], // dependent on 'is_judging' because if 'no', then need to display options
       'operator' => 'is',
       'value' => 'No'
     );
@@ -1101,7 +1101,7 @@ class ARIA_Create_Competition {
 
     $schedule_with_students_rules = array();
     $schedule_with_students_rules[] = array(
-      'fieldId' => $teacher_field_mapping['schedule_with_students'],
+      'fieldId' => $teacher_field_mapping['is_judging'], // dependent on 'is_judging' because if 'no', then need to display options
       'operator' => 'is',
       'value' => 'No'
     );
@@ -1130,7 +1130,6 @@ class ARIA_Create_Competition {
     $student_level->id = $teacher_field_mapping['student_level'];
     $student_level->isRequired = false;
     $student_level->placeholder = "Select level...";
-    // !!! replace
     $student_level->choices = array();
     for ($i = 1; $i <= 11; $i++) {
       $student_level->choices[] = array(
@@ -1151,7 +1150,7 @@ class ARIA_Create_Competition {
       array('text' => 'Classical', 'value' => '2', 'isSelected' => false),
       array('text' => 'Romantic', 'value' => '3', 'isSelected' => false),
       array('text' => 'Contemporary', 'value' => '4', 'isSelected' => false),
-   );
+    );
     $song_one_period->isRequired = true;
     $song_one_period->placeholder = "Select Period...";
     $form->fields[] = $song_one_period;
@@ -1245,7 +1244,7 @@ class ARIA_Create_Competition {
     $timing_of_pieces = new GF_Field_Select();
     $timing_of_pieces->label = "Combined Timing of Pieces (minutes)";
     $timing_of_pieces->description = "Please round up to the nearest minute.";
-    $timing_of_pieces->descriptionPlacement = "above.";
+    $timing_of_pieces->descriptionPlacement = "above";
     $timing_of_pieces->id = $teacher_field_mapping['timing_of_pieces'];
     $timing_of_pieces->isRequired = true;
     for ($i = 1; $i <= 20; $i++) {
@@ -1334,8 +1333,7 @@ class ARIA_Create_Competition {
     $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection->id;
 
     // custom submission message to inform teacher registration was successful
-    $successful_submission_message = "Congratulations! You have just successfully
-    registered your student.";
+    $successful_submission_message = "Congratulations! You have just successfully registered your student.";
     $form->confirmation['type'] = 'message';
     $form->confirmation['message'] = $successful_submission_message;
 
