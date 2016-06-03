@@ -182,7 +182,8 @@ class ARIA_Create_Competition {
       'teacher_master_form_id' => $teacher_master_form_id,
       'student_public_form_url' => $student_form_url,
       'teacher_public_form_url' => $teacher_form_url,
-      'festival_chairman_email' => $entry[strval($field_mapping['chairman_email'])]
+      'festival_chairman_email' => $entry[strval($field_mapping['chairman_email'])],
+      'festival_name' => $competition_name
     );
 
     // if requested, add the notification email
@@ -672,7 +673,37 @@ class ARIA_Create_Competition {
 
     // check competition dates to ensure they occur in chronological order
     $festival_date_incorrect = false;
-    if ($start_date[$year_offset] > $end_date[$year_offset]) {
+
+    // start date year is less than today's year
+    if ($start_date[$year_offset] <= date("Y")) {
+      foreach ($form['fields'] as &$field) {
+        // end date field
+        if ($field->id == strval($field_mapping['start_date'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "The festival start date must occur in
+          the past.";
+        }
+      }
+    }
+
+    // same year, but date and month are in past
+    /* whole process appears to be mostly working.. working on more form validation
+    elseif ($start_date[$year_offset] <= date("Y") &&
+            $start_date[$month_offset] <= date("m") &&
+            $start_date[$day_offset] < date("d")) {
+      $validation_result['is_valid'] = false;
+      foreach ($form['fields'] as &$field) {
+        // end date field
+        if ($field->id == strval($field_mapping['start_date'])) {
+          $field->failed_validation = true;
+          $field->validation_message = "The festival start date must occur in
+          the past.";
+        }
+      }
+    }
+    */
+
+    elseif ($start_date[$year_offset] > $end_date[$year_offset]) {
       $festival_date_incorrect = true;
     }
 

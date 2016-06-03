@@ -109,7 +109,6 @@ class ARIA_Form_Hooks {
           return;
     }
 
-//wp_die(print_r($entry));
     // initialize various field mapping arrays
     $student_fields = ARIA_API::aria_student_field_id_array();
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
@@ -410,7 +409,7 @@ class ARIA_Form_Hooks {
     $student_master_entry[strval($student_master_field_ids['theory_score'])] =
       $entry[strval($teacher_public_field_ids['theory_score'])];
     $student_master_entry[strval($student_master_field_ids['competition_format'])] =
-      $entry[strval($teacher_public_field_ids['competition_format'])];
+      $entry[strval($teacher_public_field_ids['student_division'])];
     $student_master_entry[strval($student_master_field_ids['timing_of_pieces'])] =
       $entry[strval($teacher_public_field_ids['timing_of_pieces'])];
 
@@ -444,6 +443,16 @@ class ARIA_Form_Hooks {
           null;
       }
     }
+
+    // send an email to the teacher acknowledging successful registration
+    $email_info = array();
+    $email_info['teacher_name'] = $student_master_entry[strval($student_master_field_ids['teacher_name'])];
+    $email_info['teacher_email'] = $teacher_master_entry[strval($teacher_master_field_ids['email'])];
+    $email_info['student_name'] = $student_master_entry[strval($student_master_field_ids['student_first_name'])] .
+      $student_master_entry[strval($student_master_field_ids['student_last_name'])];
+    $email_info['competition_name'] = $related_forms['festival_name'];
+    $email_info['festival_chairman_email'] = $related_forms['festival_chairman_email'];
+    ARIA_Registration_Handler::aria_after_teacher_submission_email($email_info);
 
     // update the student master form with the new information
     $result = GFAPI::update_entry($student_master_entry);
@@ -522,7 +531,7 @@ class ARIA_Form_Hooks {
 
     // compare the teacher's old name with the teacher's new name to see if they have changed
     if ($teacher_name != $old_teacher_val_str) {
-      // find teacher in master
+      // find teacher in teacher master form
       $search = array();
       $sorting = array();
       $paging = array('offset' => 0, 'page_size' => 2000);
@@ -538,7 +547,7 @@ class ARIA_Form_Hooks {
         $teacher_hash =  $teacher[strval($teacher_master_fields['hash'])];
         $full_name = $teacher_first . ' ' . $teacher_last;
 
-        // idk what's going on
+        // idk what's going on..
         if ($full_name == $teacher_name) {
           $found = true;
           $teacher_val = array();
@@ -586,17 +595,15 @@ class ARIA_Form_Hooks {
           $email_info = array();
           $email_info['teacher_hash'] = $teacher_hash;
           $email_info['teacher_name'] = $teacher_name;
-          $email_info['teacher_email'] = $teacher[strval($teacher_master_fields["email"])];
-          $email_info['notification_email'] = $related_forms["notification_email"];
+          $email_info['teacher_email'] = $teacher_entry[strval($teacher_master_fields["email"])];
           $email_info['festival_chairman_email'] = $related_forms["festival_chairman_email"];
-          $email_info['parent_email'] = null;
+          $email_info['parent_email'] = $entry[strval($student_fields["parent_email"])];
           $email_info['teacher_url'] = $related_forms["teacher_public_form_url"];
           $email_info['student_hash'] = $student_hash;
-          $email_info['student_name'] = $entry[strval($student_fields["student_first_name"])] .
-    " " . $entry[strval($student_fields["student_last_name"])];
+          $email_info['student_name'] = $student_name;
           $email_info['parent_name'] = $entry[strval($student_fields["parent_first_name"])] .
-    " " . $entry[strval($student_fields["parent_last_name"])];
-          $comp_name = strpos($form['title'], 'Student Master');
+          " " . $entry[strval($student_fields["parent_last_name"])];
+          $comp_name = strpos($form['title'], 'Student Registration');
           $comp_name = substr($form['title'], 0, $comp_name - 1);
           $email_info['competition_name'] = $comp_name;
           $email_info['num_participants'] = count($entries);
@@ -604,6 +611,7 @@ class ARIA_Form_Hooks {
           // send emails to various parties (parents, teachers, festival chairman)
           ARIA_Registration_Handler::aria_send_registration_emails($email_info);
         }
+
         // remove student from old teacher
         if($teacher_hash == $old_teacher_hash)
         {

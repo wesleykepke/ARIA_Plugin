@@ -140,6 +140,7 @@ class Scheduling_Algorithm {
     $current_either_sunday_total = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
+      //echo print_r($all_students_per_level);
       foreach ($all_students_per_level as $student) {
         // obtain student's first and last names
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
@@ -226,6 +227,8 @@ class Scheduling_Algorithm {
         // add student's preferred command performance time
         $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['command_performance_availability'])]);
 
+//wp_die(print_r($modified_student));
+
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
           wp_die('ERROR: Student was unable to be added. Please readjust your
@@ -233,6 +236,9 @@ class Scheduling_Algorithm {
         }
       }
     }
+
+
+//wp_die();
 
     // assign the judges for the competition
     /*
@@ -505,9 +511,6 @@ class Scheduling_Algorithm {
     $theory_score_field->id = $field_mappings['competition_theory_score'];
     $theory_score_field->isRequired = true;
     */
-
-
-
 
     // add a default submission message for the schedule competition form
     $successful_submission_message = '';

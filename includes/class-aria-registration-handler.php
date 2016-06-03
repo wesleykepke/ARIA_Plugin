@@ -35,6 +35,31 @@ class ARIA_Registration_Handler {
     wp_die($action['type']);
   }
 
+  /**
+	 * Function for sending emails after teacher registration.
+   *
+   * This function is responsible for sending teachers a confirmation email once
+   * they have completed registration of a particular student.
+   *
+   * @param $email_info Array   An associative array containing emails and url info.
+   *
+   * @return void
+	 */
+  public static function aria_after_teacher_submission_email($email_info) {
+    // generate the message to send to the teacher
+    $message_teacher = "<html>Hello " . $email_info['teacher_name'] . "!<br /><br />
+    Congratulations. You have successfully registered " . $email_info['student_name'] .
+    " for the NNMTA event '" . $email_info['competition_name'] . "'.<br />
+    Once the event has been scheduled, you will receive an email with this
+    student's scheduled performance time.<br /><br />Thank you,<br />NNMTA
+    Festival Chair<br />(" . $email_info['festival_chairman_email'] . ")</html>";
+
+    $subject = "NNMTA Festival Registration (" . $email_info['competition_name'] . ")";
+    if (!wp_mail($email_info['teacher_email'], $subject, $message_teacher)) {
+      wp_die('Teacher email (for student registration) failed to send.');
+    }
+  }
+
 	/**
 	 * Function for sending emails after student registration.
    *
