@@ -302,10 +302,11 @@ class ARIA {
       'ARIA_Form_Hooks',
       'aria_before_teacher_render', 10, 2);
 
-
+    /*
+    The action registered for this hook does something idk..
+    */
     $this->loader->add_action( 'gform_after_update_entry',
         'ARIA_Form_Hooks', 'aria_student_master_post_update_entry', 10, 3 );
-
 
     /*
     The action registered for this hook if for adding music upload/download

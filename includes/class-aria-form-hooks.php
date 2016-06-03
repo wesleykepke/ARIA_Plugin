@@ -318,7 +318,7 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_after_teacher_submission($entry, $form) {
-    // Only perform processing if it's a teacher form
+    // only perform processing if it's a teacher form
     if (!array_key_exists('isTeacherPublicForm', $form)
         || !$form['isTeacherPublicForm']) {
           return;
@@ -337,7 +337,7 @@ class ARIA_Form_Hooks {
                                                                                $teacher_hash);
 
     // if the teacher doesn't exist, throw an error message
-    if (!$teacher_master_entry) {
+    if ($teacher_master_entry === false) {
       wp_die("Error: aria_after_teacher_submission() could not locate the specified teacher.");
     }
 
@@ -360,7 +360,7 @@ class ARIA_Form_Hooks {
                                                                              $teacher_public_field_ids['volunteer_preference']);
     for ($i = 1; $i <= count($form['fields'][$volunteer_pref_field]['choices']); $i++) {
       // check to see if that volunteer preference field was set
-      if(isset($entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)])){
+      if (isset($entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)])) {
         $teacher_master_entry[strval($teacher_master_field_ids['volunteer_preference']) . '.' . strval($i)] =
           $entry[strval($teacher_public_field_ids['volunteer_preference']) . '.' . strval($i)];
       }
@@ -375,7 +375,7 @@ class ARIA_Form_Hooks {
                                                                              $teacher_public_field_ids['volunteer_time']);
     for ($i = 1; $i <= count($form['fields'][$volunteer_time_field]['choices']); $i++) {
       // check to see if that volunteer time field was set
-      if(isset($entry[strval($teacher_public_field_ids['volunteer_time']) . '.' . strval($i)])){
+      if (isset($entry[strval($teacher_public_field_ids['volunteer_time']) . '.' . strval($i)])) {
         $teacher_master_entry[strval($teacher_master_field_ids['volunteer_time']) . '.' . strval($i)] =
           $entry[strval($teacher_public_field_ids['volunteer_time']) . '.' . strval($i)];
       }
@@ -396,11 +396,11 @@ class ARIA_Form_Hooks {
                                                                                $student_hash);
 
     // if the student doesn't exist, throw an error message
-    if (!$student_master_entry) {
+    if ($student_master_entry === false) {
       wp_die("Error: aria_after_teacher_submission() could not locate the specified student.");
     }
 
-    // If the student does exist, update the student master with the new information
+    // if the student does exist, update the student master with the new information
     $student_master_entry[strval($student_master_field_ids['song_1_period'])] =
       $entry[strval($teacher_public_field_ids['song_1_period'])];
     $student_master_entry[strval($student_master_field_ids['song_1_composer'])] =
@@ -415,7 +415,7 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['timing_of_pieces'])];
 
     // if student level != 11
-    if($student_master_entry[strval($student_master_field_ids['student_level'])] != '11') {
+    if ($student_master_entry[strval($student_master_field_ids['student_level'])] != '11') {
       $student_master_entry[strval($student_master_field_ids['song_2_period'])] =
         $entry[strval($teacher_public_field_ids['song_2_period'])];
       $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
@@ -435,7 +435,7 @@ class ARIA_Form_Hooks {
     $alt_theory_field = ARIA_Registration_Handler::aria_find_field_by_id($form['fields'],
                                                                          $teacher_public_field_ids['alternate_theory']);
     for ($i = 1; $i <= count($form['fields'][$alt_theory_field]['choices']); $i++) {
-      if(isset($entry[strval($teacher_public_field_ids['alternate_theory']) . '.' . strval($i)])){
+      if (isset($entry[strval($teacher_public_field_ids['alternate_theory']) . '.' . strval($i)])) {
         $student_master_entry[strval($student_master_field_ids['alternate_theory']) . '.' . strval($i)] =
           $entry[strval($teacher_public_field_ids['alternate_theory']) . '.' . strval($i)];
       }
@@ -465,99 +465,114 @@ class ARIA_Form_Hooks {
    *
    * @since 1.0.0
    * @author KREW
-  */
+   */
   public static function aria_add_query_vars_filter($vars) {
     $vars[] = "teacher_hash";
     $vars[] = "student_hash";
     return $vars;
   }
 
-  public static function aria_student_master_post_update_entry($form, $entry_id, $original_entry)
-  {
-    //$form_id = $entry['form_id'];
-    $entry = GFAPI::get_entry($entry_id);
-//wp_die(print_r($form));
-    // Only perform processing if it's a student form
+  /**
+   * This function does something idk
+   *
+   * SOmething idk
+   *
+   * @param   $form   Form Object   The form object for the entry.
+   * @param   $entry_id   Int   The entry ID.
+   * @param   $original_entry   Entry Object  The entry before being updated.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_student_master_post_update_entry($form, $entry_id, $original_entry) {
+    // only perform processing if it's a student master form
     if (!array_key_exists('isStudentMasterForm', $form)
         || !$form['isStudentMasterForm']) {
           return;
     }
 
-    // Find the 4 related forms that pertain to $form
+    // acquire basic information about the associated entry and form
+    $entry = GFAPI::get_entry($entry_id);
     $related_forms = $form['aria_relations'];
-
-    // Find out the information associated with the $entry variable
     $student_fields = ARIA_API::aria_student_field_id_array();
-
-    /* teacher master has not been fully checked because form doesn't look complete? */
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
     $student_master_fields = ARIA_API::aria_master_student_field_id_array();
 
-    $found = true;
-    $teacher_name = $entry[ strval($student_master_fields['teacher_name']) ];
-    $old_teacher_val_str = $original_entry[ strval($student_master_fields['teacher_name']) ];
+    // acquire old information about the teacher's name
+    $old_teacher_val_str = $original_entry[strval($student_master_fields['teacher_name'])];
     $old_teacher_val = unserialize($old_teacher_val_str);
     $old_teacher_name = null;
     $old_teacher_hash = null;
-    $student_hash = $entry[ strval($student_master_fields['hash']) ];
-    if($old_teacher_val == false)
-    {
+    if ($old_teacher_val == false) {
+      // the teacher's old name was not unserializable, so provide some default values
       $old_teacher_name = '';
       $old_teacher_hash = '';
     }
-    else
-    {
+    else {
       $old_teacher_name = $old_teacher_val[0] . ' ' . $old_teacher_val[1];
       $old_teacher_hash = $old_teacher_val[2];
     }
-    if( $teacher_name != $old_teacher_val_str )
-    {
+
+    // get the updated teacher name
+    $teacher_name = $entry[strval($student_master_fields['teacher_name'])];
+
+    // initialize more values for later
+    $found = true;
+    $student_hash = $entry[strval($student_master_fields['student_hash'])];
+
+    // compare the teacher's old name with the teacher's new name to see if they have changed
+    if ($teacher_name != $old_teacher_val_str) {
       // find teacher in master
-      $search = array ( );
+      $search = array();
       $sorting = array();
       $paging = array('offset' => 0, 'page_size' => 2000);
       $total_count = 0;
-      $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'], $search, $sorting, $paging, $total_count);
+      $teacher_entries = GFAPI::get_entries($related_forms['teacher_master_form_id'],
+                                            $search, $sorting, $paging, $total_count);
+
+      // iterate through all of the teacher entries
       $found = false;
-      foreach( $teacher_entries as $teacher ){
-        $teacher_first = $teacher[ strval($teacher_master_fields['first_name'])];
-        $teacher_last = $teacher[ strval($teacher_master_fields['last_name'])];
-        $teacher_hash =  $teacher[ strval($teacher_master_fields['hash'])];
+      foreach ($teacher_entries as $teacher) {
+        $teacher_first = $teacher[strval($teacher_master_fields['first_name'])];
+        $teacher_last = $teacher[strval($teacher_master_fields['last_name'])];
+        $teacher_hash =  $teacher[strval($teacher_master_fields['hash'])];
         $full_name = $teacher_first . ' ' . $teacher_last;
-        if($full_name == $teacher_name)
-        {
+
+        // idk what's going on
+        if ($full_name == $teacher_name) {
           $found = true;
           $teacher_val = array();
           $teacher_val[] = $teacher_first;
           $teacher_val[] = $teacher_last;
           $teacher_val[] = $teacher_hash;
           $teacher_serial = serialize($teacher_val);
-          $entry[ strval($student_master_fields['teacher_name']) ] = $teacher_serial;
+          $entry[strval($student_master_fields['teacher_name'])] = $teacher_serial;
+
           // update student master
           $result = GFAPI::update_entry($entry);
 
-
           // add student into new teacher
+            // ???
 
-          // Determine whether a student has been added or not (if it's an array)
+          // determine whether a student has been added or not (if it's an array)
           $students = $teacher[strval($teacher_master_fields["students"])];
           $students = unserialize($students);
-
           if (!is_array($students)) {
             $students = array();
           }
 
-          // Add the newly registered student to the teacher's list of student hashes
+          // add the newly registered student to the teacher's list of student hashes
           $students[] = $student_hash;
           $teacher[strval($teacher_master_fields["students"])] = serialize($students);
 
-          // Update the teacher entry with the new student edition
+          // update the teacher entry with the new student addition
           $result = GFAPI::update_entry($teacher);
           if (is_wp_error($result)) {
             wp_die(__LINE__.$result->get_error_message());
           }
 
-          // Send email
+          // send email
+            // ???
 
           // determine how many students have registered so far
           $search_criteria = array();

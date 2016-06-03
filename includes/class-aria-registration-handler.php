@@ -115,9 +115,8 @@ class ARIA_Registration_Handler {
    * @author KREW
 	 */
   public static function aria_find_student_entry($student_master_form_id, $student_hash) {
-    $hash_field_id = ARIA_API::aria_master_student_field_id_array()['hash'];
-
-    // check to see if any of the entries in the student master have $student_hash
+    // prepare search criteria
+    $hash_field_id = ARIA_API::aria_master_student_field_id_array()['student_hash'];
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -131,9 +130,13 @@ class ARIA_Registration_Handler {
       )
     );
 
-    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria, $sorting, $paging, $total_count);
+    // search through the associated teacher master using the above search criteria
+    $entries = GFAPI::get_entries($student_master_form_id, $search_criteria, $sorting,
+                                  $paging, $total_count);
+
+    // exactly one student was found that has the corresponding hash value
     if(count($entries) == 1 && rgar($entries[0], (string) $hash_field_id) == $student_hash) {
-     return $entries[0];
+      return $entries[0];
     }
 
     return false;
