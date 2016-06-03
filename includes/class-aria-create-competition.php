@@ -675,7 +675,8 @@ class ARIA_Create_Competition {
     $festival_date_incorrect = false;
 
     // start date year is less than today's year
-    if ($start_date[$year_offset] <= date("Y")) {
+    /*
+    if ($start_date[$year_offset] < date("Y")) {
       foreach ($form['fields'] as &$field) {
         // end date field
         if ($field->id == strval($field_mapping['start_date'])) {
@@ -687,7 +688,6 @@ class ARIA_Create_Competition {
     }
 
     // same year, but date and month are in past
-    /* whole process appears to be mostly working.. working on more form validation
     elseif ($start_date[$year_offset] <= date("Y") &&
             $start_date[$month_offset] <= date("m") &&
             $start_date[$day_offset] < date("d")) {
@@ -703,7 +703,7 @@ class ARIA_Create_Competition {
     }
     */
 
-    elseif ($start_date[$year_offset] > $end_date[$year_offset]) {
+    if ($start_date[$year_offset] > $end_date[$year_offset]) {
       $festival_date_incorrect = true;
     }
 

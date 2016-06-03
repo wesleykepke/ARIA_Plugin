@@ -44,5 +44,6 @@ function emailParentsAndTeachers() {
   var targetFunc = host + "/wp-content/plugins/ARIA/admin/scheduler/parent-teacher-email-client.php";
   jQuery.post(targetFunc, data, function(response) {
     alert("Emails were successfully sent.");
+    console.log(response);
   });
 }

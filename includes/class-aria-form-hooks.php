@@ -196,8 +196,8 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
       strval($student_master_fields["student_level"]) => $entry[strval($student_fields["student_level"])],
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
-      strval($student_master_fields["festival_availability"]) => $entry[strval($student_fields["available_festival_days"])],
-      strval($student_master_fields["command_performance_availability"]) => $entry[strval($student_fields["preferred_command_performance"])],
+      strval($student_master_fields["festival_availability"]) => $entry[strval($student_fields["festival_availability"])],
+      strval($student_master_fields["command_performance_availability"]) => $entry[strval($student_fields["command_performance_availability"])],
       strval($student_master_fields["song_1_period"]) => null,
       strval($student_master_fields["song_1_composer"]) => null,
       strval($student_master_fields["song_1_selection"]) => null,
@@ -446,10 +446,11 @@ class ARIA_Form_Hooks {
 
     // send an email to the teacher acknowledging successful registration
     $email_info = array();
-    $email_info['teacher_name'] = $student_master_entry[strval($student_master_field_ids['teacher_name'])];
+    $teacher_name_for_email = unserialize($student_master_entry[strval($student_master_field_ids['teacher_name'])]);
+    $email_info['teacher_name'] = $teacher_name_for_email[0] . ' ' . $teacher_name_for_email[1];
     $email_info['teacher_email'] = $teacher_master_entry[strval($teacher_master_field_ids['email'])];
     $email_info['student_name'] = $student_master_entry[strval($student_master_field_ids['student_first_name'])] .
-      $student_master_entry[strval($student_master_field_ids['student_last_name'])];
+      ' ' . $student_master_entry[strval($student_master_field_ids['student_last_name'])];
     $email_info['competition_name'] = $related_forms['festival_name'];
     $email_info['festival_chairman_email'] = $related_forms['festival_chairman_email'];
     ARIA_Registration_Handler::aria_after_teacher_submission_email($email_info);

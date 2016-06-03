@@ -1017,10 +1017,15 @@ class Section {
    */
   public function group_students_by_teacher_email(&$teacher_emails_to_students) {
     for ($i = 0; $i < count($this->students); $i++) {
+      // check if the teacher's email does not already exist as part of the array
       if (!in_array($this->students[$i]->get_teacher_email(), $teacher_emails_to_students)) {
+        // if it does not yet exist, add it and make it's mapped value an array
+        array_push($teacher_emails_to_students, $this->students[$i]->get_teacher_email());
         $teacher_emails_to_students[$this->students[$i]->get_teacher_email()] = array();
       }
-      $teacher_emails_to_students[$this->students[$i]->get_teacher_email()][] = $this->students[$i];
+
+      // add the student to the list of students consolidated under one email
+      array_push($teacher_emails_to_students[$this->students[$i]->get_teacher_email()], $this->students[$i]);
     }
   }
 
