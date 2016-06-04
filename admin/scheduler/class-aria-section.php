@@ -244,7 +244,7 @@ class Section {
     $this->date = $date;
     $this->judges = "TYPE IN JUDGE(S)";
     $this->proctor = "TYPE IN PROCTOR(S)";
-    $this->door_guard = "TYPE IN DOOR GUARD";
+    $this->door_guard = "TYPE IN DOOR MONITOR";
   }
 
   /**
@@ -676,8 +676,8 @@ class Section {
     // create a placeholder for proctors in this section
     $section_info .= '<li>Proctor(s): <span id="section-proctors" contenteditable="true">' . $this->proctor . '</span></li>';
 
-    // create a placeholder for the door guard of this section
-    $section_info .= '<li>Door Guard: <span id="section-door-guard" contenteditable="true">' . $this->door_guard . '</span></li>';
+    // create a placeholder for the door monitor of this section
+    $section_info .= '<li>Door Monitor: <span id="section-door-guard" contenteditable="true">' . $this->door_guard . '</span></li>';
 
     // determine number of students per section
     $section_info .= '<li>Number of Students: ' . strval(count($this->students)) . '</li>';
@@ -829,7 +829,7 @@ class Section {
     if ($new_section_data[0] == "EMPTY") {
       $this->start_time = "TYPE IN START TIME";
       $this->judges = "TYPE IN JUDGE(S)";
-      $this->door_guard = "TYPE IN DOOR GUARD";
+      $this->door_guard = "TYPE IN DOOR MONITOR";
       $this->proctor = "TYPE IN PROCTOR(S)";
       return;
     }
@@ -863,7 +863,7 @@ class Section {
         $this->proctor = $new_section_data[$section_proctor];
       }
 
-      // door guard
+      // door monitor
       if (array_key_exists($section_door_guard, $new_section_data)) {
         $this->door_guard = $new_section_data[$section_door_guard];
       }
@@ -892,7 +892,7 @@ class Section {
       //$this->room = ;
       $this->judges = "TYPE IN JUDGE(S)";
       $this->proctor = "TYPE IN PROCTOR(S)";
-      $this->door_guard = "TYPE IN DOOR GUARD";
+      $this->door_guard = "TYPE IN DOOR MONITOR";
       return;
     }
 
