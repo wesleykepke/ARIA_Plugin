@@ -56,7 +56,16 @@ class ARIA_Registration_Handler {
 
     $subject = "NNMTA Festival Registration (" . $email_info['competition_name'] . ")";
     if (!wp_mail($email_info['teacher_email'], $subject, $message_teacher)) {
-      wp_die('Teacher email (for student registration) failed to send.');
+      wp_die('Teacher email (for teacher registration) failed to send.');
+    }
+
+    // generate message to send to the chairman
+    $message_chairman = "<html>Hello,<br /><br />" . $email_info['teacher_name'] .
+    " has just successfully registered " . $email_info['student_name'] . " for the
+    NNMTA event '" . $email_info['competition_name'] . "'.<br /></html>";
+
+    if (!wp_mail($email_info['festival_chairman_email'], $subject, $message_chairman)) {
+      wp_die('Chairman email (for teacher registration) failed to send.');
     }
   }
 
