@@ -58,7 +58,7 @@ class ARIA_Music {
     $all_songs = array();
     if (($file_ptr = fopen($csv_music_file, "r")) !== FALSE) {
       while (($single_song_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
-        $single_song_data_data = array_map("utf8_encode", $single_song_data);
+        $single_song_data = array_map("utf8_encode", $single_song_data);
         $single_song = array();
         for ($i = 1; $i <= count($single_song_data); $i++) {
           $single_song[(string) $i] = $single_song_data[$i - 1];
