@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 /**
  * The file acts like an API for functions that may be called repeatedly.
@@ -466,12 +466,12 @@ class ARIA_API {
       'song_2_period' => 13,
       'song_2_composer' => 14,
       'song_2_selection' => 15,
-      'timing_of_pieces' => 16,
-      'student_division' => 17,
-      'theory_score' => 18,
-      'alternate_theory' => 19,
-      'alt_song_2_composer' => 20,
-      'alt_song_2_selection' => 21,
+      'alt_song_2_composer' => 16,
+      'alt_song_2_selection' => 17,
+      'timing_of_pieces' => 18,
+      'student_division' => 19,
+      'theory_score' => 20,
+      'alternate_theory' => 21,
     );
   }
 

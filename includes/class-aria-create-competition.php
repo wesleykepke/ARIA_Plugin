@@ -1271,6 +1271,37 @@ class ARIA_Create_Competition {
     $form->fields[] = $song_two_selection;
     $ariaFieldIds['song_two_selection'] = $song_two_selection->id;
 
+    // if the student is level 11, we need to obtain an alternate composer
+    $alt_song_two_composer = new GF_Field_Text();
+    $alt_song_two_composer->label = "Song 2 Composer";
+    $alt_song_two_composer->id = $teacher_field_mapping['alt_song_2_composer'];
+    $alt_song_two_composer->isRequired = true;
+    $alt_song_two_composer->conditionalLogic = array(
+    	'actionType' => 'show',
+    	'logicType' => 'all',
+    	'rules' => $is_11_rule
+    );
+    $form->fields[] = $alt_song_two_composer;
+    $ariaFieldIds['alt_song_two_composer'] = $alt_song_two_composer->id;
+
+    // if the student is level 11, we need to obtain an alternate song
+    $alt_song_two_selection = new GF_Field_Text();
+    $alt_song_two_selection->label = "Song 2 Piece Title";
+    $alt_song_two_selection->id = $teacher_field_mapping['alt_song_2_selection'];
+    $alt_song_two_selection->isRequired = true;
+    $alt_song_two_selection->description = "Please be as descriptive as possible.
+    If applicable, include key (D Major, F Minor, etc.), movement number (1st,
+    2nd, etc.), movement description (Adante, Rondo Allegro Comodo, etc.), and
+    identifying number (BWV, Opus, etc.).";
+    $alt_song_two_selection->descriptionPlacement = 'above';
+    $alt_song_two_selection->conditionalLogic = array(
+      'actionType' => 'show',
+      'logicType' => 'all',
+      'rules' => $is_11_rule
+    );
+    $form->fields[] = $alt_song_two_selection;
+    $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection->id;
+
     // timing of pieces field
     $timing_of_pieces = new GF_Field_Select();
     $timing_of_pieces->label = "Combined Timing of Pieces (minutes)";
@@ -1331,37 +1362,6 @@ class ARIA_Create_Competition {
     $alternate_theory = self::aria_add_checkbox_input($alternate_theory, 'Alternate theory exam completed');
     $form->fields[] = $alternate_theory;
     $ariaFieldIds['alternate_theory'] = $alternate_theory->id;
-
-    // if the student is level 11, we need to obtain an alternate composer
-    $alt_song_two_composer = new GF_Field_Text();
-    $alt_song_two_composer->label = "Song 2 Composer";
-    $alt_song_two_composer->id = $teacher_field_mapping['alt_song_2_composer'];
-    $alt_song_two_composer->isRequired = true;
-    $alt_song_two_composer->conditionalLogic = array(
-    	'actionType' => 'show',
-    	'logicType' => 'all',
-    	'rules' => $is_11_rule
-    );
-    $form->fields[] = $alt_song_two_composer;
-    $ariaFieldIds['alt_song_two_composer'] = $alt_song_two_composer->id;
-
-    // if the student is level 11, we need to obtain an alternate song
-    $alt_song_two_selection = new GF_Field_Text();
-    $alt_song_two_selection->label = "Song 2 Piece Title";
-    $alt_song_two_selection->id = $teacher_field_mapping['alt_song_2_selection'];
-    $alt_song_two_selection->isRequired = true;
-    $alt_song_two_selection->description = "Please be as descriptive as possible.
-    If applicable, include key (D Major, F Minor, etc.), movement number (1st,
-    2nd, etc.), movement description (Adante, Rondo Allegro Comodo, etc.), and
-    identifying number (BWV, Opus, etc.).";
-    $alt_song_two_selection->descriptionPlacement = 'above';
-    $alt_song_two_selection->conditionalLogic = array(
-      'actionType' => 'show',
-      'logicType' => 'all',
-      'rules' => $is_11_rule
-    );
-    $form->fields[] = $alt_song_two_selection;
-    $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection->id;
 
     // custom submission message to inform teacher registration was successful
     $successful_submission_message = "Congratulations! You have just successfully registered your student.";

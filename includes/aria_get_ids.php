@@ -30,7 +30,7 @@
     json_encode($entry) to view the JSON and make sure it matches what this
     function returns.
     */
-    return array(
+		return array(
       'name' => 1,
 			'first_name' => 1.3,
 			'last_name' => 1.6,
@@ -50,12 +50,12 @@
       'song_2_period' => 13,
       'song_2_composer' => 14,
       'song_2_selection' => 15,
-      'timing_of_pieces' => 16,
-      'student_division' => 17,
-      'theory_score' => 18,
-      'alternate_theory' => 19,
-      'alt_song_2_composer' => 20,
-      'alt_song_2_selection' => 21,
+      'alt_song_2_composer' => 16,
+      'alt_song_2_selection' => 17,
+      'timing_of_pieces' => 18,
+      'student_division' => 19,
+      'theory_score' => 20,
+      'alternate_theory' => 21,
     );
   }
 

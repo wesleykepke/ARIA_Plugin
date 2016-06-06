@@ -323,6 +323,9 @@ class ARIA_Form_Hooks {
           return;
     }
 
+    echo "Before anything else..<br>";
+    wp_die(print_r($entry)); 
+
     // obtain various information
     $student_master_field_ids = ARIA_API::aria_master_student_field_id_array();
     $teacher_master_field_ids = ARIA_API::aria_master_teacher_field_id_array();
@@ -394,6 +397,24 @@ class ARIA_Form_Hooks {
     $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($related_forms['student_master_form_id'],
                                                                                $student_hash);
 
+    echo "Displaying student master entry: <br>";
+    echo "Displaying level stored in student master entry: " .
+    intval($student_master_entry[strval($student_master_field_ids['student_level'])])
+    . "<br>";
+
+    if (intval($student_master_entry[strval($student_master_field_ids['student_level'])]) != 11) {
+      echo "This value is somehow not 11. <br>";
+    }
+    else {
+      echo "This value is 11. <br>";
+    }
+
+    echo "Displaying incoming student entry.<br>";
+    echo print_r($entry);
+    echo "Displaying student master entry.<br>";
+
+    wp_die(print_r($student_master_entry));
+
     // if the student doesn't exist, throw an error message
     if ($student_master_entry === false) {
       wp_die("Error: aria_after_teacher_submission() could not locate the specified student.");
@@ -414,7 +435,7 @@ class ARIA_Form_Hooks {
       $entry[strval($teacher_public_field_ids['timing_of_pieces'])];
 
     // if student level != 11
-    if ($student_master_entry[strval($student_master_field_ids['student_level'])] != '11') {
+    if (intval($student_master_entry[strval($student_master_field_ids['student_level'])]) != 11) {
       $student_master_entry[strval($student_master_field_ids['song_2_period'])] =
         $entry[strval($teacher_public_field_ids['song_2_period'])];
       $student_master_entry[strval($student_master_field_ids['song_2_composer'])] =
