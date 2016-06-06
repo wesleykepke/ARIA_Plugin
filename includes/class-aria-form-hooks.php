@@ -323,9 +323,6 @@ class ARIA_Form_Hooks {
           return;
     }
 
-    echo "Before anything else..<br>";
-    wp_die(print_r($entry)); 
-
     // obtain various information
     $student_master_field_ids = ARIA_API::aria_master_student_field_id_array();
     $teacher_master_field_ids = ARIA_API::aria_master_teacher_field_id_array();
@@ -396,7 +393,7 @@ class ARIA_Form_Hooks {
     // locate the student entry in the student master.
     $student_master_entry = ARIA_Registration_Handler::aria_find_student_entry($related_forms['student_master_form_id'],
                                                                                $student_hash);
-
+/*
     echo "Displaying student master entry: <br>";
     echo "Displaying level stored in student master entry: " .
     intval($student_master_entry[strval($student_master_field_ids['student_level'])])
@@ -414,6 +411,7 @@ class ARIA_Form_Hooks {
     echo "Displaying student master entry.<br>";
 
     wp_die(print_r($student_master_entry));
+*/
 
     // if the student doesn't exist, throw an error message
     if ($student_master_entry === false) {

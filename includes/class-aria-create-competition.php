@@ -1227,18 +1227,20 @@ class ARIA_Create_Competition {
     $song_two_period = new GF_Field_Select();
     $song_two_period->label = "Song 2 Period";
     $song_two_period->id = $teacher_field_mapping['song_2_period'];
-    $song_two_period->isRequired = true;
+    $song_two_period->isRequired = false;
     $song_two_period->choices = array(
       array('text' => 'Baroque', 'value' => '1', 'isSelected' => false),
       array('text' => 'Classical', 'value' => '2', 'isSelected' => false),
       array('text' => 'Romantic', 'value' => '3', 'isSelected' => false),
       array('text' => 'Contemporary', 'value' => '4', 'isSelected' => false),
     );
+    /*
     $song_two_period->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
+    */
     $song_two_period->placeholder = "Select Period...";
     $form->fields[] = $song_two_period;
     $ariaFieldIds['song_two_period'] = $song_two_period->id;
@@ -1247,12 +1249,14 @@ class ARIA_Create_Competition {
     $song_two_composer = new GF_Field_Select();
     $song_two_composer->label = "Song 2 Composer";
     $song_two_composer->id = $teacher_field_mapping['song_2_composer'];
-    $song_two_composer->isRequired = true;
+    $song_two_composer->isRequired = false;
+    /*
     $song_two_composer->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
+    */
     $song_two_composer->placeholder = "Select Composer...";
     $form->fields[] = $song_two_composer;
     $ariaFieldIds['song_two_composer'] = $song_two_composer->id;
@@ -1261,26 +1265,42 @@ class ARIA_Create_Competition {
     $song_two_selection = new GF_Field_Select();
     $song_two_selection->label = "Song 2 Selection";
     $song_two_selection->id = $teacher_field_mapping['song_2_selection'];
-    $song_two_selection->isRequired = true;
+    $song_two_selection->isRequired = false;
+    /*
     $song_two_selection->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_not_11_rule
     );
+    */
     $song_two_selection->placeholder = "Select Song...";
     $form->fields[] = $song_two_selection;
     $ariaFieldIds['song_two_selection'] = $song_two_selection->id;
+
+    // add a section break and create level 11 fields
+    $level_11_section_break_begin = new GF_Field_Section();
+    $level_11_section_break_begin->label = "Level 11 Registration Only";
+    $level_11_section_break_begin->description = "Submit information below only if you are
+    registering a level 11 student.";
+    $form->fields[] = $level_11_section_break_begin;
 
     // if the student is level 11, we need to obtain an alternate composer
     $alt_song_two_composer = new GF_Field_Text();
     $alt_song_two_composer->label = "Song 2 Composer";
     $alt_song_two_composer->id = $teacher_field_mapping['alt_song_2_composer'];
-    $alt_song_two_composer->isRequired = true;
+    $alt_song_two_composer->isRequired = false;
+    $alt_song_two_composer->description = "If you are registering a level 11
+    student, you must manually enter the composer of the piece that the student
+    is playing in the box below. This is the composer that will be assigned as
+    the level 11 student's second piece during the scheduling process.";
+    $alt_song_two_composer->descriptionPlacement = 'above';
+    /*
     $alt_song_two_composer->conditionalLogic = array(
     	'actionType' => 'show',
     	'logicType' => 'all',
     	'rules' => $is_11_rule
     );
+    */
     $form->fields[] = $alt_song_two_composer;
     $ariaFieldIds['alt_song_two_composer'] = $alt_song_two_composer->id;
 
@@ -1288,19 +1308,32 @@ class ARIA_Create_Competition {
     $alt_song_two_selection = new GF_Field_Text();
     $alt_song_two_selection->label = "Song 2 Piece Title";
     $alt_song_two_selection->id = $teacher_field_mapping['alt_song_2_selection'];
-    $alt_song_two_selection->isRequired = true;
-    $alt_song_two_selection->description = "Please be as descriptive as possible.
-    If applicable, include key (D Major, F Minor, etc.), movement number (1st,
-    2nd, etc.), movement description (Adante, Rondo Allegro Comodo, etc.), and
-    identifying number (BWV, Opus, etc.).";
+    $alt_song_two_selection->isRequired = false;
+    $alt_song_two_selection->description = "If you are registering a level 11
+    student, you must manually enter the title of the piece that the student is
+    playing in the box below. This is the piece that will be assigned as the
+    level 11 student's second piece during the scheduling process.
+    <br>
+    Please be as descriptive as possible. If applicable, include key (D Major,
+    F Minor, etc.), movement number (1st, 2nd, etc.), movement description
+    (Adante, Rondo Allegro Comodo, etc.), and identifying number (BWV, Opus,
+    etc.).";
     $alt_song_two_selection->descriptionPlacement = 'above';
+    /*
     $alt_song_two_selection->conditionalLogic = array(
       'actionType' => 'show',
       'logicType' => 'all',
       'rules' => $is_11_rule
     );
+    */
     $form->fields[] = $alt_song_two_selection;
     $ariaFieldIds['alt_song_two_selection'] = $alt_song_two_selection->id;
+
+    // add a section break for end of level 11 fields
+    $level_11_section_break_end = new GF_Field_Section();
+    $level_11_section_break_end->description = "Continue registration process
+    below.";
+    $form->fields[] = $level_11_section_break_end;
 
     // timing of pieces field
     $timing_of_pieces = new GF_Field_Select();
@@ -1348,7 +1381,7 @@ class ARIA_Create_Competition {
 
     // field for student's alternate theory
     $alternate_theory = new GF_Field_Checkbox();
-    $alternate_theory->label = "Check if alternate theory exam was completed.";
+    $alternate_theory->label = "Check if alternate theory exam was completed";
     $alternate_theory->id = $teacher_field_mapping['alternate_theory'];
     $alternate_theory->isRequired = false;
     $alternate_theory->choices = array(
@@ -1395,15 +1428,124 @@ class ARIA_Create_Competition {
    * @author KREW
    */
    public static function aria_teacher_form_validation($validation_result) {
-     // obtain the form object and the field mapping for this object
-     $form = $validation_result['form'];
-     $field_mapping = ARIA_API::aria_teacher_field_id_array();
+    // obtain the form object and the field mapping for this object
+    $form = $validation_result['form'];
+    $field_mapping = ARIA_API::aria_teacher_field_id_array();
 
-     // only perform form validation if it's the student registration form
-     if (!array_key_exists('isTeacherPublicForm', $form)
-         || !$form['isTeacherPublicForm']) {
-           return $validation_result;
-     }
+    // only perform form validation if it's the student registration form
+    if (!array_key_exists('isTeacherPublicForm', $form)
+       || !$form['isTeacherPublicForm']) {
+      return $validation_result;
+    }
+
+    // obtain the student to which this registration pertains
+    $student_master_field_mapping = ARIA_API::aria_master_student_field_id_array();
+    $related_forms = $form['aria_relations'];
+    $student_hash = get_query_var("student_hash", false);
+    $student_master_form_entries = GFAPI::get_form($related_forms['student_master_form_id']);
+    $search = array();
+    $sorting = array();
+    $paging = array('offset' => 0, 'page_size' => 2000);
+    $total_count = 0;
+    $student_master_form_entries= GFAPI::get_entries($related_forms['student_master_form_id'],
+                                                     $search, $sorting, $paging, $total_count);
+    foreach ($student_master_form_entries as $entry) {
+      if ($entry[strval($student_master_field_mapping['student_hash'])] == $student_hash) {
+        $student_level = $entry[strval($student_master_field_mapping['student_level'])];
+        break;
+      }
+    }
+
+    // obtain the needed song input for level 11 students
+    $alt_song_2_composer = "input_" . strval($field_mapping['alt_song_2_composer']);
+    $alt_song_2_composer = rgpost($alt_song_2_composer);
+    $alt_song_2_selection = "input_" . strval($field_mapping['alt_song_2_selection']);
+    $alt_song_2_selection = rgpost($alt_song_2_selection);
+
+    // obtain the second song input for non level 11 students
+    $song_2_period = "input_" . strval($field_mapping['song_2_period']);
+    $song_2_period = rgpost($song_2_period);
+    $song_2_composer = "input_" . strval($field_mapping['song_2_composer']);
+    $song_2_composer = rgpost($song_2_composer);
+    $song_2_selection = "input_" . strval($field_mapping['song_2_selection']);
+    $song_2_selection = rgpost($song_2_selection);
+
+    //echo "Displaying song 2's period: $song_2_period <br>";
+    //echo "Displaying song 2's composer: $song_2_composer <br>";
+    //echo "Displaying song 2: $song_2_selection <br>";
+
+    //wp_die();
+
+    // check to see that level 11 student's have appropriate song selections
+    if (intval($student_level) == 11) {
+      // make sure the teacher submitted something for level 11 composer
+      if (strlen(trim($alt_song_2_composer)) == 0) {
+        $validation_result['is_valid'] = false;
+        foreach ($form['fields'] as &$field) {
+          // alternate song composer field
+          if ($field->id == strval($field_mapping['alt_song_2_composer'])) {
+            $field->failed_validation = true;
+            $field->validation_message = "This field must not be blank for level
+            11 students.";
+          }
+        }
+      }
+
+      // make sure the teacher submitted something for levell 11 song selection
+      if (strlen(trim($alt_song_2_selection)) == 0) {
+        $validation_result['is_valid'] = false;
+        foreach ($form['fields'] as &$field) {
+          // alternate song composer field
+          if ($field->id == strval($field_mapping['alt_song_2_selection'])) {
+            $field->failed_validation = true;
+            $field->validation_message = "This field must not be blank for level
+            11 students.";
+          }
+        }
+      }
+    }
+
+    // for non level 11 students, we must ensure they selected a second song via the drop-down menus
+    else {
+      // no time period was selected
+      if (strlen(trim($song_2_period)) == 0) {
+        $validation_result['is_valid'] = false;
+        foreach ($form['fields'] as &$field) {
+          // alternate song composer field
+          if ($field->id == strval($field_mapping['song_2_period'])) {
+            $field->failed_validation = true;
+            $field->validation_message = "This field must not be blank for students
+            in levels 1-10.";
+          }
+        }
+      }
+
+      // no composer was selected
+      if (strlen(trim($song_2_composer)) == 0) {
+        $validation_result['is_valid'] = false;
+        foreach ($form['fields'] as &$field) {
+          // alternate song composer field
+          if ($field->id == strval($field_mapping['song_2_composer'])) {
+            $field->failed_validation = true;
+            $field->validation_message = "This field must not be blank for students
+            in levels 1-10.";
+          }
+        }
+      }
+
+      // no song was selected
+      if (strlen(trim($song_2_selection)) == 0) {
+        $validation_result['is_valid'] = false;
+        foreach ($form['fields'] as &$field) {
+          // alternate song composer field
+          if ($field->id == strval($field_mapping['song_2_selection'])) {
+            $field->failed_validation = true;
+            $field->validation_message = "This field must not be blank for students
+            in levels 1-10.";
+          }
+        }
+      }
+    }
 
      $validation_result['form'] = $form;
      return $validation_result;

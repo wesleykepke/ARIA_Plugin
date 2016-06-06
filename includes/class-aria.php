@@ -367,6 +367,15 @@ class ARIA {
                               'ARIA_Create_Competition',
                               'aria_student_form_validation',
                               10, 1);
+
+    /*
+    The filter registered for this hook performs form validation on the teacher
+    registration form.
+    */
+    $this->loader->add_filter('gform_validation',
+                              'ARIA_Create_Competition',
+                              'aria_teacher_form_validation',
+                              10, 1);
   }
 
   /**
