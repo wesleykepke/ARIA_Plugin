@@ -109,6 +109,9 @@ class ARIA_Form_Hooks {
           return;
     }
 
+    echo "Displaying student entry: <br>";
+    wp_die(print_r($entry)); 
+
     // initialize various field mapping arrays
     $student_fields = ARIA_API::aria_student_field_id_array();
     $teacher_master_fields = ARIA_API::aria_master_teacher_field_id_array();
