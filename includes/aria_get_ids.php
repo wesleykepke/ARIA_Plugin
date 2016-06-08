@@ -82,7 +82,7 @@
     json_encode($entry) to view the JSON and make sure it matches what this
     function returns.
     */
-    return array(
+		return array(
       'parent_name' => 1,
       'parent_first_name' => 1.3,
       'parent_last_name' => 1.6,
@@ -96,9 +96,9 @@
       'festival_availability' => 7,
       'command_performance_availability' => 8,
       'student_level' => 9,
-      'compliance_statement' => 10,
-      'registration_total' => 11,
-      'level_pricing' => 12
+      'level_pricing' => 10,
+      'compliance_statement' => 11,
+      'registration_total' => 12,
     );
   }
 ?>

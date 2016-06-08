@@ -97,12 +97,12 @@ class ARIA_Form_Hooks {
    * @since 1.0.0
    * @author KREW
    */
-  public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
-  //public static function aria_after_student_submission($entry, $form) {
+  //public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
+  public static function aria_after_student_submission($entry, $form) {
     // obtain the form object and the other related forms
-    $form_id = $entry['form_id'];
-    $form = GFAPI::get_form($form_id);
-    $related_forms = $form['aria_relations'];
+    //$form_id = $entry['form_id'];
+    //$form = GFAPI::get_form($form_id);
+    //$related_forms = $form['aria_relations'];
 
     // only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
@@ -110,8 +110,7 @@ class ARIA_Form_Hooks {
           return;
     }
 
-
-    //wp_die(print_r($entry));
+    $related_forms = $form['aria_relations'];
 
     // initialize various field mapping arrays
     $student_fields = ARIA_API::aria_student_field_id_array();
@@ -189,6 +188,8 @@ class ARIA_Form_Hooks {
 
     // make a new student master entry with the student hash
     $new_student_master_entry = array();
+    $stripped_student_level = explode("|", $entry[strval($student_fields['level_pricing'])]);
+    $stripped_student_level = $stripped_student_level[0];
     $new_student_master_entry[] = array(
       strval($student_master_fields["parent_name"]) => null,
       strval($student_master_fields["parent_first_name"]) => $entry[strval($student_fields["parent_first_name"])],
@@ -198,7 +199,7 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_first_name"]) => $entry[strval($student_fields["student_first_name"])],
       strval($student_master_fields["student_last_name"]) => $entry[strval($student_fields["student_last_name"])],
       strval($student_master_fields["student_birthday"]) => $entry[strval($student_fields["student_birthday"])],
-      strval($student_master_fields["student_level"]) => $entry[strval($student_fields["student_level"])],
+      strval($student_master_fields["student_level"]) => $stripped_student_level,
       strval($student_master_fields["teacher_name"]) => $entry[strval($student_fields["teacher_name"])],
       strval($student_master_fields["festival_availability"]) => $entry[strval($student_fields["festival_availability"])],
       strval($student_master_fields["command_performance_availability"]) => $entry[strval($student_fields["command_performance_availability"])],
@@ -215,9 +216,8 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_hash"]) => $student_hash
     );
 
-    //echo "Incoming student entry's level: " . $entry[strval($student_fields['student_level'])] . "<br>";
-    //print_r($new_student_master_entry);
-    //wp_die();
+    // adjust the student level in the entry object so that it comes from the pricing field
+    $entry[strval($student_fields['level_pricing'])] = $stripped_student_level;
 
     // add the newly created student to the competition master form
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);

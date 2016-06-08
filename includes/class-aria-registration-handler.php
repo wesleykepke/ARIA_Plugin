@@ -217,8 +217,9 @@ class ARIA_Registration_Handler {
       return $entries[0];
     }
     else {
+      echo "Displaying teacher master form id: $teacher_master_form_id <br>";
       echo 'Displaying wp_die on entries variable <br>';
-      echo print_r($entries);
+      echo count($entries);
       echo '<br>';
       echo 'Displaying teacher hash <br>';
       echo $teacher_hash;

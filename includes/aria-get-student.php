@@ -39,9 +39,9 @@
       'festival_availability' => 7,
       'command_performance_availability' => 8,
       'student_level' => 9,
-      'compliance_statement' => 10,
-      'registration_total' => 11,
-      'level_pricing' => 12
+      'level_pricing' => 10,
+      'compliance_statement' => 11,
+      'registration_total' => 12,
     );
   }
 ?>
