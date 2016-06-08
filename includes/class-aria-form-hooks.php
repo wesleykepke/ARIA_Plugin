@@ -97,20 +97,17 @@ class ARIA_Form_Hooks {
    * @since 1.0.0
    * @author KREW
    */
-  //public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
-  public static function aria_after_student_submission($entry, $form) {
+  public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
     // obtain the form object and the other related forms
-    //$form_id = $entry['form_id'];
-    //$form = GFAPI::get_form($form_id);
-    //$related_forms = $form['aria_relations'];
+    $form_id = $entry['form_id'];
+    $form = GFAPI::get_form($form_id);
+    $related_forms = $form['aria_relations'];
 
     // only perform processing if it's a student form
     if (!array_key_exists('isStudentPublicForm', $form)
         || !$form['isStudentPublicForm']) {
           return;
     }
-
-    $related_forms = $form['aria_relations'];
 
     // initialize various field mapping arrays
     $student_fields = ARIA_API::aria_student_field_id_array();
@@ -216,9 +213,6 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["student_hash"]) => $student_hash
     );
 
-    // adjust the student level in the entry object so that it comes from the pricing field
-    $entry[strval($student_fields['level_pricing'])] = $stripped_student_level;
-
     // add the newly created student to the competition master form
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);
     if (is_wp_error($student_result)) {
@@ -261,6 +255,32 @@ class ARIA_Form_Hooks {
 
     // send emails to various parties (parents, teachers, festival chairman)
     ARIA_Registration_Handler::aria_send_registration_emails($email_info);
+  }
+
+  /**
+   * This function is attached to a hook after student submission.
+   *
+   * This action serves nothing more than to update the student level in the
+   * student form. The reason this is not done in the function 'aria_after_student_submission'
+   * is becasue the $entry variable cannot be modified.
+   *
+   * @param   $form   Form Object   The current form object.
+   * @param   $entry  Entry Object  The entry object that was just created.
+   *
+   * @since 1.0.0
+   * @author KREW
+   */
+  public static function aria_update_student_level_after_submission($entry, $form) {
+    // only perform processing if it's a student form
+    if (!array_key_exists('isStudentPublicForm', $form)
+        || !$form['isStudentPublicForm']) {
+          return;
+    }
+
+    // adjust the student level in the entry object so that it comes from the pricing field
+    $stripped_student_level = explode("|", $entry[strval($student_fields['level_pricing'])]);
+    $stripped_student_level = $stripped_student_level[0];
+    $entry[strval($student_fields['level_pricing'])] = $stripped_student_level;
   }
 
   /**
