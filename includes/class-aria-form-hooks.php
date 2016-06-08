@@ -98,6 +98,7 @@ class ARIA_Form_Hooks {
    * @author KREW
    */
   public static function aria_after_student_submission($entry, $feed, $transaction_id, $amount) {
+  //public static function aria_after_student_submission($entry, $form) {
     // obtain the form object and the other related forms
     $form_id = $entry['form_id'];
     $form = GFAPI::get_form($form_id);
@@ -109,8 +110,8 @@ class ARIA_Form_Hooks {
           return;
     }
 
-    echo "Displaying student entry: <br>";
-    wp_die(print_r($entry)); 
+
+    //wp_die(print_r($entry));
 
     // initialize various field mapping arrays
     $student_fields = ARIA_API::aria_student_field_id_array();
@@ -213,6 +214,10 @@ class ARIA_Form_Hooks {
       strval($student_master_fields["timing_of_pieces"]) => null,
       strval($student_master_fields["student_hash"]) => $student_hash
     );
+
+    //echo "Incoming student entry's level: " . $entry[strval($student_fields['student_level'])] . "<br>";
+    //print_r($new_student_master_entry);
+    //wp_die();
 
     // add the newly created student to the competition master form
     $student_result = GFAPI::add_entries($new_student_master_entry, $related_forms['student_master_form_id']);

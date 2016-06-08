@@ -139,15 +139,6 @@ class ARIA_Create_Competition {
       }
     }
 
-    // create the student master form
-    $command_performance_options = $entry[strval($field_mapping['command_performance_options'])];
-    $command_performance_options = unserialize($command_performance_options);
-    $master_class_registration_option = $entry[strval($field_mapping['master_class_registration_option'])];
-    $student_master_form_id =
-      ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name,
-                                                                $command_performance_options,
-                                                                $master_class_registration_option);
-
     // create the teacher master form
     $volunteer_options = $entry[strval($field_mapping['volunteer_options'])];
     $volunteer_options = unserialize($volunteer_options);
@@ -162,6 +153,22 @@ class ARIA_Create_Competition {
     $teacher_csv_file_path = ARIA_API::aria_get_teacher_csv_file_path($entry, $form);
     $teacher_names_and_hashes = ARIA_Teacher::aria_upload_from_csv($teacher_csv_file_path,
                                                                    $teacher_master_form_id);
+    if (!is_array($teacher_names_and_hashes)) { // aria_upload_from_csv returns a string for incorrect file format
+      // delete the teacher master form for bad file input
+      GFAPI::delete_form($teacher_master_form_id);
+
+      // display error message to user to notify them of the issue
+      wp_die($teacher_names_and_hashes);
+    }
+
+    // create the student master form
+    $command_performance_options = $entry[strval($field_mapping['command_performance_options'])];
+    $command_performance_options = unserialize($command_performance_options);
+    $master_class_registration_option = $entry[strval($field_mapping['master_class_registration_option'])];
+    $student_master_form_id =
+      ARIA_Create_Master_Forms::aria_create_student_master_form($competition_name,
+                                                                $command_performance_options,
+                                                                $master_class_registration_option);
 
     // create the student public form
     $student_form_id = self::aria_create_student_form($entry,
@@ -418,7 +425,7 @@ class ARIA_Create_Competition {
     have the opportunity to add more teachers using the 'ARIA: Add Teacher' page
     (located in the 'Pages' section of the WordPress dashboard). <b>Please note
     that the CSV file should be in the following format: First Name, Last Name,
-    Phone, Email</b>";
+    Phone (area code required), Email</b>";
     $teacher_upload->descriptionPlacement = 'above';
     $form->fields[] = $teacher_upload;
 

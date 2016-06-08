@@ -243,12 +243,51 @@ class ARIA_Teacher {
   public static function aria_upload_from_csv($csv_file_path, $teacher_master_form_id) {
     // obtain the field mappings of the teacher master form
     $field_mappings = ARIA_API::aria_master_teacher_field_id_array();
+    $upload_successful = true;
+    $error_message = "";
+    $phone_regex = "/^(\d[\s-]?)?[\(\[\s-]{0,2}?\d{3}[\)\]\s-]{0,2}?\d{3}[\s-]?\d{4}$/i";
 
     // read teacher data from file, line by line
     $all_teachers_master = array(); // used to populate teacher-master form
     $all_teachers_form_dropdown = array(); // used to populate teacher dropdown menu
     if (($file_ptr = fopen($csv_file_path, "r")) !== FALSE) {
       while (($single_teacher_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
+        $teacher_name = $single_teacher_data[0] . " " . $single_teacher_data[1];
+
+        // check to see if there are not four values seperated by commas
+        if (count($single_teacher_data) != 4) {
+          $upload_successful = false;
+          $error_message = "<h1>Oh no! It appears as if '$teacher_name'
+          in the teacher file you provided has an incomplete set of data. Please
+          complete the information for this teacher in the teacher file and try
+          creating the competition again.</h1>";
+          break;
+        }
+
+        // check to see if any of the phone numbers are in an invalid format
+        elseif (!preg_match($phone_regex, $single_teacher_data[2])) {
+          $upload_successful = false;
+          $error_message = "<h1>Oh no! It appears as if '$teacher_name'
+          in the teacher file you provided does not have a valid phone number.
+          Please check the phone number for '$teacher_name' in the teacher
+          file and try creating the event again.</h1>";
+          $error_message .= "<br><h4>The phone number provided for '$teacher_name'
+          is '" . $single_teacher_data[2] . "'.</h4>";
+          break;
+        }
+
+        // check to see if any of the emails are in an invalid format
+        elseif (filter_var($single_teacher_data[3], FILTER_VALIDATE_EMAIL) == false) {
+          $upload_successful = false;
+          $error_message = "<h1>Oh no! It appears as if '$teacher_name'
+          in the teacher file you provided does not have a valid email address.
+          Please check the email address for '$teacher_name' in the teacher
+          file and try creating the event again.</h1>";
+          $error_message .= "<br><h4>The email address provided for '$teacher_name'
+          is '" . $single_teacher_data[3] . "'.</h4>";
+          break;
+        }
+
         $single_teacher = array();
         $first_and_last_names_and_hash = array();
 
@@ -285,6 +324,11 @@ class ARIA_Teacher {
 
     // remove the uploaded file from the current WP directory
     unlink($csv_file_path);
-    return $all_teachers_form_dropdown;
+
+    // if upload process was successful, return the teachers,
+    if ($upload_successful) {
+      return $all_teachers_form_dropdown;
+    }
+    return $error_message; // otherwise, send signal back to the caller
   }
 }

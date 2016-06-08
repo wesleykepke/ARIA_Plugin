@@ -281,13 +281,16 @@ class ARIA {
     has submitted their registration.
     */
 
+    ///*
     $this->loader->add_action('gform_paypal_fulfillment',
       'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 4);
+    //*/
 
     /*
     $this->loader->add_action('gform_after_submission',
-      'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
-  */
+      'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 4);
+    */
+
     /*
     The action registered for this hook is to invoke processing after a teacher
     has submitted their registration.
