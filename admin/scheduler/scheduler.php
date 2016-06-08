@@ -140,7 +140,7 @@ class Scheduling_Algorithm {
     $current_either_sunday_total = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
-      //echo print_r($all_students_per_level);
+      //echo "Level #$i <br>" . print_r($all_students_per_level);
       foreach ($all_students_per_level as $student) {
         // obtain student's first and last names
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
@@ -227,7 +227,7 @@ class Scheduling_Algorithm {
         // add student's preferred command performance time
         $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['command_performance_availability'])]);
 
-//wp_die(print_r($modified_student));
+//echo print_r($modified_student);
 
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
@@ -769,6 +769,7 @@ class Scheduling_Algorithm {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
+      'status' => 'active',
       'field_filters' => array(
         'mode' => 'any',
         array(
@@ -885,6 +886,7 @@ class Scheduling_Algorithm {
   private static function determine_judges($teacher_master_form_id) {
     // get all entries in the associated teacher master
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -927,6 +929,7 @@ class Scheduling_Algorithm {
   private static function determine_proctors($teacher_master_form_id) {
     // get all entries in the associated teacher master
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;

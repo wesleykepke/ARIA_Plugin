@@ -155,6 +155,7 @@ class ARIA_Registration_Handler {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
+      'status' => 'active',
       'field_filters' => array(
         'mode' => 'any',
         array(
@@ -198,6 +199,7 @@ class ARIA_Registration_Handler {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
+      'status' => 'active',
 			'field_filters' => array(
 				'mode' => 'all',
 				array(
@@ -292,6 +294,7 @@ class ARIA_Registration_Handler {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
       $search_criteria = array(
+        'status' => 'active',
         'field_filters' => array(
         'mode' => 'any',
         array(
@@ -363,6 +366,7 @@ class ARIA_Registration_Handler {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
+      'status' => 'active',
       'field_filters' => array(
         'mode' => 'any',
         array(

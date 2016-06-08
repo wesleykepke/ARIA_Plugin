@@ -624,6 +624,7 @@ class ARIA_API {
   public static function get_teacher_email($teacher_name, $teacher_master_form_id) {
     // get all entries in the associated teacher master
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;

@@ -227,6 +227,7 @@ class ARIA_Form_Hooks {
 
     // determine how many students have registered so far
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -613,6 +614,7 @@ class ARIA_Form_Hooks {
 
           // determine how many students have registered so far
           $search_criteria = array();
+          $search_criteria['status'] = 'active';
           $sorting = null;
           $paging = array('offset' => 0, 'page_size' => 2000);
           $total_count = 0;

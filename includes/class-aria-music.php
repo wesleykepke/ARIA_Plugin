@@ -231,6 +231,7 @@ class ARIA_Music {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
 
     // get all of the music in the nnmta music database
     if (GFAPI::delete_form($music_db_form_id)) {
