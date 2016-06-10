@@ -743,6 +743,8 @@ class Scheduler {
       }
     }
 
+echo print_r($teacher_emails_to_students);
+
     // for each of the email-student relationships that were found, generate an email message
     foreach ($teacher_emails_to_students as $key => $value) {
       if (strpos($key, '@') !== false) {
@@ -756,20 +758,39 @@ class Scheduler {
         }
 
         // iterate through all of the students for a given email
+        $has_saturday_students = false;
+        $has_sunday_students = false;
         foreach ($value as $student) {
           // students who requested saturday
           if ($student->get_day_preference() === $SAT) {
             $sat_email_message .= $student->get_info_for_email();
+            $has_saturday_students = true;
           }
 
           // students who requested sunday
           else if ($student->get_day_preference() === $SUN) {
             $sun_email_message .= $student->get_info_for_email();
+            $has_sunday_students = true;
           }
         }
 
         // once the message has been generated, send the email to the teachers (per teacher basis)
-        $email_message = $sat_email_message . "\n\n" . $sun_email_message;
+        $email_message = "";
+
+        // check if there are any saturday students for this teacher
+        if ($has_saturday_students) {
+          $email_message .= $sat_email_message;
+        }
+
+        // check if there are any sunday students for this teacher
+        if ($has_sunday_students) {
+          if ($has_saturday_students) {
+            $email_message .= "\n\n";
+          }
+
+          $email_message .= $sun_email_message;
+        }
+
         $email_message .= "\n\nIf you have any questions, please contact the festival chair at $fc_email.";
         if (!is_null($email_message)) {
           $subject = "Student Assignments for " . $comp_name;

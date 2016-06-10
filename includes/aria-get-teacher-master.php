@@ -2,7 +2,20 @@
   $teacher_fields = aria_master_teacher_field_id_array();
   echo json_encode($teacher_fields);
 
-    public static function aria_master_teacher_field_id_array() {
+  /**
+   * This function defines an associative array with entry field mappings
+   * for the teacher master form.
+	 *
+	 * This function returns an array that maps all of the names of the
+   * fields in the student form to a unique integer so that they can be
+   * referenced. Moreover, this array helps prevent the case where the
+   * names of these fields are modified from the dashboard.
+	 *
+	 * @since 1.0.0
+	 * @author KREW
+	 *
+	 */
+  function aria_master_teacher_field_id_array() {
     /*
     CAUTION, This array is used as a source of truth. Changing these values may
     result in catastrophic failure. If you do not want to feel the bern,
@@ -14,17 +27,17 @@
     function returns.
     */
     return array(
-      'students' => 1,
-      'name' => 2,
-      'first_name' => 2.3,
-      'last_name' => 2.6,
-      'email' => 3,
-      'phone' => 4,
-      'teacher_hash' => 5,
-      'student_hash' => 6,
-      'volunteer_preference' => 7,
-      'volunteer_time' => 8,
-      'is_judging' => 9,
+      'name' => 1,
+      'first_name' => 1.3,
+      'last_name' => 1.6,
+      'email' => 2,
+      'phone' => 3,
+      'hash' => 4,
+      'students' => 5,
+      'student_hashes' => 6,
+      'is_judging' => 7,
+      'volunteer_preference' => 8,
+      'volunteer_time' => 9,
       'schedule_with_students' => 10
     );
   }

@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA
@@ -278,16 +278,18 @@ class ARIA {
 */
     /*
     The action registered for this hook is to invoke processing after a student
-    has submitted their registration.
+    has submitted their registration (PayPal stuff).
     */
-
     $this->loader->add_action('gform_paypal_fulfillment',
-      'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
+      'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 4);
 
     /*
+    The action registered for this hook is to perform processing on the student
+    entry object after student submission
+    */
     $this->loader->add_action('gform_after_submission',
-      'ARIA_Form_Hooks', 'aria_after_student_submission', 10, 2);
-  */
+      'ARIA_Form_Hooks', 'aria_update_student_level_after_submission', 10, 2);
+
     /*
     The action registered for this hook is to invoke processing after a teacher
     has submitted their registration.
@@ -302,11 +304,11 @@ class ARIA {
       'ARIA_Form_Hooks',
       'aria_before_teacher_render', 10, 2);
 
-
+    /*
+    The action registered for this hook does something idk..
+    */
     $this->loader->add_action( 'gform_after_update_entry',
         'ARIA_Form_Hooks', 'aria_student_master_post_update_entry', 10, 3 );
-
-
 
     /*
     The action registered for this hook if for adding music upload/download
@@ -349,6 +351,33 @@ class ARIA {
 
     $this->loader->add_filter( 'wp_mail_content_type', 'ARIA_API',
       'set_content_type', 10, 1);
+
+    /*
+    The filter registered for this hook performs form validation on the create
+    competition form.
+    */
+    $this->loader->add_filter('gform_validation',
+                              'ARIA_Create_Competition',
+                              'aria_create_competition_validation',
+                              10, 1);
+
+    /*
+    The filter registered for this hook performs form validation on the student
+    registration form.
+    */
+    $this->loader->add_filter('gform_validation',
+                              'ARIA_Create_Competition',
+                              'aria_student_form_validation',
+                              10, 1);
+
+    /*
+    The filter registered for this hook performs form validation on the teacher
+    registration form.
+    */
+    $this->loader->add_filter('gform_validation',
+                              'ARIA_Create_Competition',
+                              'aria_teacher_form_validation',
+                              10, 1);
   }
 
   /**

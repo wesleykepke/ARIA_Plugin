@@ -617,7 +617,7 @@ class Student {
     $first_name = ucwords(strtolower($this->first_name));
     $last_name = ucwords(strtolower($this->last_name));
     $message = "$first_name $last_name will be playing $songs on $this->day"
-    . " ($this->date) at $this->start_time in room: $this->room.\n";
+    . " ($this->date) at $this->start_time in $this->room.\n";
     return $message;
   }
 
@@ -671,9 +671,20 @@ class Student {
     );
   }
 
+  /**
+   * The function will return an associative array that contains basic information
+   * about a student.
+   *
+   * The information returned from this function is primarily used to display
+   * information in the HTML rendering portion of the scheduler.
+   *
+   * @since 1.0.0
+   * @return array Represents all information stored about a student.
+   */
   public function get_schedule_string() {
     return array(
       'Student Name' => $this->first_name . ' ' . $this->last_name,
+      'Student Age' => $this->age,
       'Student Skill Level' => $this->skill_level,
       'Student Play Time' => $this->play_time . ' minutes',
       'Song #1' => $this->songs[0],

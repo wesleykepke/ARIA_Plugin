@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions that allow the
  * festival chairman to upload and download music.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA
@@ -58,7 +58,7 @@ class ARIA_Music {
     $all_songs = array();
     if (($file_ptr = fopen($csv_music_file, "r")) !== FALSE) {
       while (($single_song_data = fgetcsv($file_ptr, 1000, ",")) !== FALSE) {
-        $single_song_data_data = array_map("utf8_encode", $single_song_data);
+        $single_song_data = array_map("utf8_encode", $single_song_data);
         $single_song = array();
         for ($i = 1; $i <= count($single_song_data); $i++) {
           $single_song[(string) $i] = $single_song_data[$i - 1];
@@ -231,6 +231,7 @@ class ARIA_Music {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
 
     // get all of the music in the nnmta music database
     if (GFAPI::delete_form($music_db_form_id)) {

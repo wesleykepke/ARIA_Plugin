@@ -140,6 +140,7 @@ class Scheduling_Algorithm {
     $current_either_sunday_total = 0;
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
+      //echo "Level #$i <br>" . print_r($all_students_per_level);
       foreach ($all_students_per_level as $student) {
         // obtain student's first and last names
         $first_name = $student[strval($student_master_field_mapping['student_first_name'])];
@@ -161,7 +162,7 @@ class Scheduling_Algorithm {
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
 
         // determine student's day preference
-        $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
+        $day_preference = $student[strval($student_master_field_mapping['festival_availability'])];
         if ($day_preference == "Saturday") {
           $day_preference = SAT;
         }
@@ -224,7 +225,9 @@ class Scheduling_Algorithm {
         $modified_student->set_birthday($student[strval($student_master_field_mapping['student_birthday'])]);
 
         // add student's preferred command performance time
-        $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['preferred_command_performance'])]);
+        $modified_student->set_preferred_command_performance_time($student[strval($student_master_field_mapping['command_performance_availability'])]);
+
+//echo print_r($modified_student);
 
         // schedule the student
         if (!$scheduler->schedule_student($modified_student)) {
@@ -233,6 +236,9 @@ class Scheduling_Algorithm {
         }
       }
     }
+
+
+//wp_die();
 
     // assign the judges for the competition
     /*
@@ -255,7 +261,7 @@ class Scheduling_Algorithm {
     <b>you must click the 'Save Schedule' button</b>, otherwise, your changes will be lost. The
     information you supply here will be used for document generation.<br>
     For each section below, you can modify the start time, the room, the judge(s),
-    the proctor(s), and the door guard.</h4>";
+    the proctor(s), and the door monitor.</h4>";
     $confirmation .= '<button id="saveScheduleButton" type="button" onclick="sendScheduleToServer()">Save Schedule</button><br>';
     $confirmation .= $scheduler->get_schedule_string(false);
     return $confirmation;
@@ -264,7 +270,7 @@ class Scheduling_Algorithm {
   /**
    * This function defines and creates the scheduling page (front-end).
    *
-   * @link       http://wesleykepke.github.io/ARIA/
+   * @link       http://wesleykepke.github.io/ARIA_Plugin/
    * @since      1.0.0
    *
    * @package    ARIA
@@ -485,6 +491,26 @@ class Scheduling_Algorithm {
     $date_2->calendarIconType = 'calendar';
     $date_2->dateType = 'datepicker';
     $form->fields[] = $date_2;
+
+
+
+    // theory score required for special recognition
+    /*
+    $theory_score_field = new GF_Field_Select();
+    $theory_score_field->label = "Theory Score for Recognition (70-100)";
+    $theory_choices = array();
+    for ($i = 70; $i <= 100; $i++) {
+      $single_theory_choice = array();
+      $single_theory_choice['text'] = strval($i);
+      $single_theory_choice['value'] = strval($i);
+      $single_theory_choice['isSelected'] = false;
+      $theory_choices[] = $single_theory_choice;
+      unset($single_theory_choice);
+    }
+    $theory_score_field->choices = $theory_choices;
+    $theory_score_field->id = $field_mappings['competition_theory_score'];
+    $theory_score_field->isRequired = true;
+    */
 
     // add a default submission message for the schedule competition form
     $successful_submission_message = '';
@@ -743,6 +769,7 @@ class Scheduling_Algorithm {
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
     $search_criteria = array(
+      'status' => 'active',
       'field_filters' => array(
         'mode' => 'any',
         array(
@@ -787,7 +814,7 @@ class Scheduling_Algorithm {
     for ($i = LOW_LEVEL; $i <= HIGH_LEVEL; $i++) {
       $all_students_per_level = self::get_all_students_per_level($student_master_form_id, $i);
       foreach ($all_students_per_level as $student) {
-        $day_preference = $student[strval($student_master_field_mapping['available_festival_days'])];
+        $day_preference = $student[strval($student_master_field_mapping['festival_availability'])];
         $total_play_time = $student[strval($student_master_field_mapping['timing_of_pieces'])];
 
         if ($day_preference == "Saturday") {
@@ -859,6 +886,7 @@ class Scheduling_Algorithm {
   private static function determine_judges($teacher_master_form_id) {
     // get all entries in the associated teacher master
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;
@@ -901,6 +929,7 @@ class Scheduling_Algorithm {
   private static function determine_proctors($teacher_master_form_id) {
     // get all entries in the associated teacher master
     $search_criteria = array();
+    $search_criteria['status'] = 'active';
     $sorting = null;
     $paging = array('offset' => 0, 'page_size' => 2000);
     $total_count = 0;

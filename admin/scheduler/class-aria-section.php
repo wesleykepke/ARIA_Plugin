@@ -244,7 +244,7 @@ class Section {
     $this->date = $date;
     $this->judges = "TYPE IN JUDGE(S)";
     $this->proctor = "TYPE IN PROCTOR(S)";
-    $this->door_guard = "TYPE IN DOOR GUARD";
+    $this->door_guard = "TYPE IN DOOR MONITOR";
   }
 
   /**
@@ -676,8 +676,8 @@ class Section {
     // create a placeholder for proctors in this section
     $section_info .= '<li>Proctor(s): <span id="section-proctors" contenteditable="true">' . $this->proctor . '</span></li>';
 
-    // create a placeholder for the door guard of this section
-    $section_info .= '<li>Door Guard: <span id="section-door-guard" contenteditable="true">' . $this->door_guard . '</span></li>';
+    // create a placeholder for the door monitor of this section
+    $section_info .= '<li>Door Monitor: <span id="section-door-guard" contenteditable="true">' . $this->door_guard . '</span></li>';
 
     // determine number of students per section
     $section_info .= '<li>Number of Students: ' . strval(count($this->students)) . '</li>';
@@ -829,7 +829,7 @@ class Section {
     if ($new_section_data[0] == "EMPTY") {
       $this->start_time = "TYPE IN START TIME";
       $this->judges = "TYPE IN JUDGE(S)";
-      $this->door_guard = "TYPE IN DOOR GUARD";
+      $this->door_guard = "TYPE IN DOOR MONITOR";
       $this->proctor = "TYPE IN PROCTOR(S)";
       return;
     }
@@ -863,7 +863,7 @@ class Section {
         $this->proctor = $new_section_data[$section_proctor];
       }
 
-      // door guard
+      // door monitor
       if (array_key_exists($section_door_guard, $new_section_data)) {
         $this->door_guard = $new_section_data[$section_door_guard];
       }
@@ -892,7 +892,7 @@ class Section {
       //$this->room = ;
       $this->judges = "TYPE IN JUDGE(S)";
       $this->proctor = "TYPE IN PROCTOR(S)";
-      $this->door_guard = "TYPE IN DOOR GUARD";
+      $this->door_guard = "TYPE IN DOOR MONITOR";
       return;
     }
 
@@ -1017,10 +1017,15 @@ class Section {
    */
   public function group_students_by_teacher_email(&$teacher_emails_to_students) {
     for ($i = 0; $i < count($this->students); $i++) {
+      // check if the teacher's email does not already exist as part of the array
       if (!in_array($this->students[$i]->get_teacher_email(), $teacher_emails_to_students)) {
+        // if it does not yet exist, add it and make it's mapped value an array
+        array_push($teacher_emails_to_students, $this->students[$i]->get_teacher_email());
         $teacher_emails_to_students[$this->students[$i]->get_teacher_email()] = array();
       }
-      $teacher_emails_to_students[$this->students[$i]->get_teacher_email()][] = $this->students[$i];
+
+      // add the student to the list of students consolidated under one email
+      array_push($teacher_emails_to_students[$this->students[$i]->get_teacher_email()], $this->students[$i]);
     }
   }
 

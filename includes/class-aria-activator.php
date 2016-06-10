@@ -3,7 +3,7 @@
 /**
  * Fired during plugin activation.
  *
- * @link       http://wesleykepke.github.io/ARIA/
+ * @link       http://wesleykepke.github.io/ARIA_Plugin/
  * @since      1.0.0
  *
  * @package    ARIA
@@ -49,7 +49,7 @@ class ARIA_Activator {
     }
 
     // create various forms upon initialization
-    require_once( 'class-gf-form.php' );
+    require_once('class-gf-form.php');
     require_once("class-aria-create-competition.php");
     require_once("class-aria-music.php");
     require_once(ARIA_ROOT . "/admin/scheduler/scheduler.php");
@@ -60,7 +60,7 @@ class ARIA_Activator {
     ARIA_Create_Competition::aria_create_competition_activation();
     ARIA_Music::aria_create_music_upload_form();
     Scheduling_Algorithm::aria_create_scheduling_page();
-    ARIA_TEACHER::aria_create_teacher_upload_form();
+    ARIA_Teacher::aria_create_teacher_upload_form();
 		ARIA_Resend_Email::aria_create_resend_teacher_email_form();
 		Modify_Schedule::aria_create_modify_schedule_page();
     Score_Input::aria_create_score_input_page();
